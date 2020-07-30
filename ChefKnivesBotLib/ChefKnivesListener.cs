@@ -1,6 +1,6 @@
-﻿using ChefknivesBot.CommentHandlers;
-using ChefknivesBot.Handlers;
-using ChefknivesBot.PostHandlers;
+﻿using ChefKnivesBotLib.Handlers;
+using ChefKnivesBotLib.Handlers.Comments;
+using ChefKnivesBotLib.Handlers.Posts;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Inputs.LinksAndComments;

@@ -1,4 +1,4 @@
-﻿using ChefKnivesBot.Utilities;
+﻿using ChefKnivesBotLib.Utilities;
 using ChefKnivesBotLib.Data;
 using Reddit;
 using Reddit.Things;
@@ -9,7 +9,7 @@ using Post = Reddit.Controllers.Post;
 using Subreddit = Reddit.Controllers.Subreddit;
 using User = Reddit.Controllers.User;
 
-namespace ChefKnivesBot.Handlers.Posts
+namespace ChefKnivesBotLib.Handlers.Posts
 {
     public class TenToOnePostHandler : IPostHandler
     {

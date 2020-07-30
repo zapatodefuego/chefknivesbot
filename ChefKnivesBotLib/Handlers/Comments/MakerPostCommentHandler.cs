@@ -7,7 +7,7 @@ using System.Linq;
 using Subreddit = Reddit.Controllers.Subreddit;
 using User = Reddit.Controllers.User;
 
-namespace ChefKnivesBot.Handlers.Comments
+namespace ChefKnivesBotLib.Handlers.Comments
 {
     public class MakerPostCommentHandler : ICommentHandler
     {

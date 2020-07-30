@@ -5,7 +5,7 @@ using System.Linq;
 using Post = Reddit.Controllers.Post;
 using User = Reddit.Controllers.User;
 
-namespace ChefKnivesBot.Handlers.Posts
+namespace ChefKnivesBotLib.Handlers.Posts
 {
     public class MakerPostHandler : IPostHandler
     {

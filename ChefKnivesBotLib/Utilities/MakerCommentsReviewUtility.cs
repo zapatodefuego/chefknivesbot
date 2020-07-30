@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ChefKnivesBot.Utilities
+namespace ChefKnivesBotLib.Utilities
 {
 
     public class MakerCommentsReviewUtility

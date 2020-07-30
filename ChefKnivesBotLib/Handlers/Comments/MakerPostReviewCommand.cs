@@ -1,4 +1,4 @@
-﻿using ChefKnivesBot.Utilities;
+﻿using ChefKnivesBotLib.Utilities;
 using ChefKnivesBotLib.Data;
 using Reddit;
 using Reddit.Things;
@@ -8,7 +8,7 @@ using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
 using Subreddit = Reddit.Controllers.Subreddit;
 
-namespace ChefKnivesBot.Handlers.Comments
+namespace ChefKnivesBotLib.Handlers.Comments
 {
     public class MakerPostReviewCommand : ICommentHandler
     {
