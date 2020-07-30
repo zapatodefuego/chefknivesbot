@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotLib", "ChefKnivesBotLib\ChefKnivesBotLib.csproj", "{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotWeb", "ChefKnivesBotWeb\ChefKnivesBotWeb.csproj", "{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C3C08FB-04F0-4145-B1A4-0309C4D436CE}
+	EndGlobalSection
+EndGlobal
