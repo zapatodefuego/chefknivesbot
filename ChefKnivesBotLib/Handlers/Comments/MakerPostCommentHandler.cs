@@ -22,6 +22,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
             _logger = logger;
             _subreddit = subreddit;
             _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
+            _me = me;
         }
 
         public void Process(Reddit.Controllers.Comment comment)

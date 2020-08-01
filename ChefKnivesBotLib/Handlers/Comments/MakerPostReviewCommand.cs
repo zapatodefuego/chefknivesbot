@@ -44,6 +44,12 @@ namespace ChefKnivesBotLib.Handlers.Comments
             {
                 var result = MakerCommentsReviewUtility.Review(comment.Root.Author, _subreddit.Name, _redditClient);
 
+                if (!string.IsNullOrEmpty(result.Error))
+                {
+                    _logger.Error($"[{nameof(MakerPostReviewCommand)}:" + result.Error);
+                    SendErrorMessage(comment);
+                }
+
                 if (result.OtherComments < 3)
                 {
                     SendNeverContributedWarningMessage(comment, comment.Root);
@@ -56,6 +62,19 @@ namespace ChefKnivesBotLib.Handlers.Comments
                 {
                     SendGoodStandingMessage(comment);
                 }
+            }
+        }
+
+        private void SendErrorMessage(Comment comment)
+        {
+            if (!comment.Replies.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("Sorry,")))
+            {
+                comment
+                    .Reply(
+                        $"Sorry, I ran into an error because I'm not a very good bot...")
+                    .Distinguish("yes");
+
+                _logger.Information($"Commented with SendGoodStandingMessage on comment by {comment.Author}. (Invoked by !review command)");
             }
         }
 

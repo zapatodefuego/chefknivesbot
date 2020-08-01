@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotLib", "ChefKni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotWeb", "ChefKnivesBotWeb\ChefKnivesBotWeb.csproj", "{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChefKnivesBotLib.Test", "ChefKnivesBotLib.Test\ChefKnivesBotLib.Test.csproj", "{74F3C576-39FB-4B26-B629-E6942ABDFD3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

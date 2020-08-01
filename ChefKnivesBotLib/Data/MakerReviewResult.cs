@@ -9,6 +9,8 @@ namespace ChefKnivesBotLib.Data
         public int SelfPostComments { get; set; }
 
         public int OtherComments { get; set; }
+
+        public string Error { get; set; }
     }
 
 }

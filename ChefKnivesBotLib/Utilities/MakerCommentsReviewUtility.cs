@@ -14,7 +14,12 @@ namespace ChefKnivesBotLib.Utilities
         public static MakerReviewResult Review(string author, string subreddit, RedditClient redditClient)
         {
             var potentialUsers = redditClient.SearchUsers(new SearchGetSearchInput(author));
-            var user = potentialUsers.Single(u => u.Name.Equals(author));
+            var user = potentialUsers.SingleOrDefault(u => u.Name.Equals(author));
+
+            if (user == null)
+            {
+                return new MakerReviewResult { Error = $"Unable to find user {author}" };
+            }
 
             user.GetCommentHistory(30);
 

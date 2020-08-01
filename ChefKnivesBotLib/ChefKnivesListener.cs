@@ -17,28 +17,17 @@ namespace ChefKnivesBotLib
         private readonly ILogger _logger;
         private readonly RedditClient _redditClient;
         private readonly Subreddit _subreddit;
-        private static User _me;
-        private static Reddit.Things.FlairV2 _makerPostFlair;
-        public readonly List<ICommentHandler> _commentHandlers = new List<ICommentHandler>();
-        public readonly List<IPostHandler> _postHandlers = new List<IPostHandler>();
 
-        public ChefKnivesListener(ILogger logger, RedditClient redditClient)
+        public ChefKnivesListener(ILogger logger, RedditClient redditClient, Subreddit subreddit)
         {
             _logger = logger;
             _redditClient = redditClient;
-            _subreddit = _redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals("chefknives"));
-            _me = _redditClient.Account.Me;
-            _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
-
-            _commentHandlers.Add(new MakerPostCommentHandler(_logger, _subreddit, _me));
-            _commentHandlers.Add(new MakerPostReviewCommand(_logger, _redditClient, _subreddit, _me));
-
-            _postHandlers.Add(new MakerPostHandler(_logger, _makerPostFlair, _me));
-            _postHandlers.Add(new TenToOnePostHandler(_logger, _redditClient, _subreddit, _me));
-
-            SubscribeToPostFeed();
-            SubscribeToCommentFeed();
+            _subreddit = subreddit;
         }
+
+        public List<ICommentHandler> CommentHandlers { get; } = new List<ICommentHandler>();
+
+        public List<IPostHandler> PostHandlers { get; } = new List<IPostHandler>();
 
         public void SubscribeToPostFeed()
         {
@@ -60,7 +49,7 @@ namespace ChefKnivesBotLib
             {
                 foreach (var comment in e.NewComments)
                 {
-                    _commentHandlers.ForEach(c => c.Process(comment));
+                    CommentHandlers.ForEach(c => c.Process(comment));
                 }
             }
             catch (Exception exception)
@@ -77,7 +66,7 @@ namespace ChefKnivesBotLib
             {
                 foreach (var post in e.Added)
                 {
-                    _postHandlers.ForEach(c => c.Process(post));
+                    PostHandlers.ForEach(c => c.Process(post));
                 }
             }
             catch (Exception exception)
