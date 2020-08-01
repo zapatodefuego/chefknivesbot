@@ -3,7 +3,7 @@ using Serilog;
 using System;
 using System.Linq;
 using Post = Reddit.Controllers.Post;
-using User = Reddit.Controllers.User;
+using Account = Reddit.Controllers.Account;
 
 namespace ChefKnivesBotLib.Handlers.Posts
 {
@@ -11,13 +11,13 @@ namespace ChefKnivesBotLib.Handlers.Posts
     {
         private readonly ILogger _logger;
         private FlairV2 _makerPostFlair;
-        private User _me;
+        private Account _account;
 
-        public MakerPostHandler(ILogger logger, FlairV2 makerPostFlair, User me)
+        public MakerPostHandler(ILogger logger, FlairV2 makerPostFlair, Account account)
         {
             _logger = logger;
             _makerPostFlair = makerPostFlair;
-            _me = me;
+            _account = account;
         }
         public void Process(Post post)
         {
@@ -32,7 +32,7 @@ namespace ChefKnivesBotLib.Handlers.Posts
                 post.SetFlair(_makerPostFlair.Text, _makerPostFlair.Id);
 
                 // Check if we already commented on this post
-                if (!post.Comments.New.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("This post has been identified")))
+                if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("This post has been identified")))
                 {
                     post
                         .Reply(

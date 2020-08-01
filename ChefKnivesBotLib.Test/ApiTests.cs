@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Reddit;
 using Reddit.Controllers;
+using Reddit.Inputs.Modmail;
 using Serilog;
 using System;
 using System.Linq;
@@ -33,9 +34,16 @@ namespace ChefKnivesBotLib.Tests
         }
 
         [Test]
-        public void Test()
+        [TestCase("zapatodefuego")]
+        public void TestCanReviewByUsername(string username)
         {
-            var result = MakerCommentsReviewUtility.Review("u/Enotification", _subreddit.Name, _redditClient);
+            var result = MakerCommentsReviewUtility.Review(username, _subreddit.Name, _redditClient);
+        }
+
+        [Test]
+        public void SetupModMailConversation()
+        {
+            var converstation = _redditClient.Account.Modmail.NewConversation(body: "Placeholder for bot replies", subject: "CKBot Message Queue", srName: _subreddit.Name, to: "chefknives");
         }
     }
 }

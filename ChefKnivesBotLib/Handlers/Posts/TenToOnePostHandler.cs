@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using Post = Reddit.Controllers.Post;
 using Subreddit = Reddit.Controllers.Subreddit;
-using User = Reddit.Controllers.User;
+using Account = Reddit.Controllers.Account;
 
 namespace ChefKnivesBotLib.Handlers.Posts
 {
@@ -16,15 +16,15 @@ namespace ChefKnivesBotLib.Handlers.Posts
         private readonly ILogger _logger;
         private readonly RedditClient _redditClient;
         private readonly Subreddit _subreddit;
-        private readonly User _me;
+        private readonly Account _account;
         private readonly FlairV2 _makerPostFlair;
 
-        public TenToOnePostHandler(ILogger logger, RedditClient redditClient, Subreddit subreddit, User me)
+        public TenToOnePostHandler(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account)
         {
             _logger = logger;
             _redditClient = redditClient;
             _subreddit = subreddit;
-            _me = me;
+            _account = account;
             _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
@@ -53,7 +53,7 @@ namespace ChefKnivesBotLib.Handlers.Posts
 
         private void SendNeverContributedWarningMessage(Post post)
         {
-            if (!post.Comments.New.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("It looks like you haven't")))
+            if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("It looks like you haven't")))
             {
                 post
                     .Reply(
@@ -68,7 +68,7 @@ namespace ChefKnivesBotLib.Handlers.Posts
 
         private void SendTenToOneWarningMessage(Post post, MakerReviewResult result)
         {
-            if (!post.Comments.New.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("Of your recent comments in")))
+            if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Of your recent comments in")))
             {
                 post
                     .Reply(

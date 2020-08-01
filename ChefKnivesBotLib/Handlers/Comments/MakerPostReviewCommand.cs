@@ -7,6 +7,7 @@ using System.Linq;
 using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
 using Subreddit = Reddit.Controllers.Subreddit;
+using Account = Reddit.Controllers.Account;
 
 namespace ChefKnivesBotLib.Handlers.Comments
 {
@@ -14,16 +15,16 @@ namespace ChefKnivesBotLib.Handlers.Comments
     {
         private ILogger _logger;
         private readonly RedditClient _redditClient;
-        private Subreddit _subreddit;
-        private readonly Reddit.Controllers.User _me;
-        private FlairV2 _makerPostFlair;
+        private readonly Subreddit _subreddit;
+        private readonly Account _account;
+        private readonly FlairV2 _makerPostFlair;
 
-        public MakerPostReviewCommand(ILogger logger, RedditClient redditClient, Subreddit subreddit, Reddit.Controllers.User me)
+        public MakerPostReviewCommand(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account)
         {
             _logger = logger;
             _redditClient = redditClient;
             _subreddit = subreddit;
-            _me = me;
+            _account = account;
             _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
@@ -67,7 +68,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
 
         private void SendErrorMessage(Comment comment)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("Sorry,")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Sorry,")))
             {
                 comment
                     .Reply(
@@ -80,7 +81,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
 
         private void SendGoodStandingMessage(Comment comment)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("I reviewed OP and they appear to be in good standing.")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("I reviewed OP and they appear to be in good standing.")))
             {
                 comment
                     .Reply(
@@ -93,7 +94,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
 
         private void SendNeverContributedWarningMessage(Comment comment, Post post)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing.")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing.")))
             {
                 comment
                     .Reply(
@@ -108,7 +109,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
 
         private void SendTenToOneWarningMessage(Comment comment, MakerReviewResult result, Post post)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing. Of")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing. Of")))
             {
                 comment
                     .Reply(
