@@ -37,9 +37,9 @@ namespace ChefKnivesBotLib.Handlers.Posts
                     || (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
                )
             {
-                var result = MakerCommentsReviewUtility.Review(post.Author, _subreddit.Name, _redditClient);
+                var result = MakerCommentsReviewUtility.Review(_logger, post.Author, _subreddit.Name, _redditClient);
 
-                if (result.OtherComments < 3)
+                if (result.OtherComments < 2)
                 {
                     SendNeverContributedWarningMessage(post);
                 }

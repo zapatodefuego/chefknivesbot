@@ -43,7 +43,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
             if (linkFlairId != null && 
                 linkFlairId.Equals(_makerPostFlair.Id))
             {
-                var result = MakerCommentsReviewUtility.Review(comment.Root.Author, _subreddit.Name, _redditClient);
+                var result = MakerCommentsReviewUtility.Review(_logger, comment.Root.Author, _subreddit.Name, _redditClient);
 
                 if (!string.IsNullOrEmpty(result.Error))
                 {
@@ -51,7 +51,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
                     SendErrorMessage(comment);
                 }
 
-                if (result.OtherComments < 3)
+                if (result.OtherComments < 2)
                 {
                     SendNeverContributedWarningMessage(comment, comment.Root);
                 }

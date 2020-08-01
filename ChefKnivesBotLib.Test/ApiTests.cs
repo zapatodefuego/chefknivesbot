@@ -33,17 +33,24 @@ namespace ChefKnivesBotLib.Tests
             _subreddit = _redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals("chefknives"));
         }
 
+        [OneTimeTearDown]
+        public void Teardown()
+        {
+            _redditClient = null;
+            _subreddit = null;
+        }
+
         [Test]
         [TestCase("zapatodefuego")]
         public void TestCanReviewByUsername(string username)
         {
-            var result = MakerCommentsReviewUtility.Review(username, _subreddit.Name, _redditClient);
+            var result = MakerCommentsReviewUtility.Review(Log.Logger, username, _subreddit.Name, _redditClient);
         }
 
         [Test]
         public void SetupModMailConversation()
         {
-            var converstation = _redditClient.Account.Modmail.NewConversation(body: "Placeholder for bot replies", subject: "CKBot Message Queue", srName: _subreddit.Name, to: "chefknives");
+            // var converstation = _redditClient.Account.Modmail.NewConversation(body: "Placeholder for bot replies", subject: "CKBot Message Queue", srName: _subreddit.Name, to: "chefknives");
         }
     }
 }
