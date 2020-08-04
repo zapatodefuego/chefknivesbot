@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotLib", "ChefKnivesBotLib\ChefKnivesBotLib.csproj", "{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotWeb", "ChefKnivesBotWeb\ChefKnivesBotWeb.csproj", "{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotLib.Test", "ChefKnivesBotLib.Test\ChefKnivesBotLib.Test.csproj", "{74F3C576-39FB-4B26-B629-E6942ABDFD3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChefKnivesBotLib.Test", "ChefKnivesBotLib.Test\ChefKnivesBotLib.Test.csproj", "{74F3C576-39FB-4B26-B629-E6942ABDFD3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChefKnivesBotWeb", "ChefKnivesBotWeb\ChefKnivesBotWeb.csproj", "{B4FA0D27-046B-421F-B133-C51761A0894F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87F6BCC2-D51B-43B7-AC3B-128E8B5F864E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AADDF79-9E04-4DD1-B3E8-F83E7C545BBE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74F3C576-39FB-4B26-B629-E6942ABDFD3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4FA0D27-046B-421F-B133-C51761A0894F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4FA0D27-046B-421F-B133-C51761A0894F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4FA0D27-046B-421F-B133-C51761A0894F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4FA0D27-046B-421F-B133-C51761A0894F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

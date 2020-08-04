@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Linq;
 
-namespace ChefKnivesBot
+namespace ChefKnivesBotWeb
 {
     public class Program
     {
