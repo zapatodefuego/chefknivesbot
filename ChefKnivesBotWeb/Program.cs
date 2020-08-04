@@ -15,7 +15,7 @@ namespace ChefKnivesBotWeb
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             if (!args.Any(a => a.Equals("--websiteonly")))
