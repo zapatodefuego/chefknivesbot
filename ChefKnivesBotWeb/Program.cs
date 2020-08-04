@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System.Linq;
 
 namespace ChefKnivesBot
 {
@@ -14,10 +15,13 @@ namespace ChefKnivesBot
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, configuration["RedditSettingsFile"]);
+            if (!args.Any(a => a.Equals("--websiteonly")))
+            {
+                var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, configuration["RedditSettingsFile"]);
+            }
 
             CreateHostBuilder(args).Build().Run();
         }
