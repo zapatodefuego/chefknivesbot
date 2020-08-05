@@ -1,16 +1,16 @@
-﻿using Reddit.Inputs.LinksAndComments;
+﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Subreddit = Reddit.Controllers.Subreddit;
 using Account = Reddit.Controllers.Account;
-using Reddit.Inputs.Modmail;
+using Comment = Reddit.Controllers.Comment;
+using Subreddit = Reddit.Controllers.Subreddit;
 
 namespace ChefKnivesBotLib.Handlers.Comments
 {
-    public class MakerPostCommentHandler : ICommentHandler
+    public class MakerPostCommentHandler : IControllerHandler
     {
         private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private readonly ILogger _logger;
@@ -26,8 +26,14 @@ namespace ChefKnivesBotLib.Handlers.Comments
             _account = account;
         }
 
-        public void Process(Reddit.Controllers.Comment comment)
+        public bool Process(BaseController baseController)
         {
+            var comment = baseController as Comment;
+            if (comment == null)
+            {
+                return false;
+            }
+
             var linkFlairId = comment.Root.Listing.LinkFlairTemplateId;
 
             // Check if the link flair matches the maker post flait and that the author is not a moderator
@@ -38,7 +44,7 @@ namespace ChefKnivesBotLib.Handlers.Comments
                 // TODO: Check if we replied with the right thing first...
                 if (comment.Removed || comment.Listing.Approved || comment.Replies.Any(c => c.Author.Equals(_account.Me.Name)))
                 {
-                    return;
+                    return false;
                 }
 
                 if (_forbiddenPhrases.Any(f => comment.Body.Contains(f, StringComparison.OrdinalIgnoreCase)))
@@ -53,8 +59,12 @@ namespace ChefKnivesBotLib.Handlers.Comments
                         to: "chefknives");
 
                     _logger.Information($"Removed comment from {comment.Author}: {comment.Body.Substring(0, 100)}");
+
+                    return true;
                 }
             }
+
+            return false;
         }
     }
 }

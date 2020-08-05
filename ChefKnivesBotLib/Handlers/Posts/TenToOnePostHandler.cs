@@ -1,17 +1,18 @@
-﻿using ChefKnivesBotLib.Utilities;
-using ChefKnivesBotLib.Data;
+﻿using ChefKnivesBotLib.Data;
+using ChefKnivesBotLib.Utilities;
 using Reddit;
+using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
 using System;
 using System.Linq;
+using Account = Reddit.Controllers.Account;
 using Post = Reddit.Controllers.Post;
 using Subreddit = Reddit.Controllers.Subreddit;
-using Account = Reddit.Controllers.Account;
 
 namespace ChefKnivesBotLib.Handlers.Posts
 {
-    public class TenToOnePostHandler : IPostHandler
+    public class TenToOnePostHandler : IControllerHandler
     {
         private readonly ILogger _logger;
         private readonly RedditClient _redditClient;
@@ -28,8 +29,14 @@ namespace ChefKnivesBotLib.Handlers.Posts
             _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
-        public void Process(Post post)
+        public bool Process(BaseController baseController)
         {
+            var post = baseController as Post;
+            if (post == null)
+            {
+                return false;
+            }
+
             var linkFlairId = post.Listing.LinkFlairTemplateId;
 
             // Checkc that the tile contains [maker post] or that the link flair matches the maker post flair
@@ -48,7 +55,10 @@ namespace ChefKnivesBotLib.Handlers.Posts
                     SendTenToOneWarningMessage(post, result);
                 }
 
+                return true;
             }
+
+            return false;
         }
 
         private void SendNeverContributedWarningMessage(Post post)

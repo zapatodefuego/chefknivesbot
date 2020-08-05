@@ -10,7 +10,6 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "commandLineArgs": "--websiteonly",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

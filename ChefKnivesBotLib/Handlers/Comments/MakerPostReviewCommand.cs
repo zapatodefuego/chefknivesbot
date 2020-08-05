@@ -1,17 +1,18 @@
-﻿using ChefKnivesBotLib.Utilities;
-using ChefKnivesBotLib.Data;
+﻿using ChefKnivesBotLib.Data;
+using ChefKnivesBotLib.Utilities;
 using Reddit;
+using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
 using System.Linq;
+using Account = Reddit.Controllers.Account;
 using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
 using Subreddit = Reddit.Controllers.Subreddit;
-using Account = Reddit.Controllers.Account;
 
 namespace ChefKnivesBotLib.Handlers.Comments
 {
-    public class MakerPostReviewCommand : ICommentHandler
+    public class MakerPostReviewCommand : IControllerHandler
     {
         private ILogger _logger;
         private readonly RedditClient _redditClient;
@@ -28,15 +29,21 @@ namespace ChefKnivesBotLib.Handlers.Comments
             _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
-        public void Process(Comment comment)
+        public bool Process(BaseController baseController)
         {
+            var comment = baseController as Comment;
+            if (comment == null)
+            {
+                return false;
+            }
+
             if (comment.Depth == 0 && comment.Body.Equals("!review"))
             {
                 _logger.Information($"Review invoked by {comment.Author} on post by {comment.Root.Author}");
             }
             else
             {
-                return;
+                return false;
             }
 
             var linkFlairId = comment.Root.Listing.LinkFlairTemplateId;
@@ -63,7 +70,11 @@ namespace ChefKnivesBotLib.Handlers.Comments
                 {
                     SendGoodStandingMessage(comment);
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         private void SendErrorMessage(Comment comment)

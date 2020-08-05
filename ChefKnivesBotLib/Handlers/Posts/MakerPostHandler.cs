@@ -1,13 +1,14 @@
-﻿using Reddit.Things;
+﻿using Reddit.Controllers;
+using Reddit.Things;
 using Serilog;
 using System;
 using System.Linq;
-using Post = Reddit.Controllers.Post;
 using Account = Reddit.Controllers.Account;
+using Post = Reddit.Controllers.Post;
 
 namespace ChefKnivesBotLib.Handlers.Posts
 {
-    public class MakerPostHandler : IPostHandler
+    public class MakerPostHandler : IControllerHandler
     {
         private readonly ILogger _logger;
         private FlairV2 _makerPostFlair;
@@ -19,8 +20,14 @@ namespace ChefKnivesBotLib.Handlers.Posts
             _makerPostFlair = makerPostFlair;
             _account = account;
         }
-        public void Process(Post post)
+        public bool Process(BaseController baseController)
         {
+            var post = baseController as Post;
+            if (post == null)
+            {
+                return false;
+            }
+
             var linkFlairId = post.Listing.LinkFlairTemplateId;
 
             // Check that the tile contains [maker post] or that the link flair matches the maker post flair (does the work for updates? i don't know yet)
@@ -43,7 +50,11 @@ namespace ChefKnivesBotLib.Handlers.Posts
 
                     _logger.Information($"Commented with maker warning on post by {post.Author}");
                 }
+
+                return true;
             }
+
+            return false;
         }
     }
 }

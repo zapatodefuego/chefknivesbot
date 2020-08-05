@@ -1,4 +1,5 @@
 ﻿using ChefKnivesBotLib.Handlers.Comments;
+using ChefKnivesBotLib.Handlers.Mail;
 using ChefKnivesBotLib.Handlers.Posts;
 using Microsoft.Extensions.Configuration;
 using Reddit;
@@ -11,7 +12,6 @@ namespace ChefKnivesBotLib
     public class Initializer
     {
         private const string _subredditName = "chefknives";
-        private const string _modMailConversationId = "fy2tg";
 
         public static ChefKnivesListener Start(ILogger logger, string settingsFileLocation)
         {
@@ -26,7 +26,7 @@ namespace ChefKnivesBotLib
             var account = redditClient.Account;
             var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
 
-            var listener = new ChefKnivesListener(logger, redditClient, subreddit);
+            var listener = new ChefKnivesListener(logger, redditClient, subreddit, account);
 
             listener.CommentHandlers.Add(new MakerPostCommentHandler(logger, subreddit, account));
             listener.CommentHandlers.Add(new MakerPostReviewCommand(logger, redditClient, subreddit, account));
@@ -34,8 +34,11 @@ namespace ChefKnivesBotLib
             listener.PostHandlers.Add(new MakerPostHandler(logger, makerPostFlair, account));
             listener.PostHandlers.Add(new TenToOnePostHandler(logger, redditClient, subreddit, account));
 
+            listener.MessageHandlers.Add(new MessageHandler(logger, redditClient, account));
+
             listener.SubscribeToPostFeed();
             listener.SubscribeToCommentFeed();
+            listener.SubscribeToMessageFeed();
 
             return listener;
         }
