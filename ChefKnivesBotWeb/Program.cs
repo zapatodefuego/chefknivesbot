@@ -8,10 +8,17 @@ namespace ChefKnivesBotWeb
 {
     public class Program
     {
+        private static IConfigurationRoot _configuration;
+
         public static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
+            var initialConfiguration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true)
+                .Build();
+
+            _configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile(initialConfiguration["RedditSettingsFile"], false, true)
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
@@ -21,7 +28,7 @@ namespace ChefKnivesBotWeb
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
                 var dryRun = args.Any(a => a.Equals("--dryrun"));
-                var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, configuration["RedditSettingsFile"], dryRun);
+                var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, _configuration, dryRun);
             }
 
             CreateHostBuilder(args).Build().Run();
@@ -33,6 +40,7 @@ namespace ChefKnivesBotWeb
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseConfiguration(_configuration);
                 });
     }
 }

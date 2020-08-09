@@ -13,12 +13,8 @@ namespace ChefKnivesBotLib
     {
         private const string _subredditName = "chefknives";
 
-        public static ChefKnivesListener Start(ILogger logger, string settingsFileLocation, bool dryRun = false)
+        public static ChefKnivesListener Start(ILogger logger, IConfigurationRoot redditConfiguration, bool dryRun = false)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile(settingsFileLocation, false, true)
-                .Build();
-
             logger.Information("Application started...");
 
             if (dryRun)
@@ -26,7 +22,7 @@ namespace ChefKnivesBotLib
                 logger.Warning("This is a DRYRUN! No actions will be taken!");
             }
 
-            var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
+            var redditClient = new RedditClient(appId: redditConfiguration["AppId"], appSecret: redditConfiguration["AppSecret"], refreshToken: redditConfiguration["RefreshToken"]);
             var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(_subredditName));
             var account = redditClient.Account;
             var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
