@@ -66,7 +66,7 @@ namespace ChefKnivesBotWeb
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"web")),
-                    RequestPath = new PathString("/web")
+                    RequestPath = new PathString()
                 });
             }
 
