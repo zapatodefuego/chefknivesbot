@@ -20,7 +20,8 @@ namespace ChefKnivesBotWeb
 
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
-                var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, configuration["RedditSettingsFile"]);
+                var dryRun = args.Any(a => a.Equals("--dryrun"));
+                var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, configuration["RedditSettingsFile"], dryRun);
             }
 
             CreateHostBuilder(args).Build().Run();

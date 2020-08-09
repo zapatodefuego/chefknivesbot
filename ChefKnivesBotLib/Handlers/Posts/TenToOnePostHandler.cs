@@ -12,7 +12,7 @@ using Subreddit = Reddit.Controllers.Subreddit;
 
 namespace ChefKnivesBotLib.Handlers.Posts
 {
-    public class TenToOnePostHandler : IControllerHandler
+    public class TenToOnePostHandler : HandlerBase, IControllerHandler
     {
         private readonly ILogger _logger;
         private readonly RedditClient _redditClient;
@@ -20,7 +20,8 @@ namespace ChefKnivesBotLib.Handlers.Posts
         private readonly Account _account;
         private readonly FlairV2 _makerPostFlair;
 
-        public TenToOnePostHandler(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account)
+        public TenToOnePostHandler(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account, bool dryRun)
+            : base(dryRun)
         {
             _logger = logger;
             _redditClient = redditClient;
@@ -65,12 +66,15 @@ namespace ChefKnivesBotLib.Handlers.Posts
         {
             if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("It looks like you haven't")))
             {
-                post
-                    .Reply(
-                        $"It looks like you haven't recently contributed to this community. Please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
-                    .Distinguish("yes", false);
+                if (!DryRun)
+                {
+                    post
+                        .Reply(
+                            $"It looks like you haven't recently contributed to this community. Please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
+                        .Distinguish("yes", false);
 
-                post.Remove();
+                    post.Remove();
+                }
 
                 _logger.Information($"Commented with SendNeverContributedWarningMessage on post by {post.Author}");
             }
@@ -80,13 +84,16 @@ namespace ChefKnivesBotLib.Handlers.Posts
         {
             if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Of your recent comments in")))
             {
-                post
-                    .Reply(
-                        $"Of your recent comments in {_subreddit.Name}, {result.OtherComments} occured outside of your own posts while {result.SelfPostComments} were made on posts your authored. \n\n " +
-                        $"Please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
-                    .Distinguish("yes", false);
+                if (!DryRun)
+                {
+                    post
+                        .Reply(
+                            $"Of your recent comments in {_subreddit.Name}, {result.OtherComments} occured outside of your own posts while {result.SelfPostComments} were made on posts your authored. \n\n " +
+                            $"Please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
+                        .Distinguish("yes", false);
 
-                post.Remove();
+                    post.Remove();
+                }
 
                 _logger.Information($"Commented with SendTenToOneWarningMessage on post by {post.Author}. ");
             }

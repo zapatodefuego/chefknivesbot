@@ -13,13 +13,18 @@ namespace ChefKnivesBotLib
     {
         private const string _subredditName = "chefknives";
 
-        public static ChefKnivesListener Start(ILogger logger, string settingsFileLocation)
+        public static ChefKnivesListener Start(ILogger logger, string settingsFileLocation, bool dryRun = false)
         {
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(settingsFileLocation, false, true)
                 .Build();
 
             logger.Information("Application started...");
+
+            if (dryRun)
+            {
+                logger.Warning("This is a DRYRUN! No actions will be taken!");
+            }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
             var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(_subredditName));
@@ -28,13 +33,13 @@ namespace ChefKnivesBotLib
 
             var listener = new ChefKnivesListener(logger, redditClient, subreddit, account);
 
-            listener.CommentHandlers.Add(new MakerPostCommentHandler(logger, subreddit, account));
-            listener.CommentHandlers.Add(new MakerPostReviewCommand(logger, redditClient, subreddit, account));
+            listener.CommentHandlers.Add(new MakerPostCommentHandler(logger, subreddit, account, dryRun));
+            listener.CommentHandlers.Add(new MakerPostReviewCommand(logger, redditClient, subreddit, account, dryRun));
 
-            listener.PostHandlers.Add(new MakerPostHandler(logger, makerPostFlair, account));
-            listener.PostHandlers.Add(new TenToOnePostHandler(logger, redditClient, subreddit, account));
+            listener.PostHandlers.Add(new MakerPostHandler(logger, makerPostFlair, account, dryRun));
+            listener.PostHandlers.Add(new TenToOnePostHandler(logger, redditClient, subreddit, account, dryRun));
 
-            listener.MessageHandlers.Add(new MessageHandler(logger, redditClient, account));
+            listener.MessageHandlers.Add(new MessageHandler(logger, redditClient, account, dryRun));
 
             listener.SubscribeToPostFeed();
             listener.SubscribeToCommentFeed();

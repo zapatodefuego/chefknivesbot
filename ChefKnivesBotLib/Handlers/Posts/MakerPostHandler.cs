@@ -8,13 +8,14 @@ using Post = Reddit.Controllers.Post;
 
 namespace ChefKnivesBotLib.Handlers.Posts
 {
-    public class MakerPostHandler : IControllerHandler
+    public class MakerPostHandler : HandlerBase, IControllerHandler
     {
         private readonly ILogger _logger;
         private FlairV2 _makerPostFlair;
         private Account _account;
 
-        public MakerPostHandler(ILogger logger, FlairV2 makerPostFlair, Account account)
+        public MakerPostHandler(ILogger logger, FlairV2 makerPostFlair, Account account, bool dryRun)
+            : base(dryRun)
         {
             _logger = logger;
             _makerPostFlair = makerPostFlair;
@@ -41,12 +42,15 @@ namespace ChefKnivesBotLib.Handlers.Posts
                 // Check if we already commented on this post
                 if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("This post has been identified")))
                 {
-                    post
-                        .Reply(
-                            "This post has been identified as a maker post! If you have not done so please review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq). \n\n " +
-                            "As a reminder to all readers, you may not discuss sales, pricing, for OP to make you something, or where to buy what OP is displaying or similar in this thread or anywhere on r/chefknives. Use private messages for any such communication. \n\n " +
-                            "^(I am a bot. Beep boop.)")
-                        .Distinguish("yes", true);
+                    if (!DryRun)
+                    {
+                        post
+                            .Reply(
+                                "This post has been identified as a maker post! If you have not done so please review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq). \n\n " +
+                                "As a reminder to all readers, you may not discuss sales, pricing, for OP to make you something, or where to buy what OP is displaying or similar in this thread or anywhere on r/chefknives. Use private messages for any such communication. \n\n " +
+                                "^(I am a bot. Beep boop.)")
+                            .Distinguish("yes", true);
+                    }
 
                     _logger.Information($"Commented with maker warning on post by {post.Author}");
                 }

@@ -10,7 +10,7 @@ using Subreddit = Reddit.Controllers.Subreddit;
 
 namespace ChefKnivesBotLib.Handlers.Comments
 {
-    public class MakerPostCommentHandler : IControllerHandler
+    public class MakerPostCommentHandler : HandlerBase, IControllerHandler
     {
         private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private readonly ILogger _logger;
@@ -18,7 +18,8 @@ namespace ChefKnivesBotLib.Handlers.Comments
         private readonly FlairV2 _makerPostFlair;
         private readonly Account _account;
 
-        public MakerPostCommentHandler(ILogger logger, Subreddit subreddit, Account account)
+        public MakerPostCommentHandler(ILogger logger, Subreddit subreddit, Account account, bool dryRun)
+            : base(dryRun)
         {
             _logger = logger;
             _subreddit = subreddit;
@@ -49,16 +50,19 @@ namespace ChefKnivesBotLib.Handlers.Comments
 
                 if (_forbiddenPhrases.Any(f => comment.Body.Contains(f, StringComparison.OrdinalIgnoreCase)))
                 {
-                    comment.Remove();
-                    
-                    // Send message to modmail about the removal for review
-                    _account.Modmail.NewConversation(
-                        body: $"Removed comment by {comment.Author}: {comment.Permalink}", 
-                        subject: $"{nameof(MakerPostCommentHandler)}: comment removal review",
-                        srName: _subreddit.Name,
-                        to: "chefknives");
+                    if (!DryRun)
+                    {
+                        comment.Remove();
 
-                    _logger.Information($"Removed comment from {comment.Author}: {comment.Body.Substring(0, 100)}");
+                        // Send message to modmail about the removal for review
+                        _account.Modmail.NewConversation(
+                            body: $"Removed comment by {comment.Author}: {comment.Permalink}",
+                            subject: $"{nameof(MakerPostCommentHandler)}: comment removal review",
+                            srName: _subreddit.Name,
+                            to: "chefknives");
+
+                        _logger.Information($"Removed comment from {comment.Author}: {comment.Body.Substring(0, 100)}");
+                    }
 
                     return true;
                 }

@@ -1,16 +1,11 @@
 ﻿using ChefKnivesBotLib.Handlers;
-using ChefKnivesBotLib.Handlers.Comments;
-using ChefKnivesBotLib.Handlers.Posts;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Controllers.EventArgs;
 using Reddit.Exceptions;
-using Reddit.Inputs.LinksAndComments;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace ChefKnivesBotLib
 {

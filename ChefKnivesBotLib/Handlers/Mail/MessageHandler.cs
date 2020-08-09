@@ -6,7 +6,7 @@ using Serilog;
 
 namespace ChefKnivesBotLib.Handlers.Mail
 {
-    public class MessageHandler : IThingHandler
+    public class MessageHandler : HandlerBase, IThingHandler
     {
         private const string _status = "!status";
 
@@ -14,7 +14,8 @@ namespace ChefKnivesBotLib.Handlers.Mail
         private readonly RedditClient _redditClient;
         private readonly Account _account;
 
-        public MessageHandler(ILogger logger, RedditClient redditClient, Account account)
+        public MessageHandler(ILogger logger, RedditClient redditClient, Account account, bool dryRun)
+            : base(dryRun)
         {
             _logger = logger;
             _redditClient = redditClient;
