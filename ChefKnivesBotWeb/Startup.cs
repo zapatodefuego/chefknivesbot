@@ -58,20 +58,19 @@ namespace ChefKnivesBotWeb
                 app.UseHsts();
             }
             
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            if (env.IsProduction())
-            {
-                app.UseStaticFiles(new StaticFileOptions()
-                {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"web")),
-                    RequestPath = new PathString()
-                });
-            }
+            //if (env.IsProduction())
+            //{
+            //    app.UseStaticFiles(new StaticFileOptions()
+            //    {
+            //        FileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory(), @"web")),
+            //        RequestPath = new PathString()
+            //    });
+            //}
 
             app.UseRouting();
-            app.UseHttpsRedirection();
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
