@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,8 @@ namespace ChefKnivesBotWeb
 {
     public class Startup
     {
+        private const string real = "https://174.59.197.112/signin-reddit";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,7 +28,6 @@ namespace ChefKnivesBotWeb
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
@@ -42,6 +44,17 @@ namespace ChefKnivesBotWeb
                     options.ClientId = Configuration["AppId"];
                     options.ClientSecret = Configuration["AppSecret"];
                 });
+
+            services
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy("subredditModerator", policy => policy.Requirements.Add(new SubredditModeratorPolicy("chefknives")));
+                    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                });
+
+            services.AddScoped<IAuthorizationHandler, SubredditModeratorHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,16 +73,6 @@ namespace ChefKnivesBotWeb
             
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            //if (env.IsProduction())
-            //{
-            //    app.UseStaticFiles(new StaticFileOptions()
-            //    {
-            //        FileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory(), @"web")),
-            //        RequestPath = new PathString()
-            //    });
-            //}
-
             app.UseRouting();
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions

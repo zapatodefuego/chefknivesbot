@@ -13,7 +13,7 @@ namespace ChefKnivesBotLib
     {
         private const string _subredditName = "chefknives";
 
-        public static ChefKnivesListener Start(ILogger logger, IConfigurationRoot redditConfiguration, bool dryRun = false)
+        public static ChefKnivesService Start(ILogger logger, IConfiguration redditConfiguration, bool dryRun = false)
         {
             logger.Information("Application started...");
 
@@ -27,7 +27,7 @@ namespace ChefKnivesBotLib
             var account = redditClient.Account;
             var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
 
-            var listener = new ChefKnivesListener(logger, redditClient, subreddit, account);
+            var listener = new ChefKnivesService(logger, redditClient, subreddit, account);
 
             listener.CommentHandlers.Add(new MakerPostCommentHandler(logger, subreddit, account, dryRun));
             listener.CommentHandlers.Add(new MakerPostReviewCommand(logger, redditClient, subreddit, account, dryRun));

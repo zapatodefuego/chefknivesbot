@@ -18,6 +18,7 @@
     },
     "ChefKnivesBotWeb": {
       "commandName": "Project",
+      "commandLineArgs": "--dry",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

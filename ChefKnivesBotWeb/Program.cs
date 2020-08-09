@@ -1,3 +1,4 @@
+using ChefKnivesBotLib;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +9,10 @@ namespace ChefKnivesBotWeb
 {
     public class Program
     {
+        public static ChefKnivesService ChefKnivesService { get; set; }
+
+        public static bool DryRun { get; private set; }
+
         private static IConfigurationRoot _configuration;
 
         public static void Main(string[] args)
@@ -27,8 +32,8 @@ namespace ChefKnivesBotWeb
 
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
-                var dryRun = args.Any(a => a.Equals("--dryrun"));
-                var listener = ChefKnivesBotLib.Initializer.Start(Log.Logger, _configuration, dryRun);
+                DryRun = args.Any(a => a.Equals("--dryrun"));
+                ChefKnivesService = Initializer.Start(Log.Logger, _configuration, DryRun);
             }
 
             CreateHostBuilder(args).Build().Run();
