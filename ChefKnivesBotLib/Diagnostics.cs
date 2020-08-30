@@ -61,7 +61,7 @@ namespace ChefKnivesBotLib
                 $"Posts: saw {SeenPosts}, processed {ProcessedPosts}\n\n" +
                 $"Messages: saw {SeenMessages}, processed {ProcessedMessages}\n\n" +
                 $"Exceptions: {nameof(RedditServiceUnavailableException)} {RedditServiceUnavailableExceptionCount}, other {OtherExceptionCount}\n\n" +
-                $"Average reviw time (ms): {ReviewTimes.Average()}";
+                $"Average review time (ms): {(ReviewTimes.Any() ? ReviewTimes.Average() : 0)}";
         }
     }
 }
