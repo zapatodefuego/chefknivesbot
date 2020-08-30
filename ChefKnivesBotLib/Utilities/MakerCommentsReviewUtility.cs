@@ -18,6 +18,9 @@ namespace ChefKnivesBotLib.Utilities
 
         public static MakerReviewResult Review(ILogger logger, string author, string subreddit, RedditClient redditClient)
         {
+            _stopWatch.Reset();
+            _stopWatch.Start();
+
             var potentialUsers = redditClient.SearchUsers(new SearchGetSearchInput(author));
             var user = potentialUsers.SingleOrDefault(u => u.Name.Equals(author));
 
@@ -26,13 +29,7 @@ namespace ChefKnivesBotLib.Utilities
                 return new MakerReviewResult { Error = $"Unable to find user {author}" };
             }
 
-            _stopWatch.Reset();
-            _stopWatch.Start();
             user.GetCommentHistory(_commentQueryCount);
-            _stopWatch.Stop();
-
-            logger.Information($"[{nameof(MakerCommentsReviewUtility)}] Queried for {_commentQueryCount} comments for {author} in [{_stopWatch.ElapsedMilliseconds}] miliseconds");
-
             var commentHistoryForChefknives =
                 user
                     .CommentHistory
@@ -52,6 +49,11 @@ namespace ChefKnivesBotLib.Utilities
                     otherComments++;
                 }
             }
+
+            _stopWatch.Stop();
+
+            Diagnostics.AddReviewTime(_stopWatch.ElapsedMilliseconds);
+            logger.Information($"[{nameof(MakerCommentsReviewUtility)}] Queried for {_commentQueryCount} comments for {author} in [{_stopWatch.ElapsedMilliseconds}] miliseconds");
 
             return new MakerReviewResult
             {

@@ -1,12 +1,14 @@
 ﻿using Reddit.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ChefKnivesBotLib
 {
     public static class Diagnostics
     {
+
         private static DateTime StartTime { get; set; }
 
         public static int RedditServiceUnavailableExceptionCount { get; set; }
@@ -25,6 +27,8 @@ namespace ChefKnivesBotLib
 
         public static int ProcessedMessages { get; set; }
 
+        public static List<long> ReviewTimes { get; set; }
+
         static Diagnostics()
         {
             Reset();
@@ -41,6 +45,12 @@ namespace ChefKnivesBotLib
             ProcessedPosts = 0;
             SeenMessages = 0;
             ProcessedMessages = 0;
+            ReviewTimes = new List<long>();
+        }
+
+        public static void AddReviewTime(long time)
+        {
+            ReviewTimes.Add(time);
         }
 
         public static string GetStatusMessage()
@@ -50,7 +60,8 @@ namespace ChefKnivesBotLib
                 $"Comments: saw {SeenComments}, processed {ProcessedComments}\n\n" +
                 $"Posts: saw {SeenPosts}, processed {ProcessedPosts}\n\n" +
                 $"Messages: saw {SeenMessages}, processed {ProcessedMessages}\n\n" +
-                $"Exceptions: {nameof(RedditServiceUnavailableException)} {RedditServiceUnavailableExceptionCount}, other {OtherExceptionCount}";
+                $"Exceptions: {nameof(RedditServiceUnavailableException)} {RedditServiceUnavailableExceptionCount}, other {OtherExceptionCount}\n\n" +
+                $"Average reviw time (ms): {ReviewTimes.Average()}";
         }
     }
 }
