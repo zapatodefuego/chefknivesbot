@@ -34,6 +34,7 @@ namespace ChefKnivesBotLib
 
             listener.PostHandlers.Add(new MakerPostHandler(logger, makerPostFlair, account, dryRun));
             listener.PostHandlers.Add(new TenToOnePostHandler(logger, redditClient, subreddit, account, dryRun));
+            listener.PostHandlers.Add(new KnifePicsPostHandler(logger, subreddit, account, dryRun));
 
             listener.MessageHandlers.Add(new MessageHandler(logger, redditClient, account, dryRun));
 
