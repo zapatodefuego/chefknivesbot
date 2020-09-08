@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotLib", "ChefKni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotLib.Test", "ChefKnivesBotLib.Test\ChefKnivesBotLib.Test.csproj", "{74F3C576-39FB-4B26-B629-E6942ABDFD3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChefKnivesBotWeb", "ChefKnivesBotWeb\ChefKnivesBotWeb.csproj", "{B4FA0D27-046B-421F-B133-C51761A0894F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBotWeb", "ChefKnivesBotWeb\ChefKnivesBotWeb.csproj", "{B4FA0D27-046B-421F-B133-C51761A0894F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
