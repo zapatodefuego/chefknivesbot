@@ -43,7 +43,7 @@ namespace ChefKnivesBotLib.Handlers.Posts
             if (linkFlairId != null && linkFlairId.Equals(_knifePicsFlair.Id))
             {
                 // Check if we already commented on this post
-                if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Please ensure you fulfill the requirements for Rule #5")))
+                if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Please ensure you fulfill Rule #5")))
                 {
                     if (!DryRun)
                     {
