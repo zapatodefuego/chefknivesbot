@@ -49,11 +49,9 @@ namespace ChefKnivesBotLib.Handlers.Posts
                     {
                         var replyComment = post
                             .Reply(
-                                $"Please ensure you fulfill the requirements for Rule #5: \n" +
+                                $"Please ensure you fulfill Rule #5 by posting a top level comment with a description within 15 minutes. Any post not in compliance will be removed. See Rule #5 below for more information: \n\n" +
                                 "---\n\n" +
-                                $"{_rulefive.Description}\n\n" +
-                                "---\n\n" +
-                                $"You have fifteen minutes do so, otherwise this post will be removed.")
+                                $"{_rulefive.Description}")
                             .Distinguish("yes", true);
 
                         ScheduleDelayedCheck(post, replyComment);
