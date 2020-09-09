@@ -50,7 +50,9 @@ namespace ChefKnivesBotLib.Handlers.Posts
                         var replyComment = post
                             .Reply(
                                 $"Please ensure you fulfill the requirements for Rule #5: \n" +
-                                $">{_rulefive.Description}\n\n" +
+                                "---\n\n" +
+                                $"{_rulefive.Description}\n\n" +
+                                "---\n\n" +
                                 $"You have fifteen minutes do so, otherwise this post will be removed.")
                             .Distinguish("yes", true);
 
