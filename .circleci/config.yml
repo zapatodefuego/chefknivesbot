@@ -10,3 +10,18 @@
      steps:
        - checkout
        - run: dotnet build
+   test:
+     - run: dotnet test
+   store_artifacts:
+     path: /tmp/chefknivesbot
+
+  workflows:
+    build_test_deploy:
+      jobs:
+        - build
+        - test:
+          requires:
+            - build
+        - store_artifacts:
+            requires:
+            - test
