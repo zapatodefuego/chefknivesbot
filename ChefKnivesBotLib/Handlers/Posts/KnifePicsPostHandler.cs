@@ -81,7 +81,7 @@ namespace ChefKnivesBotLib.Handlers.Posts
                     _logger.Information($"Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
                 }
 
-                replyComment.Remove();
+                replyComment.Delete();
             };
             timer.Enabled = true;
             timer.Start();
