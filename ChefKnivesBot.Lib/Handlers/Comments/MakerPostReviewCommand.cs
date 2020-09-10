@@ -2,7 +2,6 @@
 using ChefKnivesBot.Lib.DataExtensions;
 using ChefKnivesBot.Lib.Utilities;
 using Reddit.Controllers;
-using Reddit.Things;
 using Serilog;
 using System.Linq;
 using Comment = Reddit.Controllers.Comment;
