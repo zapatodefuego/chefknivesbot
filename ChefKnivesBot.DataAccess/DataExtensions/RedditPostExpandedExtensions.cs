@@ -14,7 +14,7 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
                 Author = expandedPost.author,
                 Title = expandedPost.title,
                 Flair = expandedPost.link_flair_text,
-                CreateDate = Constants.EpochTime.AddSeconds(Convert.ToInt64(expandedPost.created_utc.Substring(0, expandedPost.created_utc.Length - 2)))
+                CreateDate = DatabaseConstants.EpochTime.AddSeconds(Convert.ToInt64(expandedPost.created_utc.Substring(0, expandedPost.created_utc.Length - 2)))
         };
         }
     }

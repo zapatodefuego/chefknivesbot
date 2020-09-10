@@ -24,7 +24,7 @@ namespace ChefKnivesBot.Lib
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(Constants.ChefKnivesSubredditName));
+            var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(DatabaseConstants.ChefKnivesSubredditName));
             var account = redditClient.Account;
             var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
 

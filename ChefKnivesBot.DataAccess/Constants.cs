@@ -2,7 +2,7 @@
 
 namespace ChefKnivesBot.DataAccess
 {
-    public static class Constants
+    public static class DatabaseConstants
     {
         public const string ChefKnivesSubredditName = "chefknives";
 

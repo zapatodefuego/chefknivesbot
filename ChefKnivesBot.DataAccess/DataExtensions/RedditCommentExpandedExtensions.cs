@@ -16,7 +16,7 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
                 Body = expandedComment.body,
                 Id = expandedComment.id,
                 PostLinkId = expandedComment.link_id,
-                CreateDate = Constants.EpochTime.AddSeconds(Convert.ToInt64(expandedComment.created_utc.Substring(0, expandedComment.created_utc.Length - 2)))
+                CreateDate = DatabaseConstants.EpochTime.AddSeconds(Convert.ToInt64(expandedComment.created_utc.Substring(0, expandedComment.created_utc.Length - 2)))
             };
         }
     }

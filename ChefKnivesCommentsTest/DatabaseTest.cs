@@ -1,4 +1,5 @@
 ﻿using ChefKnivesBot.Data;
+using ChefKnivesBot.DataAccess;
 using ChefKnivesCommentsDatabase;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,26 +8,23 @@ using System.Collections.Generic;
 
 namespace ChefknivesBot.DataAccess.Tests
 {
-    internal class TestDatabase : RedditContentService
+    internal class TestDatabase : DatabaseService<RedditComment>
     {
         public TestDatabase(string subreddit)
-            : base(GetTestConfiguration(), subreddit) { }
+            : base(GetConnectionString(), DatabaseConstants.ChefKnivesDatabaseName, DatabaseConstants.ChefKnivesSubredditName) { }
 
-        protected override void UpsertIntoCollection(RedditComment comment)
+        protected override void UpsertIntoCollection(RedditThing thing)
         {
             throw new Exception("UpsertIntoCollection was hit");
         }
 
-        protected override void UpsertIntoCollection(RedditPost comment)
+        public static string GetConnectionString()
         {
-            throw new Exception("UpsertIntoCollection was hit");
-        }
-
-        public static IConfiguration GetTestConfiguration()
-        {
-            return new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
+
+            return configuration["ConnectionString"];
         }
     }
 
@@ -36,8 +34,8 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void CachePreventsUpsertComments()
         {
-            RedditContentService database = new TestDatabase(subreddit: "test");
-            List<RedditComment> comments = new List<RedditComment>()
+            var database = new TestDatabase(subreddit: "test");
+            var comments = new List<RedditComment>()
             {
                 new RedditComment()
                 {
@@ -49,16 +47,16 @@ namespace ChefknivesBot.DataAccess.Tests
             };
 
             // first insert should hit upsert, that's fine
-            Assert.ThrowsException<Exception>(() => database.InsertComments(comments));
+            Assert.ThrowsException<Exception>(() => database.Insert(comments));
 
             // second insert must be caught by the cache, else we have a serious problem
-            database.InsertComments(comments);
+            database.Insert(comments);
         }
 
         [TestMethod]
         public void CachePreventsUpsertPosts()
         {
-            RedditContentService database = new TestDatabase(subreddit: "test");
+            var database = new TestDatabase(subreddit: "test");
             List<RedditPost> posts = new List<RedditPost>()
             {
                 new RedditPost()
@@ -70,10 +68,10 @@ namespace ChefknivesBot.DataAccess.Tests
             };
 
             // first insert should hit upsert, that's fine
-            Assert.ThrowsException<Exception>(() => database.InsertPosts(posts));
+            Assert.ThrowsException<Exception>(() => database.Insert(posts));
 
             // second insert must be caught by the cache, else we have a serious problem
-            database.InsertPosts(posts);
+            database.Insert(posts);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using ChefKnivesBot.Data;
 using ChefKnivesCommentsDatabase.Utility;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
