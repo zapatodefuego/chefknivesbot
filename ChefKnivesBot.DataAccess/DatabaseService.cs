@@ -1,12 +1,12 @@
 ﻿using ChefKnivesBot.Data;
 using ChefKnivesBot.DataAccess.Utility;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChefKnivesCommentsDatabase
 {
@@ -22,9 +22,13 @@ namespace ChefKnivesCommentsDatabase
             _mongoClient = new MongoClient(connectionString);
             _databaseName = databaseName;
             _collectionName = collectionName;
+
+            // ensures the database and collection is set up the first time
             if (!_mongoClient.GetDatabase(databaseName).ListCollections(new ListCollectionsOptions { Filter = new BsonDocument("name", collectionName) }).Any())
             {
-                GetMongoCollection().InsertOne(new BsonDocument()); // completely empty, but ensures the database and collection is set up the first time
+                var defaultObject = (T)Activator.CreateInstance(typeof(T));
+                defaultObject.Id = Guid.NewGuid().ToString();
+                GetMongoCollection().InsertOne(defaultObject.ToBsonDocument()); 
             }
         }
 
@@ -74,12 +78,21 @@ namespace ChefKnivesCommentsDatabase
             return null;
         }
 
-        public IEnumerable<T> GetByAuthor(string author)
+        public async Task<IEnumerable<T>> GetByAuthor(string author)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("Author", author);
+            return await GetByFilter(filter);
+        }
+
+        public async Task<IEnumerable<T>> GetAll()
+        {
+            return await GetByFilter(Builders<BsonDocument>.Filter.Empty);
+        }
+
+        public async Task<IEnumerable<T>> GetByFilter(FilterDefinition<BsonDocument> filter)
         {
             var collection = GetMongoCollection();
-            var filter = Builders<BsonDocument>.Filter.Eq("Author", author);
-            var queryResults = collection.Find(filter).ToList();
-            
+            var queryResults = await collection.Find(filter).ToListAsync();
             return queryResults.Select(r => BsonSerializer.Deserialize<T>(r));
         }
 

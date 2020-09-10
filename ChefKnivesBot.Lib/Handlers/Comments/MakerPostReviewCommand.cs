@@ -47,7 +47,8 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
             if (linkFlairId != null &&
                 linkFlairId.Equals(_makerPostFlair.Id))
             {
-                var result = MakerCommentsReviewUtility.Review(comment.Root.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
+                var reviewTask = MakerCommentsReviewUtility.Review(comment.Root.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
+                var result = reviewTask.GetAwaiter().GetResult();
 
                 if (!string.IsNullOrEmpty(result.Error))
                 {

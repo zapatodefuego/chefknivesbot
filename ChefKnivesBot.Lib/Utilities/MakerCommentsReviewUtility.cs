@@ -6,6 +6,7 @@ using Reddit.Inputs.Search;
 using Serilog;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChefKnivesBot.Lib.Utilities
 {
@@ -15,13 +16,13 @@ namespace ChefKnivesBot.Lib.Utilities
         private static Stopwatch _stopWatch = new Stopwatch();
         private const int _commentQueryCount = 60;
 
-        public static MakerReviewResult Review(string author, DatabaseService<RedditPost> postDatabase, DatabaseService<RedditComment> commentDatabase)
+        public static async Task<MakerReviewResult> Review(string author, DatabaseService<RedditPost> postDatabase, DatabaseService<RedditComment> commentDatabase)
         {
             _stopWatch.Reset();
             _stopWatch.Start();
             var result = new MakerReviewResult();
 
-            var comments = commentDatabase.GetByAuthor(author);
+            var comments = await commentDatabase.GetByAuthor(author);
             foreach (var comment in comments)
             {
                 var post = postDatabase.Get(ConvertListingIdToPostId(comment.PostLinkId));
