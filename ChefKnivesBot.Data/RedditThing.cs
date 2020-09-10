@@ -15,6 +15,8 @@ namespace ChefKnivesBot.Data
 
         public string Kind { get; set; } = string.Empty;
 
+        public bool IsDeleted { get; set; }
+
         public override int GetHashCode()
         {
             int hash = 17;

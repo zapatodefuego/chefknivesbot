@@ -6,5 +6,4 @@
 
         public string PostLinkId { get; set; } = string.Empty;
     }
-
 }
