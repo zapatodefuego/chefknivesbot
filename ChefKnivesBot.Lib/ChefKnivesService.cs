@@ -18,6 +18,8 @@ namespace ChefKnivesBot.Lib
 {
     public class ChefKnivesService : IDisposable
     {
+        private const int _commentAndPostPullIntervalMinutes = 10;
+
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private CancellationTokenSource _cancellationToken;
@@ -119,7 +121,7 @@ namespace ChefKnivesBot.Lib
         {
             _cancellationToken = new CancellationTokenSource();
 
-            Repeater.Repeat(() => PullCommentsAndPosts(), 600, _cancellationToken.Token);
+            Repeater.Repeat(() => PullCommentsAndPosts(), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
         }
 
         public string ReviewUser(string username)

@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChefKnivesBotWeb.Controllers
 {
-    //[Authorize(Policy = "SubredditModerator")]
-    [AllowAnonymous]
+    [Authorize(Policy = "SubredditModerator")]
     public class TestPageController : Controller
     {
         public TestPageController()
