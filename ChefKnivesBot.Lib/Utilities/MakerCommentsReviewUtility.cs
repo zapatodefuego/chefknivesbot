@@ -25,6 +25,11 @@ namespace ChefKnivesBot.Lib.Utilities
             foreach (var comment in comments)
             {
                 var post = postDatabase.Get(ConvertListingIdToPostId(comment.PostLinkId));
+                if (post == null)
+                {
+                    continue;
+                }
+
                 if (post.Author.Equals(author))
                 {
                     result.SelfPostComments++;

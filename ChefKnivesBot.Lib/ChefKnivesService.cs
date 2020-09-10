@@ -130,7 +130,7 @@ namespace ChefKnivesBot.Lib
             return $"SelfPostComments: {result.SelfPostComments}, OtherComments: {result.OtherComments}, ReviewTime: {result.ReviewTime} (ms), Error: {result.Error}";
         }
 
-        public void PullCommentsAndPosts(int postCount = 30, int commentCount = 100)
+        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 100)
         {
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
