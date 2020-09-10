@@ -1,13 +1,15 @@
-﻿using System;
+﻿using ChefKnivesBot.Data;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace ChefKnivesCommentsDatabase.Utility
+namespace ChefKnivesBot.DataAccess.Utility
 {
     /// <summary>
     /// Cache of the most recent items added
     /// </summary>
-    public class DatabaseCache<T> : IEnumerable, IDisposable
+    public class DatabaseCache<T> : IEnumerable, IDisposable where T : RedditThing
     {
         private readonly ISet<T> _set = new HashSet<T>();
         private readonly LinkedList<T> _list = new LinkedList<T>();
@@ -20,7 +22,7 @@ namespace ChefKnivesCommentsDatabase.Utility
 
         public void Add(T item)
         {
-            if(_set.Count >= MaxSize)
+            if (_set.Count >= MaxSize)
             {
                 T toRemove = _list.Last.Value;
                 _set.Remove(toRemove);
@@ -34,6 +36,22 @@ namespace ChefKnivesCommentsDatabase.Utility
         public bool Contains(T item)
         {
             return _set.Contains(item);
+        }
+
+        public bool GetById(string id, out T result)
+        {
+            result = _set.SingleOrDefault(o => o.Id.Equals(id));
+            if (result != default(T))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public IEnumerable<T> GetByAuthor(string author)
+        {
+            return _set.Where(o => o.Author.Equals(author));
         }
 
         public IEnumerator GetEnumerator()

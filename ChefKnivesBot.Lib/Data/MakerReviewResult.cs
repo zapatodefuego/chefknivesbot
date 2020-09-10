@@ -11,6 +11,8 @@ namespace ChefKnivesBot.Lib.Data
         public int OtherComments { get; set; }
 
         public string Error { get; set; }
+
+        public long ReviewTime { get; set; }
     }
 
 }

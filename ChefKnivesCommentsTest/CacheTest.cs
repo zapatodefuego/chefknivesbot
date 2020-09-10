@@ -1,6 +1,6 @@
 ﻿using ChefKnivesBot.Data;
+using ChefKnivesBot.DataAccess.Utility;
 using ChefKnivesCommentsDatabase;
-using ChefKnivesCommentsDatabase.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ChefknivesBot.DataAccess.Tests
@@ -8,30 +8,38 @@ namespace ChefknivesBot.DataAccess.Tests
     [TestClass]
     public class CacheTest
     {
+        private class IntThing : RedditThing
+        {
+            public int Index { get; set; }
+        }
+
         [TestMethod]
         public void AddWorksAsExpectedBeforeReachingCapacity()
         {
-            DatabaseCache<int> cache = new DatabaseCache<int>(10);
+            DatabaseCache<RedditThing> cache = new DatabaseCache<RedditThing>(10);
             for (int i = 0; i < 10; ++i)
             {
-                Assert.IsFalse(cache.Contains(i));
-                cache.Add(i);
-                Assert.IsTrue(cache.Contains(i));
+                var item = new IntThing { Index = i };
+                Assert.IsFalse(cache.Contains(item));
+                cache.Add(item);
+                Assert.IsTrue(cache.Contains(item));
             }
         }
 
         [TestMethod]
         public void AddWorksAsExpectedAfterReachingCapacity()
         {
-            DatabaseCache<int> cache = new DatabaseCache<int>(5);
+            DatabaseCache<RedditThing> cache = new DatabaseCache<RedditThing>(5);
             for (int i = 0; i < 10; ++i)
             {
-                Assert.IsFalse(cache.Contains(i));
-                cache.Add(i);
-                Assert.IsTrue(cache.Contains(i));
+                var item = new IntThing { Index = i };
+                Assert.IsFalse(cache.Contains(item));
+                cache.Add(item);
+                Assert.IsTrue(cache.Contains(item));
             }
 
-            Assert.IsFalse(cache.Contains(0));
+            var newItem = new IntThing { Index = int.MaxValue };
+            Assert.IsFalse(cache.Contains(newItem));
         }
 
         [TestMethod]

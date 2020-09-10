@@ -8,10 +8,10 @@ using System.Collections.Generic;
 
 namespace ChefknivesBot.DataAccess.Tests
 {
-    internal class TestDatabase : DatabaseService<RedditComment>
+    internal class TestCommentDatabase : DatabaseService<RedditComment>
     {
-        public TestDatabase(string subreddit)
-            : base(GetConnectionString(), DatabaseConstants.ChefKnivesDatabaseName, DatabaseConstants.ChefKnivesSubredditName) { }
+        public TestCommentDatabase(string databaseName)
+            : base(GetConnectionString(), databaseName, databaseName) { }
 
         protected override void UpsertIntoCollection(RedditThing thing)
         {
@@ -20,11 +20,23 @@ namespace ChefknivesBot.DataAccess.Tests
 
         public static string GetConnectionString()
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", false, true)
-                .Build();
+            return "mongodb://localhost";
+        }
+    }
 
-            return configuration["ConnectionString"];
+    internal class TestPostDatabase : DatabaseService<RedditPost>
+    {
+        public TestPostDatabase(string databaseName)
+            : base(GetConnectionString(), databaseName, databaseName) { }
+
+        protected override void UpsertIntoCollection(RedditThing thing)
+        {
+            throw new Exception("UpsertIntoCollection was hit");
+        }
+
+        public static string GetConnectionString()
+        {
+            return "mongodb://localhost";
         }
     }
 
@@ -34,7 +46,7 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void CachePreventsUpsertComments()
         {
-            var database = new TestDatabase(subreddit: "test");
+            var database = new TestCommentDatabase(databaseName: "test");
             var comments = new List<RedditComment>()
             {
                 new RedditComment()
@@ -56,8 +68,8 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void CachePreventsUpsertPosts()
         {
-            var database = new TestDatabase(subreddit: "test");
-            List<RedditPost> posts = new List<RedditPost>()
+            var database = new TestPostDatabase(databaseName: "test");
+            var posts = new List<RedditPost>()
             {
                 new RedditPost()
                 {

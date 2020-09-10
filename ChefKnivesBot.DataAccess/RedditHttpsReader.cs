@@ -33,7 +33,7 @@ namespace ChefKnivesCommentsDatabase
             return $"{ _redditUrlPrefix}{_subreddit}{_redditUrlCommentsRequest}{_redditUrlLimitString}{numComments}";
         }
 
-        internal IEnumerable<RedditPost> GetRecentPosts(int numPosts)
+        public IEnumerable<RedditPost> GetRecentPosts(int numPosts)
         {
             var output = new List<RedditPost>();
             using (var httpResponse = _httpClient.GetAsync(GetRecentPostsRequestUrl(numPosts)).Result)
@@ -47,7 +47,7 @@ namespace ChefKnivesCommentsDatabase
                 var parsedContent = JsonConvert.DeserializeObject<RedditPostQueryResponse>(content.ReadAsStringAsync().Result);
                 foreach (Post post in parsedContent?.data?.children)
                 {
-                    output.Add(post.data.ToRedditPost());
+                    output.Add(post.data.ToRedditPost(post.kind));
                 }
             }
 
@@ -66,9 +66,9 @@ namespace ChefKnivesCommentsDatabase
                 }
 
                 var parsedContent = JsonConvert.DeserializeObject<RedditCommentQueryResponse>(content.ReadAsStringAsync().Result);
-                foreach(var redditComment in parsedContent?.data?.children)
+                foreach(var comment in parsedContent?.data?.children)
                 {
-                    output.Add(redditComment.data.ToRedditComment());
+                    output.Add(comment.data.ToRedditComment(comment.kind));
                 }
             }
 

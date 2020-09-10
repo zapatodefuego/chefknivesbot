@@ -15,19 +15,15 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
     public class TenToOnePostHandler : HandlerBase, IControllerHandler
     {
         private readonly ILogger _logger;
-        private readonly RedditClient _redditClient;
-        private readonly Subreddit _subreddit;
-        private readonly Account _account;
+        private readonly ChefKnivesService _service;
         private readonly FlairV2 _makerPostFlair;
 
-        public TenToOnePostHandler(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account, bool dryRun)
+        public TenToOnePostHandler(ILogger logger, ChefKnivesService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
-            _redditClient = redditClient;
-            _subreddit = subreddit;
-            _account = account;
-            _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
+            _service = service;
+            _makerPostFlair = _service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
         public bool Process(BaseController baseController)
@@ -45,7 +41,7 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
                     || (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
                )
             {
-                var result = MakerCommentsReviewUtility.Review(_logger, post.Author, _subreddit.Name, _redditClient);
+                var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
 
                 if (result.OtherComments < 2)
                 {
@@ -64,13 +60,13 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
 
         private void SendNeverContributedWarningMessage(Post post)
         {
-            if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("It looks like you haven't")))
+            if (!post.Comments.New.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("It looks like you haven't")))
             {
                 if (!DryRun)
                 {
                     post
                         .Reply(
-                            $"It looks like you haven't recently contributed to this community. Please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
+                            $"It looks like you haven't recently contributed to this community. Please sufficiently interact with r/{_service.Subreddit.Name} outside of your own posts before submitting a [Maker Post].")
                         .Distinguish("yes", false);
 
                     post.Remove();
@@ -82,14 +78,14 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
 
         private void SendTenToOneWarningMessage(Post post, MakerReviewResult result)
         {
-            if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Of your recent comments in")))
+            if (!post.Comments.New.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("Of your recent comments in")))
             {
                 if (!DryRun)
                 {
                     post
                         .Reply(
-                            $"Of your recent comments in {_subreddit.Name}, {result.OtherComments} occured outside of your own posts while {result.SelfPostComments} were made on posts your authored. \n\n " +
-                            $"Please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
+                            $"Of your recent comments in {_service.Subreddit.Name}, {result.OtherComments} occured outside of your own posts while {result.SelfPostComments} were made on posts your authored. \n\n " +
+                            $"Please sufficiently interact with r/{_service.Subreddit.Name} outside of your own posts before submitting a [Maker Post].")
                         .Distinguish("yes", false);
 
                     post.Remove();

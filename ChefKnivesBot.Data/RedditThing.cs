@@ -14,5 +14,7 @@ namespace ChefKnivesBot.Data
 
         [BsonRepresentation(BsonType.DateTime)]
         public DateTime CreateDate { get; set; } = DateTime.MinValue;
+
+        public string Kind { get; set; } = string.Empty;
     }
 }

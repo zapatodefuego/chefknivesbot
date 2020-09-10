@@ -1,6 +1,8 @@
-﻿using ChefKnivesBot.DataAccess;
+﻿using ChefKnivesBot.Data;
+using ChefKnivesBot.DataAccess;
 using ChefKnivesBot.Lib.Handlers;
 using ChefKnivesBot.Lib.Utilities;
+using ChefKnivesCommentsDatabase;
 using Microsoft.Extensions.Configuration;
 using Reddit;
 using Reddit.Controllers;
@@ -18,9 +20,6 @@ namespace ChefKnivesBot.Lib
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
-        private readonly RedditClient _redditClient;
-        private readonly Subreddit _subreddit;
-        private readonly Account _account;
         private CancellationTokenSource _cancellationToken;
 
         public ChefKnivesService(
@@ -32,10 +31,35 @@ namespace ChefKnivesBot.Lib
         {
             _logger = logger;
             _configuration = configuration;
-            _redditClient = redditClient;
-            _subreddit = subreddit;
-            _account = account;
+            RedditClient = redditClient;
+            Subreddit = subreddit;
+            Account = account;
+
+            RedditPostDatabase = new DatabaseService<RedditPost>(
+                configuration["ConnectionString"],
+                databaseName: Subreddit.Name,
+                collectionName: DatabaseConstants.PostsCollectionName);
+            RedditCommentDatabase = new DatabaseService<RedditComment>(
+                configuration["ConnectionString"],
+                databaseName: Subreddit.Name,
+                collectionName: DatabaseConstants.CommentsCollectionName);
+            SelfCommentDatabase = new DatabaseService<RedditComment>(
+                configuration["ConnectionString"],
+                databaseName: Subreddit.Name,
+                collectionName: DatabaseConstants.SelfCommentsCollectionName);
         }
+
+        public RedditClient RedditClient { get; }
+
+        public Subreddit Subreddit { get; }
+
+        public Account Account { get; }
+
+        public DatabaseService<RedditPost> RedditPostDatabase { get; }
+
+        public DatabaseService<RedditComment> RedditCommentDatabase { get; }
+
+        public DatabaseService<RedditComment> SelfCommentDatabase { get; }
 
         public void Dispose()
         {
@@ -55,40 +79,40 @@ namespace ChefKnivesBot.Lib
 
         public bool IsSubredditModerator(string username)
         {
-            if (_subreddit == null)
+            if (Subreddit == null)
             {
                 return false;
             }
 
-            return _subreddit.Moderators.Any(m => m.Name.Equals(username));
+            return Subreddit.Moderators.Any(m => m.Name.Equals(username));
         }
 
         public void SubscribeToPostFeed()
         {
-            _subreddit.Posts.GetNew();
-            _subreddit.Posts.NewUpdated += Posts_NewUpdated_OrEdited;
-            _subreddit.Posts.MonitorNew();
+            Subreddit.Posts.GetNew();
+            Subreddit.Posts.NewUpdated += Posts_NewUpdated_OrEdited;
+            Subreddit.Posts.MonitorNew();
         }
 
         public void SubscribeToCommentFeed()
         {
-            _subreddit.Comments.GetNew();
-            _subreddit.Comments.NewUpdated += Comments_NewUpdated;
-            _subreddit.Comments.MonitorNew();
+            Subreddit.Comments.GetNew();
+            Subreddit.Comments.NewUpdated += Comments_NewUpdated;
+            Subreddit.Comments.MonitorNew();
         }
 
         public void SubscribeToMessageFeed()
         {
-            _account.Messages.GetMessagesUnread();
-            _account.Messages.UnreadUpdated += Messages_UnreadUpdated;
-            _account.Messages.MonitorUnread();
+            Account.Messages.GetMessagesUnread();
+            Account.Messages.UnreadUpdated += Messages_UnreadUpdated;
+            Account.Messages.MonitorUnread();
         }
 
         public void UnsubscribeAllEvents()
         {
-            _account.Messages.UnreadUpdated -= Messages_UnreadUpdated;
-            _subreddit.Comments.NewUpdated -= Comments_NewUpdated;
-            _subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
+            Account.Messages.UnreadUpdated -= Messages_UnreadUpdated;
+            Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
+            Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
         }
 
         public void RegisterRepeatForCommentAndPostDataPull()
@@ -98,9 +122,22 @@ namespace ChefKnivesBot.Lib
             Repeater.Repeat(() => PullCommentsAndPosts(), 600, _cancellationToken.Token);
         }
 
+        public string ReviewUser(string username)
+        {
+            //var result = MakerCommentsReviewUtility.ReviewViaApi(_logger, username, _subreddit.Name, _redditClient);
+            var result = MakerCommentsReviewUtility.Review(username, RedditPostDatabase, RedditCommentDatabase);
+            return $"SelfPostComments: {result.SelfPostComments}, OtherComments: {result.OtherComments}, ReviewTime: {result.ReviewTime} (ms), Error: {result.Error}";
+        }
+
         public void PullCommentsAndPosts(int postCount = 30, int commentCount = 100)
         {
-            DataPullUtility.Execute(_logger, _configuration["ConnectionString"], postCount: postCount, commentCount: commentCount);
+            var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
+
+            var recentPosts = redditReader.GetRecentPosts(numPosts: postCount);
+            RedditPostDatabase.Insert(recentPosts);
+
+            var recentComments = redditReader.GetRecentComments(numComments: commentCount);
+            RedditCommentDatabase.Insert(recentComments);
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)
@@ -123,7 +160,7 @@ namespace ChefKnivesBot.Lib
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
-                _account.Messages.InboxUpdated -= Messages_UnreadUpdated;
+                Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (Exception exception)
@@ -153,7 +190,7 @@ namespace ChefKnivesBot.Lib
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
-                _subreddit.Comments.NewUpdated -= Comments_NewUpdated;
+                Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
                 SubscribeToCommentFeed();
             }
             catch (Exception exception)
@@ -183,7 +220,7 @@ namespace ChefKnivesBot.Lib
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
-                _subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
+                Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (Exception exception)

@@ -4,10 +4,6 @@ namespace ChefKnivesBot.DataAccess
 {
     public static class DatabaseConstants
     {
-        public const string ChefKnivesSubredditName = "chefknives";
-
-        public const string ChefKnivesDatabaseName = "chefknives";
-
         public const string CommentsCollectionName = "comments";
 
         public const string PostsCollectionName = "posts";

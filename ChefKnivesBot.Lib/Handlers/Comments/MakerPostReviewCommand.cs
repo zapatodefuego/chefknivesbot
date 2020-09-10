@@ -15,19 +15,15 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
     public class MakerPostReviewCommand : HandlerBase, IControllerHandler
     {
         private ILogger _logger;
-        private readonly RedditClient _redditClient;
-        private readonly Subreddit _subreddit;
-        private readonly Account _account;
+        private readonly ChefKnivesService _service;
         private readonly FlairV2 _makerPostFlair;
 
-        public MakerPostReviewCommand(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account, bool dryRun)
+        public MakerPostReviewCommand(ILogger logger, ChefKnivesService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
-            _redditClient = redditClient;
-            _subreddit = subreddit;
-            _account = account;
-            _makerPostFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
+            _service = service;
+            _makerPostFlair = _service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
         public bool Process(BaseController baseController)
@@ -51,7 +47,7 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
             if (linkFlairId != null &&
                 linkFlairId.Equals(_makerPostFlair.Id))
             {
-                var result = MakerCommentsReviewUtility.Review(_logger, comment.Root.Author, _subreddit.Name, _redditClient);
+                var result = MakerCommentsReviewUtility.Review(comment.Root.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
 
                 if (!string.IsNullOrEmpty(result.Error))
                 {
@@ -80,7 +76,7 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
 
         private void SendErrorMessage(Comment comment)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Sorry,")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("Sorry,")))
             {
                 if (!DryRun)
                 {
@@ -96,7 +92,7 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
 
         private void SendGoodStandingMessage(Comment comment)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("I reviewed OP and they appear to be in good standing.")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("I reviewed OP and they appear to be in good standing.")))
             {
                 if (!DryRun)
                 {
@@ -112,13 +108,13 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
 
         private void SendNeverContributedWarningMessage(Comment comment, Post post)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing.")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing.")))
             {
                 if (!DryRun)
                 {
                     comment
                         .Reply(
-                            $"I reviewd OP and they appear to not be in good standing. u/{post.Author}, please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
+                            $"I reviewd OP and they appear to not be in good standing. u/{post.Author}, please sufficiently interact with r/{_service.Subreddit.Name} outside of your own posts before submitting a [Maker Post].")
                         .Distinguish("yes");
 
                     //post.Remove();
@@ -130,15 +126,15 @@ namespace ChefKnivesBot.Lib.Handlers.Comments
 
         private void SendTenToOneWarningMessage(Comment comment, MakerReviewResult result, Post post)
         {
-            if (!comment.Replies.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing. Of")))
+            if (!comment.Replies.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("I reviewd OP and they appear to not be in good standing. Of")))
             {
                 if (!DryRun)
                 {
                     comment
                         .Reply(
-                            $"I reviewd OP and they appear to not be in good standing. Of their recent comments in r/{_subreddit.Name}, {result.OtherComments} occured outside of their own posts " +
+                            $"I reviewd OP and they appear to not be in good standing. Of their recent comments in r/{_service.Subreddit.Name}, {result.OtherComments} occured outside of their own posts " +
                             $"while {result.SelfPostComments} were made on posts they authored. \n\n " +
-                            $"u/{post.Author}, please sufficiently interact with r/{_subreddit.Name} outside of your own posts before submitting a [Maker Post].")
+                            $"u/{post.Author}, please sufficiently interact with r/{_service.Subreddit.Name} outside of your own posts before submitting a [Maker Post].")
                         .Distinguish("yes");
 
                     //post.Remove();

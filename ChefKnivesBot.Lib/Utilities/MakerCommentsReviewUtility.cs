@@ -1,12 +1,11 @@
-﻿using ChefKnivesBot.Lib.Data;
+﻿using ChefKnivesBot.Data;
+using ChefKnivesBot.Lib.Data;
+using ChefKnivesCommentsDatabase;
 using Reddit;
 using Reddit.Inputs.Search;
 using Serilog;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace ChefKnivesBot.Lib.Utilities
 {
@@ -16,7 +15,33 @@ namespace ChefKnivesBot.Lib.Utilities
         private static Stopwatch _stopWatch = new Stopwatch();
         private const int _commentQueryCount = 60;
 
-        public static MakerReviewResult Review(ILogger logger, string author, string subreddit, RedditClient redditClient)
+        public static MakerReviewResult Review(string author, DatabaseService<RedditPost> postDatabase, DatabaseService<RedditComment> commentDatabase)
+        {
+            _stopWatch.Reset();
+            _stopWatch.Start();
+            var result = new MakerReviewResult();
+
+            var comments = commentDatabase.GetByAuthor(author);
+            foreach (var comment in comments)
+            {
+                var post = postDatabase.Get(ConvertListingIdToPostId(comment.PostLinkId));
+                if (post.Author.Equals(author))
+                {
+                    result.SelfPostComments++;
+                }
+                else
+                {
+                    result.OtherComments++;
+                }
+            }
+
+            _stopWatch.Stop();
+            result.ReviewTime = _stopWatch.ElapsedMilliseconds;
+
+            return result;
+        }
+
+        public static MakerReviewResult ReviewViaApi(ILogger logger, string author, string subreddit, RedditClient redditClient)
         {
             _stopWatch.Reset();
             _stopWatch.Start();
@@ -58,8 +83,14 @@ namespace ChefKnivesBot.Lib.Utilities
             return new MakerReviewResult
             {
                 OtherComments = otherComments,
-                SelfPostComments = selfPostComments
+                SelfPostComments = selfPostComments,
+                ReviewTime = _stopWatch.ElapsedMilliseconds
             };
+        }
+
+        private static string ConvertListingIdToPostId(string listingId)
+        {
+            return listingId.Replace($"t3_", "");
         }
     }
 }

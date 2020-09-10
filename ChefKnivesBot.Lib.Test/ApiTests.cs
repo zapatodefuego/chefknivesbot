@@ -44,7 +44,7 @@ namespace ChefKnivesBot.Lib.Tests
         [TestCase("zapatodefuego")]
         public void TestCanReviewByUsername(string username)
         {
-            var result = MakerCommentsReviewUtility.Review(Log.Logger, username, _subreddit.Name, _redditClient);
+            var result = MakerCommentsReviewUtility.ReviewViaApi(Log.Logger, username, _subreddit.Name, _redditClient);
         }
 
         [Test]
