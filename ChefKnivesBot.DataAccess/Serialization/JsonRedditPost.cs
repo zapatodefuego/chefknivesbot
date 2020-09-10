@@ -72,7 +72,9 @@
         public object content_categories { get; set; }
         public bool is_self { get; set; }
         public object mod_note { get; set; }
-        public float created { get; set; }
+
+        // kept as string to avoid truncation
+        public string created { get; set; }
         public string link_flair_type { get; set; }
         public int wls { get; set; }
         public object removed_by_category { get; set; }
@@ -123,7 +125,9 @@
         public bool stickied { get; set; }
         public string url { get; set; }
         public int subreddit_subscribers { get; set; }
-        public float created_utc { get; set; }
+
+        // kept as string to avoid truncation
+        public string created_utc { get; set; }
         public int num_crossposts { get; set; }
         public Media media { get; set; }
         public bool is_video { get; set; }
@@ -1194,14 +1198,18 @@
         public object approved_by { get; set; }
         public bool author_premium { get; set; }
         public string thumbnail { get; set; }
-        public float edited { get; set; }
+
+        // kept as string to avoid truncation
+        public string edited { get; set; }
         public object author_flair_css_class { get; set; }
         public object[] author_flair_richtext { get; set; }
         public Gildings1 gildings { get; set; }
         public object content_categories { get; set; }
         public bool is_self { get; set; }
         public object mod_note { get; set; }
-        public float created { get; set; }
+        
+        // kept as string to avoid truncation
+        public string created { get; set; }
         public string link_flair_type { get; set; }
         public int wls { get; set; }
         public object removed_by_category { get; set; }

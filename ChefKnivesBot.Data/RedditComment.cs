@@ -1,12 +1,8 @@
 ﻿namespace ChefKnivesBot.Data
 {
-    public class RedditComment
+    public class RedditComment : RedditThing
     {
-        public string Author { get; set; } = string.Empty;
-
         public string Body { get; set; } = string.Empty;
-
-        public string Id { get; set; } = string.Empty;
 
         public string PostLinkId { get; set; } = string.Empty;
 

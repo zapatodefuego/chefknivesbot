@@ -4,7 +4,7 @@ using Reddit.Inputs.LinksAndComments;
 using Reddit.Things;
 using Serilog;
 
-namespace ChefKnivesBotLib.Handlers.Mail
+namespace ChefKnivesBot.Lib.Handlers.Mail
 {
     public class MessageHandler : HandlerBase, IThingHandler
     {

@@ -1,11 +1,7 @@
 ﻿namespace ChefKnivesBot.Data
 {
-    public class RedditPost
+    public class RedditPost : RedditThing
     {
-        public string Id { get; set; } = string.Empty;
-
-        public string Author { get; set; } = string.Empty;
-
         public string Title { get; set; } = string.Empty;
 
         public string Flair { get; set; } = string.Empty;

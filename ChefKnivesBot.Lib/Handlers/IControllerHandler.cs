@@ -1,6 +1,6 @@
 ﻿using Reddit.Controllers;
 
-namespace ChefKnivesBotLib.Handlers
+namespace ChefKnivesBot.Lib.Handlers
 {
     public interface IControllerHandler
     {

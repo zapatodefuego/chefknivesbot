@@ -1,8 +1,9 @@
-using ChefKnivesBotLib;
+using ChefKnivesBot.Lib;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System;
 using System.Linq;
 
 namespace ChefKnivesBotWeb
@@ -18,13 +19,19 @@ namespace ChefKnivesBotWeb
         public static void Main(string[] args)
         {
             var initialConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile("appsettings.json", false, false)
                 .Build();
 
-            _configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", false, true)
-                .AddJsonFile(initialConfiguration["RedditSettingsFile"], false, true)
-                .Build();
+            var redditSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RedditSettingsFile"]);
+            var compoundConfiguration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false, true);
+
+            if (!string.IsNullOrEmpty(redditSettingsFile))
+            {
+                compoundConfiguration.AddJsonFile(redditSettingsFile, true, false);
+            }
+
+            _configuration = compoundConfiguration.Build();
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)

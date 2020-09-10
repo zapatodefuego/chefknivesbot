@@ -46,7 +46,9 @@
         public string author { get; set; }
         public int num_comments { get; set; }
         public bool can_mod_post { get; set; }
-        public float created_utc { get; set; }
+
+        // kept as string to avoid truncation
+        public string created_utc { get; set; }
         public bool send_replies { get; set; }
         public string parent_id { get; set; }
         public int score { get; set; }
@@ -85,7 +87,9 @@
         public string subreddit { get; set; }
         public object author_flair_text { get; set; }
         public string link_url { get; set; }
-        public float created { get; set; }
+
+        // kept as string to avoid truncation
+        public string created { get; set; }
         public bool collapsed { get; set; }
         public object[] awarders { get; set; }
         public int controversiality { get; set; }

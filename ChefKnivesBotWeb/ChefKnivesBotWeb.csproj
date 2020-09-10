@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChefKnivesBotLib\ChefKnivesBotLib.csproj" />
+    <ProjectReference Include="..\ChefKnivesBot.Lib\ChefKnivesBot.Lib.csproj" />
   </ItemGroup>
   
 </Project>

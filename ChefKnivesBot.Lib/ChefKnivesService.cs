@@ -1,4 +1,7 @@
-﻿using ChefKnivesBotLib.Handlers;
+﻿using ChefKnivesBot.DataAccess;
+using ChefKnivesBot.Lib.Handlers;
+using ChefKnivesBot.Lib.Utilities;
+using Microsoft.Extensions.Configuration;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Controllers.EventArgs;
@@ -7,19 +10,28 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
-namespace ChefKnivesBotLib
+namespace ChefKnivesBot.Lib
 {
     public class ChefKnivesService : IDisposable
     {
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
         private readonly RedditClient _redditClient;
         private readonly Subreddit _subreddit;
         private readonly Account _account;
+        private CancellationTokenSource _cancellationToken;
 
-        public ChefKnivesService(ILogger logger, RedditClient redditClient, Subreddit subreddit, Account account)
+        public ChefKnivesService(
+            ILogger logger,
+            IConfiguration configuration,
+            RedditClient redditClient,
+            Subreddit subreddit,
+            Account account)
         {
             _logger = logger;
+            _configuration = configuration;
             _redditClient = redditClient;
             _subreddit = subreddit;
             _account = account;
@@ -31,6 +43,8 @@ namespace ChefKnivesBotLib
             CommentHandlers = null;
             PostHandlers = null;
             MessageHandlers = null;
+
+            _cancellationToken.Cancel();
         }
 
         public List<IControllerHandler> CommentHandlers { get; private set; } = new List<IControllerHandler>();
@@ -75,6 +89,18 @@ namespace ChefKnivesBotLib
             _account.Messages.UnreadUpdated -= Messages_UnreadUpdated;
             _subreddit.Comments.NewUpdated -= Comments_NewUpdated;
             _subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
+        }
+
+        public void RegisterRepeatForCommentAndPostDataPull()
+        {
+            _cancellationToken = new CancellationTokenSource();
+
+            Repeater.Repeat(() => PullCommentsAndPosts(), 600, _cancellationToken.Token);
+        }
+
+        public void PullCommentsAndPosts(int postCount = 30, int commentCount = 100)
+        {
+            DataPullUtility.Execute(_logger, _configuration["ConnectionString"], postCount: postCount, commentCount: commentCount);
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChefKnivesBotLib.Handlers
+namespace ChefKnivesBot.Lib.Handlers
 {
     public abstract class HandlerBase
     {

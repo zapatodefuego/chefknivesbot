@@ -1,5 +1,6 @@
 ﻿using ChefKnivesBot.Data;
 using ChefKnivesBot.DataAccess.Serialization;
+using System;
 
 namespace ChefKnivesBot.DataAccess.DataExtensions
 {
@@ -12,8 +13,9 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
                 Id = expandedPost.id,
                 Author = expandedPost.author,
                 Title = expandedPost.title,
-                Flair = expandedPost.link_flair_text
-            };
+                Flair = expandedPost.link_flair_text,
+                CreateDate = Constants.EpochTime.AddSeconds(Convert.ToInt64(expandedPost.created_utc.Substring(0, expandedPost.created_utc.Length - 2)))
+        };
         }
     }
 }

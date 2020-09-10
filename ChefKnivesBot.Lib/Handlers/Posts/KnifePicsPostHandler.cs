@@ -11,7 +11,7 @@ using Post = Reddit.Controllers.Post;
 using System.Timers;
 using Comment = Reddit.Controllers.Comment;
 
-namespace ChefKnivesBotLib.Handlers.Posts
+namespace ChefKnivesBot.Lib.Handlers.Posts
 {
     public class KnifePicsPostHandler : HandlerBase, IControllerHandler
     {

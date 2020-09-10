@@ -1,4 +1,4 @@
-﻿using ChefKnivesBotLib;
+﻿using ChefKnivesBot.Lib;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using System;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ChefKnivesBotLib
+namespace ChefKnivesBot.Lib
 {
     public static class Diagnostics
     {
