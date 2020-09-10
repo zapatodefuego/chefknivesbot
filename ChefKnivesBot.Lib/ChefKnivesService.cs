@@ -163,6 +163,13 @@ namespace ChefKnivesBot.Lib
                     });
                 }
             }
+            catch (RedditGatewayTimeoutException exception)
+            {
+                Diagnostics.RedditGatewayTimeoutException++;
+                _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
+                Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
+                SubscribeToMessageFeed();
+            }
             catch (RedditServiceUnavailableException exception)
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
@@ -193,6 +200,13 @@ namespace ChefKnivesBot.Lib
                     });
                 }
             }
+            catch (RedditGatewayTimeoutException exception)
+            {
+                Diagnostics.RedditGatewayTimeoutException++;
+                _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
+                Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
+                SubscribeToCommentFeed();
+            }
             catch (RedditServiceUnavailableException exception)
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
@@ -222,6 +236,13 @@ namespace ChefKnivesBot.Lib
                         }
                     });
                 }
+            }
+            catch (RedditGatewayTimeoutException exception)
+            {
+                Diagnostics.RedditGatewayTimeoutException++;
+                _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
+                Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
+                SubscribeToPostFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {

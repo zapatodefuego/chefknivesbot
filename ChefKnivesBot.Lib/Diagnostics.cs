@@ -13,6 +13,8 @@ namespace ChefKnivesBot.Lib
 
         public static int RedditServiceUnavailableExceptionCount { get; set; }
 
+        public static int RedditGatewayTimeoutException { get; set; }
+
         public static int OtherExceptionCount { get; set; }
 
         public static int SeenComments { get; set; }
@@ -37,6 +39,7 @@ namespace ChefKnivesBot.Lib
         public static void Reset()
         {
             StartTime = DateTime.Now;
+            RedditGatewayTimeoutException = 0;
             RedditServiceUnavailableExceptionCount = 0;
             OtherExceptionCount = 0;
             SeenComments = 0;
@@ -60,7 +63,7 @@ namespace ChefKnivesBot.Lib
                 $"Comments: saw {SeenComments}, processed {ProcessedComments}\n\n" +
                 $"Posts: saw {SeenPosts}, processed {ProcessedPosts}\n\n" +
                 $"Messages: saw {SeenMessages}, processed {ProcessedMessages}\n\n" +
-                $"Exceptions: {nameof(RedditServiceUnavailableException)} {RedditServiceUnavailableExceptionCount}, other {OtherExceptionCount}\n\n" +
+                $"Exceptions: {nameof(RedditServiceUnavailableException)} {RedditServiceUnavailableExceptionCount}, {nameof(RedditGatewayTimeoutException)} {RedditGatewayTimeoutException}, other {OtherExceptionCount}\n\n" +
                 $"Average review time (ms): {(ReviewTimes.Any() ? ReviewTimes.Average() : 0)}";
         }
     }
