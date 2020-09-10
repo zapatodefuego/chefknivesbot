@@ -45,7 +45,7 @@ namespace ChefKnivesBot.Lib
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.CommentsCollectionName);
-            SelfCommentDatabase = new DatabaseService<ChefKnivesBot.Data.Comment>(
+            SelfCommentDatabase = new DatabaseService<SelfComment>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.SelfCommentsCollectionName);
@@ -61,7 +61,7 @@ namespace ChefKnivesBot.Lib
 
         public DatabaseService<ChefKnivesBot.Data.Comment> RedditCommentDatabase { get; }
 
-        public DatabaseService<ChefKnivesBot.Data.Comment> SelfCommentDatabase { get; }
+        public DatabaseService<SelfComment> SelfCommentDatabase { get; }
 
         public void Dispose()
         {
