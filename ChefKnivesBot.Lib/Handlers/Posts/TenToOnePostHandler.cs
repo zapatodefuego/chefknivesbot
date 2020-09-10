@@ -41,7 +41,8 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
                     || (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
                )
             {
-                var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
+                //var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
+                var result = MakerCommentsReviewUtility.ReviewViaApi(_logger, post.Author, _service.Subreddit.Name, _service.RedditClient);
 
                 if (result.OtherComments < 2)
                 {

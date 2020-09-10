@@ -124,7 +124,6 @@ namespace ChefKnivesBot.Lib
 
         public string ReviewUser(string username)
         {
-            //var result = MakerCommentsReviewUtility.ReviewViaApi(_logger, username, _subreddit.Name, _redditClient);
             var result = MakerCommentsReviewUtility.Review(username, RedditPostDatabase, RedditCommentDatabase);
             return $"SelfPostComments: {result.SelfPostComments}, OtherComments: {result.OtherComments}, ReviewTime: {result.ReviewTime} (ms), Error: {result.Error}";
         }
