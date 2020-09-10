@@ -31,7 +31,7 @@ namespace ChefKnivesBot.Cli
                 {
                     commentCount++;
                     var redditComment = comment.ToRedditComment();
-                    _service.RedditCommentDatabase.Insert(redditComment);
+                    _service.RedditCommentDatabase.Upsert(redditComment);
                 }
 
                 Console.WriteLine($"Post {post.Id} had {comments.Count} comments");

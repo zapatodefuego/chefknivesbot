@@ -59,10 +59,10 @@ namespace ChefknivesBot.DataAccess.Tests
             };
 
             // first insert should hit upsert, that's fine
-            Assert.ThrowsException<Exception>(() => database.Insert(comments));
+            Assert.ThrowsException<Exception>(() => database.Upsert(comments));
 
             // second insert must be caught by the cache, else we have a serious problem
-            database.Insert(comments);
+            database.Upsert(comments);
         }
 
         [TestMethod]
@@ -80,10 +80,10 @@ namespace ChefknivesBot.DataAccess.Tests
             };
 
             // first insert should hit upsert, that's fine
-            Assert.ThrowsException<Exception>(() => database.Insert(posts));
+            Assert.ThrowsException<Exception>(() => database.Upsert(posts));
 
             // second insert must be caught by the cache, else we have a serious problem
-            database.Insert(posts);
+            database.Upsert(posts);
         }
     }
 }

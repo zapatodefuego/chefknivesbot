@@ -36,16 +36,16 @@ namespace ChefKnivesCommentsDatabase
         /// Ensures a post is in is in the database
         /// </summary>
         /// <param name="post"></param>
-        public void Insert(T thing)
+        public void Upsert(T thing)
         {
-            Insert(new List<T> { thing });
+            Upsert(new List<T> { thing });
         }
 
         /// <summary>
         /// Ensures each post in the collection is in the database
         /// </summary>
         /// <param name="posts"></param>
-        public void Insert(IEnumerable<T> things)
+        public void Upsert(IEnumerable<T> things)
         {
             foreach (T thing in things)
             {

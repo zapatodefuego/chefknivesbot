@@ -139,10 +139,10 @@ namespace ChefKnivesBot.Lib
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
             var recentPosts = redditReader.GetRecentPosts(numPosts: postCount);
-            RedditPostDatabase.Insert(recentPosts);
+            RedditPostDatabase.Upsert(recentPosts);
 
             var recentComments = redditReader.GetRecentComments(numComments: commentCount);
-            RedditCommentDatabase.Insert(recentComments);
+            RedditCommentDatabase.Upsert(recentComments);
 
             _logger.Information($"Fineshed pulling posts and comments.");
         }
