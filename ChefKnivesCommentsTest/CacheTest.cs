@@ -8,7 +8,7 @@ namespace ChefknivesBot.DataAccess.Tests
     [TestClass]
     public class CacheTest
     {
-        private class IntThing : RedditThing
+        private class IntThing : Thing
         {
             public int Index { get; set; }
         }
@@ -16,7 +16,7 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void AddWorksAsExpectedBeforeReachingCapacity()
         {
-            DatabaseCache<RedditThing> cache = new DatabaseCache<RedditThing>(10);
+            DatabaseCache<Thing> cache = new DatabaseCache<Thing>(10);
             for (int i = 0; i < 10; ++i)
             {
                 var item = new IntThing { Index = i };
@@ -29,7 +29,7 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void AddWorksAsExpectedAfterReachingCapacity()
         {
-            DatabaseCache<RedditThing> cache = new DatabaseCache<RedditThing>(5);
+            DatabaseCache<Thing> cache = new DatabaseCache<Thing>(5);
             for (int i = 0; i < 10; ++i)
             {
                 var item = new IntThing { Index = i };
@@ -45,46 +45,46 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void DatabaseCacheWorksWithDatabaseObjects()
         {
-            DatabaseCache<RedditComment> cache = new DatabaseCache<RedditComment>(5);
+            DatabaseCache<Comment> cache = new DatabaseCache<Comment>(5);
             for (int i = 0; i < 10; ++i)
             {
-                RedditComment comment = new RedditComment() { Body = $"info: {i}" };
+                Comment comment = new Comment() { Body = $"info: {i}" };
                 Assert.IsFalse(cache.Contains(comment));
                 cache.Add(comment);
                 Assert.IsTrue(cache.Contains(comment));
             }
 
-            Assert.IsFalse(cache.Contains(new RedditComment() { Body = $"info: 0" }));
+            Assert.IsFalse(cache.Contains(new Comment() { Body = $"info: 0" }));
         }
 
         [TestMethod]
         public void ObjectEqualityOnDatabaseObjectsWorksAsExpected()
         {
-            using (DatabaseCache<RedditComment> cache = new DatabaseCache<RedditComment>(5))
+            using (DatabaseCache<Comment> cache = new DatabaseCache<Comment>(5))
             {
                 for (int i = 0; i < 5; ++i)
                 {
-                    RedditComment comment = new RedditComment() { Body = $"info: {i}" };
+                    Comment comment = new Comment() { Body = $"info: {i}" };
                     Assert.IsFalse(cache.Contains(comment));
                     cache.Add(comment);
                     Assert.IsTrue(cache.Contains(comment));
                 }
 
-                Assert.IsTrue(cache.Contains(new RedditComment() { Body = $"info: 0" }));
+                Assert.IsTrue(cache.Contains(new Comment() { Body = $"info: 0" }));
             }
 
-            using (DatabaseCache<RedditPost> postCache = new DatabaseCache<RedditPost>(15))
+            using (DatabaseCache<Post> postCache = new DatabaseCache<Post>(15))
             {
                 for (int i = 0; i < 20; ++i)
                 {
-                    RedditPost post = new RedditPost() { Title = $"info: {i}" };
+                    Post post = new Post() { Title = $"info: {i}" };
                     Assert.IsFalse(postCache.Contains(post));
                     postCache.Add(post);
                     Assert.IsTrue(postCache.Contains(post));
                 }
 
-                Assert.IsTrue(postCache.Contains(new RedditPost() { Title = $"info: 10" }));
-                Assert.IsFalse(postCache.Contains(new RedditPost() { Title = $"info: 0" }));
+                Assert.IsTrue(postCache.Contains(new Post() { Title = $"info: 10" }));
+                Assert.IsFalse(postCache.Contains(new Post() { Title = $"info: 0" }));
             }
         }
     }

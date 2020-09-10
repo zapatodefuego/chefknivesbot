@@ -1,6 +1,6 @@
 ﻿namespace ChefKnivesBot.Data
 {
-    public class RedditComment : RedditThing
+    public class Comment : Thing
     {
         public string Body { get; set; } = string.Empty;
 
@@ -18,7 +18,7 @@
 
         public override bool Equals(object o)
         {
-            if (o is RedditComment other)
+            if (o is Comment other)
             {
                 return Author.Equals(other.Author)
                     && Body.Equals(other.Body)

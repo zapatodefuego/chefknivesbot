@@ -37,15 +37,15 @@ namespace ChefKnivesBot.Lib
             Subreddit = subreddit;
             Account = account;
 
-            RedditPostDatabase = new DatabaseService<RedditPost>(
+            RedditPostDatabase = new DatabaseService<ChefKnivesBot.Data.Post>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.PostsCollectionName);
-            RedditCommentDatabase = new DatabaseService<RedditComment>(
+            RedditCommentDatabase = new DatabaseService<ChefKnivesBot.Data.Comment>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.CommentsCollectionName);
-            SelfCommentDatabase = new DatabaseService<RedditComment>(
+            SelfCommentDatabase = new DatabaseService<ChefKnivesBot.Data.Comment>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.SelfCommentsCollectionName);
@@ -57,11 +57,11 @@ namespace ChefKnivesBot.Lib
 
         public Account Account { get; }
 
-        public DatabaseService<RedditPost> RedditPostDatabase { get; }
+        public DatabaseService<ChefKnivesBot.Data.Post> RedditPostDatabase { get; }
 
-        public DatabaseService<RedditComment> RedditCommentDatabase { get; }
+        public DatabaseService<ChefKnivesBot.Data.Comment> RedditCommentDatabase { get; }
 
-        public DatabaseService<RedditComment> SelfCommentDatabase { get; }
+        public DatabaseService<ChefKnivesBot.Data.Comment> SelfCommentDatabase { get; }
 
         public void Dispose()
         {

@@ -33,9 +33,9 @@ namespace ChefKnivesCommentsDatabase
             return $"{ _redditUrlPrefix}{_subreddit}{_redditUrlCommentsRequest}{_redditUrlLimitString}{numComments}";
         }
 
-        public IEnumerable<RedditPost> GetRecentPosts(int numPosts)
+        public IEnumerable<ChefKnivesBot.Data.Post> GetRecentPosts(int numPosts)
         {
-            var output = new List<RedditPost>();
+            var output = new List<ChefKnivesBot.Data.Post>();
             using (var httpResponse = _httpClient.GetAsync(GetRecentPostsRequestUrl(numPosts)).Result)
             {
                 var content = httpResponse.Content;
@@ -45,7 +45,7 @@ namespace ChefKnivesCommentsDatabase
                 }
 
                 var parsedContent = JsonConvert.DeserializeObject<RedditPostQueryResponse>(content.ReadAsStringAsync().Result);
-                foreach (Post post in parsedContent?.data?.children)
+                foreach (ChefKnivesBot.DataAccess.Serialization.Post post in parsedContent?.data?.children)
                 {
                     output.Add(post.data.ToRedditPost(post.kind));
                 }
@@ -54,9 +54,9 @@ namespace ChefKnivesCommentsDatabase
             return output;
         }
 
-        public IEnumerable<RedditComment> GetRecentComments(int numComments)
+        public IEnumerable<ChefKnivesBot.Data.Comment> GetRecentComments(int numComments)
         {
-            var output = new List<RedditComment>();
+            var output = new List<ChefKnivesBot.Data.Comment>();
             using (var httpResponse = _httpClient.GetAsync(GetRecentCommentsRequestUrl(numComments)).Result)
             {
                 var content = httpResponse.Content;

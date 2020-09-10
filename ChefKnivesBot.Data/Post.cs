@@ -1,6 +1,6 @@
 ﻿namespace ChefKnivesBot.Data
 {
-    public class RedditPost : RedditThing
+    public class Post : Thing
     {
         public string Title { get; set; } = string.Empty;
 
@@ -18,7 +18,7 @@
 
         public override bool Equals(object o)
         {
-            if (o is RedditPost other)
+            if (o is Post other)
             {
                 return Id.Equals(other.Id)
                     && Author.Equals(other.Author)

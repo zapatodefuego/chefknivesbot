@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ChefKnivesCommentsDatabase
 {
-    public class DatabaseService<T> : IDisposable where T : RedditThing
+    public class DatabaseService<T> : IDisposable where T : Thing
     {
         private readonly string _databaseName;
         private readonly string _collectionName;
@@ -106,7 +106,7 @@ namespace ChefKnivesCommentsDatabase
             return _mongoClient.GetDatabase(_databaseName).GetCollection<BsonDocument>(_collectionName);
         }
 
-        protected virtual void UpsertIntoCollection(RedditThing thing)
+        protected virtual void UpsertIntoCollection(Thing thing)
         {
             var collection = GetMongoCollection();
             collection.ReplaceOne(

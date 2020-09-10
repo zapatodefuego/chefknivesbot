@@ -9,7 +9,7 @@ namespace ChefKnivesBot.DataAccess.Utility
     /// <summary>
     /// Cache of the most recent items added
     /// </summary>
-    public class DatabaseCache<T> : IEnumerable, IDisposable where T : RedditThing
+    public class DatabaseCache<T> : IEnumerable, IDisposable where T : Thing
     {
         private readonly ISet<T> _set = new HashSet<T>();
         private readonly LinkedList<T> _list = new LinkedList<T>();

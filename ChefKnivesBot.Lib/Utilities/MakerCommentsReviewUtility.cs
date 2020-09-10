@@ -16,7 +16,7 @@ namespace ChefKnivesBot.Lib.Utilities
         private static Stopwatch _stopWatch = new Stopwatch();
         private const int _commentQueryCount = 60;
 
-        public static async Task<MakerReviewResult> Review(string author, DatabaseService<RedditPost> postDatabase, DatabaseService<RedditComment> commentDatabase)
+        public static async Task<MakerReviewResult> Review(string author, DatabaseService<Post> postDatabase, DatabaseService<Comment> commentDatabase)
         {
             _stopWatch.Reset();
             _stopWatch.Start();

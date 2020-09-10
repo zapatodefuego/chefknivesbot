@@ -1,12 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChefKnivesBot.Data
 {
-    public abstract class RedditThing
+    public abstract class Thing
     {
         public string Id { get; set; } = string.Empty;
 
