@@ -47,7 +47,7 @@ namespace ChefKnivesCommentsDatabase
                 var parsedContent = JsonConvert.DeserializeObject<RedditPostQueryResponse>(content.ReadAsStringAsync().Result);
                 foreach (ChefKnivesBot.DataAccess.Serialization.Post post in parsedContent?.data?.children)
                 {
-                    output.Add(post.data.ToRedditPost(post.kind));
+                    output.Add(post.data.ToPost(post.kind));
                 }
             }
 
@@ -68,7 +68,7 @@ namespace ChefKnivesCommentsDatabase
                 var parsedContent = JsonConvert.DeserializeObject<RedditCommentQueryResponse>(content.ReadAsStringAsync().Result);
                 foreach(var comment in parsedContent?.data?.children)
                 {
-                    output.Add(comment.data.ToRedditComment(comment.kind));
+                    output.Add(comment.data.ToComment(comment.kind));
                 }
             }
 

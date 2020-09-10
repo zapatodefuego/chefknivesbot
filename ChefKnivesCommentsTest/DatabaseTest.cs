@@ -13,7 +13,7 @@ namespace ChefknivesBot.DataAccess.Tests
         public TestCommentDatabase(string databaseName)
             : base(GetConnectionString(), databaseName, databaseName) { }
 
-        protected override void UpsertIntoCollection(Thing thing)
+        protected override void UpsertIntoCollection(RedditThing thing)
         {
             throw new Exception("UpsertIntoCollection was hit");
         }
@@ -29,7 +29,7 @@ namespace ChefknivesBot.DataAccess.Tests
         public TestPostDatabase(string databaseName)
             : base(GetConnectionString(), databaseName, databaseName) { }
 
-        protected override void UpsertIntoCollection(Thing thing)
+        protected override void UpsertIntoCollection(RedditThing thing)
         {
             throw new Exception("UpsertIntoCollection was hit");
         }

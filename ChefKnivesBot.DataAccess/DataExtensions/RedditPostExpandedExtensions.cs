@@ -6,7 +6,7 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
 {
     public static class RedditPostExpandedExtensions
     {
-        public static Data.Post ToRedditPost(this RedditPostExpanded expandedPost, string kind)
+        public static Data.Post ToPost(this RedditPostExpanded expandedPost, string kind)
         {
             return new Data.Post
             {

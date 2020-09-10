@@ -25,7 +25,7 @@ namespace ChefKnivesBot.Lib.Utilities
             var comments = await commentDatabase.GetByAuthor(author);
             foreach (var comment in comments)
             {
-                var post = postDatabase.Get(ConvertListingIdToPostId(comment.PostLinkId));
+                var post = postDatabase.GetById(ConvertListingIdToPostId(comment.PostLinkId));
                 if (post == null)
                 {
                     continue;

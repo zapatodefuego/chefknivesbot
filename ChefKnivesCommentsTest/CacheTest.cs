@@ -8,7 +8,7 @@ namespace ChefknivesBot.DataAccess.Tests
     [TestClass]
     public class CacheTest
     {
-        private class IntThing : Thing
+        private class IntThing : RedditThing
         {
             public int Index { get; set; }
         }
@@ -16,7 +16,7 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void AddWorksAsExpectedBeforeReachingCapacity()
         {
-            DatabaseCache<Thing> cache = new DatabaseCache<Thing>(10);
+            DatabaseCache<RedditThing> cache = new DatabaseCache<RedditThing>(10);
             for (int i = 0; i < 10; ++i)
             {
                 var item = new IntThing { Index = i };
@@ -29,7 +29,7 @@ namespace ChefknivesBot.DataAccess.Tests
         [TestMethod]
         public void AddWorksAsExpectedAfterReachingCapacity()
         {
-            DatabaseCache<Thing> cache = new DatabaseCache<Thing>(5);
+            DatabaseCache<RedditThing> cache = new DatabaseCache<RedditThing>(5);
             for (int i = 0; i < 10; ++i)
             {
                 var item = new IntThing { Index = i };

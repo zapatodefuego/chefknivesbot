@@ -8,7 +8,7 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
     {
         
 
-        public static Data.Comment ToRedditComment(this RedditCommentExpanded expandedComment, string kind)
+        public static Data.Comment ToComment(this RedditCommentExpanded expandedComment, string kind)
         {
             return new Data.Comment
             {
