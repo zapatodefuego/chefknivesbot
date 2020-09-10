@@ -59,7 +59,18 @@ namespace ChefKnivesCommentsDatabase
             }
         }
 
-        public T Get(string id)
+        public async Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue)
+        {
+            if (propertyName.Equals(nameof(RedditThing.Id)))
+            {
+                throw new InvalidOperationException($"Use {nameof(GetById)} to query by Id");
+            }
+
+            var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
+            return await GetByFilter(filter);
+        }
+
+        public T GetById(string id)
         {
             if (_cache.GetById(id, out T cacheResult))
             {
@@ -89,16 +100,16 @@ namespace ChefKnivesCommentsDatabase
             return await GetByFilter(Builders<BsonDocument>.Filter.Empty);
         }
 
-        public async Task<IEnumerable<T>> GetByFilter(FilterDefinition<BsonDocument> filter)
+        public void Delete(string id)
+        {
+
+        }
+
+        private async Task<IEnumerable<T>> GetByFilter(FilterDefinition<BsonDocument> filter)
         {
             var collection = GetMongoCollection();
             var queryResults = await collection.Find(filter).ToListAsync();
             return queryResults.Select(r => BsonSerializer.Deserialize<T>(r));
-        }
-
-        public void Delete(string id)
-        {
-
         }
 
         private IMongoCollection<BsonDocument> GetMongoCollection()

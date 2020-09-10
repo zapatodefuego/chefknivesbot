@@ -30,7 +30,7 @@ namespace ChefKnivesBot.Cli
                 foreach (var comment in comments)
                 {
                     commentCount++;
-                    var redditComment = comment.ToRedditComment();
+                    var redditComment = comment.ToComment();
                     _service.RedditCommentDatabase.Upsert(redditComment);
                 }
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace ChefknivesBot.DataAccess.Tests
 {
-    internal class TestCommentDatabase : DatabaseService<RedditComment>
+    internal class TestCommentDatabase : DatabaseService<Comment>
     {
         public TestCommentDatabase(string databaseName)
             : base(GetConnectionString(), databaseName, databaseName) { }
@@ -24,7 +24,7 @@ namespace ChefknivesBot.DataAccess.Tests
         }
     }
 
-    internal class TestPostDatabase : DatabaseService<RedditPost>
+    internal class TestPostDatabase : DatabaseService<Post>
     {
         public TestPostDatabase(string databaseName)
             : base(GetConnectionString(), databaseName, databaseName) { }
@@ -47,9 +47,9 @@ namespace ChefknivesBot.DataAccess.Tests
         public void CachePreventsUpsertComments()
         {
             var database = new TestCommentDatabase(databaseName: "test");
-            var comments = new List<RedditComment>()
+            var comments = new List<Comment>()
             {
-                new RedditComment()
+                new Comment()
                 {
                     Author = "test",
                     Body = "this is a comment",
@@ -69,9 +69,9 @@ namespace ChefknivesBot.DataAccess.Tests
         public void CachePreventsUpsertPosts()
         {
             var database = new TestPostDatabase(databaseName: "test");
-            var posts = new List<RedditPost>()
+            var posts = new List<Post>()
             {
-                new RedditPost()
+                new Post()
                 {
                     Author = "test",
                     Title = "this is a comment",

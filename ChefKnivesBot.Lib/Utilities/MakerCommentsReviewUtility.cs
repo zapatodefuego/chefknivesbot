@@ -16,7 +16,7 @@ namespace ChefKnivesBot.Lib.Utilities
         private static Stopwatch _stopWatch = new Stopwatch();
         private const int _commentQueryCount = 60;
 
-        public static async Task<MakerReviewResult> Review(string author, DatabaseService<RedditPost> postDatabase, DatabaseService<RedditComment> commentDatabase)
+        public static async Task<MakerReviewResult> Review(string author, DatabaseService<Post> postDatabase, DatabaseService<Comment> commentDatabase)
         {
             _stopWatch.Reset();
             _stopWatch.Start();
@@ -25,7 +25,7 @@ namespace ChefKnivesBot.Lib.Utilities
             var comments = await commentDatabase.GetByAuthor(author);
             foreach (var comment in comments)
             {
-                var post = postDatabase.Get(ConvertListingIdToPostId(comment.PostLinkId));
+                var post = postDatabase.GetById(ConvertListingIdToPostId(comment.PostLinkId));
                 if (post == null)
                 {
                     continue;

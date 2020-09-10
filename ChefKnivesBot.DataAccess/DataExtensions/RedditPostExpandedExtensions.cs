@@ -6,9 +6,9 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
 {
     public static class RedditPostExpandedExtensions
     {
-        public static RedditPost ToRedditPost(this RedditPostExpanded expandedPost, string kind)
+        public static Data.Post ToPost(this RedditPostExpanded expandedPost, string kind)
         {
-            return new RedditPost
+            return new Data.Post
             {
                 Id = expandedPost.id,
                 Author = expandedPost.author,
@@ -16,7 +16,7 @@ namespace ChefKnivesBot.DataAccess.DataExtensions
                 Flair = expandedPost.link_flair_text,
                 CreateDate = DatabaseConstants.EpochTime.AddSeconds(Convert.ToInt64(expandedPost.created_utc.Substring(0, expandedPost.created_utc.Length - 2))),
                 Kind = kind
-        };
+            };
         }
     }
 }

@@ -7,9 +7,9 @@ namespace ChefKnivesBot.Lib.DataExtensions
 {
     public static class RedditControllerPostDataExtensions
     {
-        public static RedditPost ToRedditPost(this Reddit.Controllers.Post post)
+        public static Post ToPost(this Reddit.Controllers.Post post)
         {
-            return new RedditPost
+            return new Post
             {
                 Author = post.Author,
                 Title = post.Title,

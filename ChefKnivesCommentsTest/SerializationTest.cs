@@ -30,7 +30,7 @@ namespace ChefknivesBot.DataAccess.Tests
         public void RedditCommentReaderCanRetrieveMostRecentComment()
         {
             RedditHttpsReader reader = new RedditHttpsReader("chefknives");
-            RedditComment comment = reader.GetRecentComments(1).FirstOrDefault();
+            ChefKnivesBot.Data.Comment comment = reader.GetRecentComments(1).FirstOrDefault();
 
             Assert.IsNotNull(comment);
             Assert.IsNotNull(comment.Author);
@@ -47,7 +47,7 @@ namespace ChefknivesBot.DataAccess.Tests
 
             Assert.AreEqual(10, comments.Count());
 
-            foreach (RedditComment comment in comments)
+            foreach (ChefKnivesBot.Data.Comment comment in comments)
             {
                 Assert.IsNotNull(comment);
                 Assert.IsNotNull(comment.Author);
@@ -65,7 +65,7 @@ namespace ChefknivesBot.DataAccess.Tests
 
             Assert.AreEqual(100, comments.Count());
 
-            foreach (RedditComment comment in comments)
+            foreach (ChefKnivesBot.Data.Comment comment in comments)
             {
                 Assert.IsNotNull(comment);
                 Assert.IsNotNull(comment.PostLinkId);
