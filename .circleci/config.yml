@@ -1,27 +1,12 @@
-version: 2.1
+ version: 2.1
 
-orbs:
+ orbs:
   win: circleci/windows@2.2.0
 
-jobs:
-  build:
-    executor: win/default     
-
-  steps:
-    - checkout
-    - run: dotnet build
-  test:
-    - run: dotnet test
-  store_artifacts:
-    path: /tmp/chefknivesbot
-
-workflows:
-  build_test_deploy:
-    jobs:
-    - build
-    - test:
-      requires:
-        - build
-    - store_artifacts:
-      requires:
-        - test
+ jobs:
+   build:
+     executor: win/default     
+    
+     steps:
+       - checkout
+       - run: dotnet build

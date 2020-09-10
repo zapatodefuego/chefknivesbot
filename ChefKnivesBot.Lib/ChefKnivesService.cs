@@ -37,15 +37,15 @@ namespace ChefKnivesBot.Lib
             Subreddit = subreddit;
             Account = account;
 
-            RedditPostDatabase = new DatabaseService<RedditPost>(
+            RedditPostDatabase = new DatabaseService<ChefKnivesBot.Data.Post>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.PostsCollectionName);
-            RedditCommentDatabase = new DatabaseService<RedditComment>(
+            RedditCommentDatabase = new DatabaseService<ChefKnivesBot.Data.Comment>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.CommentsCollectionName);
-            SelfCommentDatabase = new DatabaseService<RedditComment>(
+            SelfCommentDatabase = new DatabaseService<SelfComment>(
                 configuration["ConnectionString"],
                 databaseName: Subreddit.Name,
                 collectionName: DatabaseConstants.SelfCommentsCollectionName);
@@ -57,11 +57,11 @@ namespace ChefKnivesBot.Lib
 
         public Account Account { get; }
 
-        public DatabaseService<RedditPost> RedditPostDatabase { get; }
+        public DatabaseService<ChefKnivesBot.Data.Post> RedditPostDatabase { get; }
 
-        public DatabaseService<RedditComment> RedditCommentDatabase { get; }
+        public DatabaseService<ChefKnivesBot.Data.Comment> RedditCommentDatabase { get; }
 
-        public DatabaseService<RedditComment> SelfCommentDatabase { get; }
+        public DatabaseService<SelfComment> SelfCommentDatabase { get; }
 
         public void Dispose()
         {
@@ -163,6 +163,13 @@ namespace ChefKnivesBot.Lib
                     });
                 }
             }
+            catch (RedditGatewayTimeoutException exception)
+            {
+                Diagnostics.RedditGatewayTimeoutException++;
+                _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
+                Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
+                SubscribeToMessageFeed();
+            }
             catch (RedditServiceUnavailableException exception)
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
@@ -193,6 +200,13 @@ namespace ChefKnivesBot.Lib
                     });
                 }
             }
+            catch (RedditGatewayTimeoutException exception)
+            {
+                Diagnostics.RedditGatewayTimeoutException++;
+                _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
+                Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
+                SubscribeToCommentFeed();
+            }
             catch (RedditServiceUnavailableException exception)
             {
                 Diagnostics.RedditServiceUnavailableExceptionCount++;
@@ -222,6 +236,13 @@ namespace ChefKnivesBot.Lib
                         }
                     });
                 }
+            }
+            catch (RedditGatewayTimeoutException exception)
+            {
+                Diagnostics.RedditGatewayTimeoutException++;
+                _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
+                Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
+                SubscribeToPostFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {

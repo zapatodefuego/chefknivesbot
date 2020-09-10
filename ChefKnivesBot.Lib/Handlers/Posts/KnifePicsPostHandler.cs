@@ -10,25 +10,25 @@ using Subreddit = Reddit.Controllers.Subreddit;
 using Post = Reddit.Controllers.Post;
 using System.Timers;
 using Comment = Reddit.Controllers.Comment;
+using ChefKnivesBot.Lib.DataExtensions;
+using ChefKnivesBot.Data;
 
 namespace ChefKnivesBot.Lib.Handlers.Posts
 {
     public class KnifePicsPostHandler : HandlerBase, IControllerHandler
     {
         private ILogger _logger;
-        private readonly Subreddit _subreddit;
-        private readonly Account _account;
+        private readonly ChefKnivesService _service;
         private readonly FlairV2 _knifePicsFlair;
         private readonly Rule _rulefive;
 
-        public KnifePicsPostHandler(ILogger logger, Subreddit subreddit, Account account, bool dryRun)
+        public KnifePicsPostHandler(ILogger logger, ChefKnivesService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
-            _subreddit = subreddit;
-            _account = account;
-            _knifePicsFlair = _subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Knife Pics"));
-            _rulefive = _subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive Content"));
+            _service = service;
+            _knifePicsFlair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Knife Pics"));
+            _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive Content"));
         }
 
         public bool Process(BaseController baseController)
@@ -43,7 +43,7 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
             if (linkFlairId != null && linkFlairId.Equals(_knifePicsFlair.Id))
             {
                 // Check if we already commented on this post
-                if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("Please ensure you fulfill Rule #5")))
+                if (!_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
                 {
                     if (!DryRun)
                     {
@@ -54,10 +54,11 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
                                 $"{_rulefive.Description}")
                             .Distinguish("yes", true);
 
+                        _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));
                         ScheduleDelayedCheck(post, replyComment);
                     }
 
-                    _logger.Information($"Commented with rule five warning on post by {post.Author}");
+                    _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
                 }
 
                 return true;
@@ -68,6 +69,7 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
 
         private void ScheduleDelayedCheck(Post post, Comment replyComment)
         {
+            // 900000 ms is 15 minutes
             var timer = new Timer { Interval = 900000 };
             timer.Elapsed += (object sender, ElapsedEventArgs e) => 
             {
@@ -78,11 +80,17 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
                 if (!comments.Any(c => c.Depth == 0 && c.Author.Equals(post.Author)))
                 {
                     post.Remove();
-                    _logger.Information($"Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
+                    _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
                 }
 
                 replyComment.Delete();
+
+                // Update the comment in the database. There has to be a more elegant way to do this...
+                var databaseComment = replyComment.ToSelfComment(post.Id, RedditThingType.Post);
+                databaseComment.IsDeleted = true;
+                _service.SelfCommentDatabase.Upsert(databaseComment);
             };
+
             timer.Enabled = true;
             timer.Start();
         }
