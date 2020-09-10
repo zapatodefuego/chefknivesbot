@@ -132,6 +132,8 @@ namespace ChefKnivesBot.Lib
 
         public void PullCommentsAndPosts(int postCount = 100, int commentCount = 100)
         {
+            _logger.Information($"Pulling {postCount} posts and {commentCount} comments. Interval: {_commentAndPostPullIntervalMinutes} minutes");
+
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
             var recentPosts = redditReader.GetRecentPosts(numPosts: postCount);
@@ -139,6 +141,8 @@ namespace ChefKnivesBot.Lib
 
             var recentComments = redditReader.GetRecentComments(numComments: commentCount);
             RedditCommentDatabase.Insert(recentComments);
+
+            _logger.Information($"Fineshed pulling posts and comments.");
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)
