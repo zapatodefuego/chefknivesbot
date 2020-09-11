@@ -9,7 +9,7 @@ using Post = Reddit.Controllers.Post;
 
 namespace ChefKnivesBot.Lib.Handlers.Posts
 {
-    public class TenToOnePostHandler : HandlerBase, IControllerHandler
+    public class TenToOnePostHandler : HandlerBase, IPostHandler
     {
         private readonly ILogger _logger;
         private readonly ChefKnivesService _service;

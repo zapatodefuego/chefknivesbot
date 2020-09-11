@@ -8,18 +8,18 @@ using Post = Reddit.Controllers.Post;
 
 namespace ChefKnivesBot.Lib.Handlers.Posts
 {
-    public class MakerPostHandler : HandlerBase, IControllerHandler
+    public class MakerPostHandler : HandlerBase, IPostHandler
     {
         private readonly ILogger _logger;
+        private readonly ChefKnivesService _service;
         private FlairV2 _makerPostFlair;
-        private Account _account;
 
-        public MakerPostHandler(ILogger logger, FlairV2 makerPostFlair, Account account, bool dryRun)
+        public MakerPostHandler(ILogger logger, ChefKnivesService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
-            _makerPostFlair = makerPostFlair;
-            _account = account;
+            _service = service;
+            _makerPostFlair = _service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post")); ;
         }
         public bool Process(BaseController baseController)
         {
@@ -40,7 +40,7 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
                 post.SetFlair(_makerPostFlair.Text, _makerPostFlair.Id);
 
                 // Check if we already commented on this post
-                if (!post.Comments.New.Any(c => c.Author.Equals(_account.Me.Name) && c.Body.StartsWith("This post has been identified")))
+                if (!post.Comments.New.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("This post has been identified")))
                 {
                     if (!DryRun)
                     {

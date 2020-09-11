@@ -8,7 +8,7 @@ using Comment = Reddit.Controllers.Comment;
 
 namespace ChefKnivesBot.Lib.Handlers.Comments
 {
-    public class MakerPostReviewCommand : HandlerBase, IControllerHandler
+    public class MakerPostReviewCommand : HandlerBase, ICommentHandler
     {
         private ILogger _logger;
         private readonly ChefKnivesService _service;

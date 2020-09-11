@@ -6,20 +6,18 @@ using Serilog;
 
 namespace ChefKnivesBot.Lib.Handlers.Mail
 {
-    public class MessageHandler : HandlerBase, IThingHandler
+    public class MessageHandler : HandlerBase, IMessageHandler
     {
         private const string _status = "!status";
 
         private readonly ILogger _logger;
-        private readonly RedditClient _redditClient;
-        private readonly Account _account;
+        private readonly ChefKnivesService _service;
 
-        public MessageHandler(ILogger logger, RedditClient redditClient, Account account, bool dryRun)
+        public MessageHandler(ILogger logger, ChefKnivesService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
-            _redditClient = redditClient;
-            _account = account;
+            _service = service;
         }
 
         public bool Process(object thing)
@@ -33,7 +31,7 @@ namespace ChefKnivesBot.Lib.Handlers.Mail
             if (message.Body.Equals(_status))
             {
                 var text = Diagnostics.GetStatusMessage();
-                _account.Messages.Reply(new LinksAndCommentsThingInput(text, message.Id));
+                _service.Account.Messages.Reply(new LinksAndCommentsThingInput(text, message.Id));
                 return true;
             }
 

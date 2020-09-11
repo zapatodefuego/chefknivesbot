@@ -73,11 +73,11 @@ namespace ChefKnivesBot.Lib
             _cancellationToken.Cancel();
         }
 
-        public List<IControllerHandler> CommentHandlers { get; private set; } = new List<IControllerHandler>();
+        public List<ICommentHandler> CommentHandlers { get; private set; } = new List<ICommentHandler>();
 
-        public List<IControllerHandler> PostHandlers { get; private set; } = new List<IControllerHandler>();
+        public List<IPostHandler> PostHandlers { get; private set; } = new List<IPostHandler>();
 
-        public List<IThingHandler> MessageHandlers { get; private set; } = new List<IThingHandler>();
+        public List<IMessageHandler> MessageHandlers { get; private set; } = new List<IMessageHandler>();
 
         public bool IsSubredditModerator(string username)
         {
@@ -232,7 +232,7 @@ namespace ChefKnivesBot.Lib
                         Diagnostics.SeenPosts++;
                         if (c.Process(post))
                         {
-                            Diagnostics.ProcessedComments++;
+                            Diagnostics.ProcessedPosts++;
                         }
                     });
                 }

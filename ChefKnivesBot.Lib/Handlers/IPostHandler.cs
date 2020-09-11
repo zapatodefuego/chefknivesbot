@@ -2,7 +2,7 @@
 
 namespace ChefKnivesBot.Lib.Handlers
 {
-    public interface IControllerHandler
+    public interface IPostHandler
     {
         /// <summary>
         /// Processess the controller

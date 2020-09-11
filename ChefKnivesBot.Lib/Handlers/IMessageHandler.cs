@@ -1,6 +1,6 @@
 ﻿namespace ChefKnivesBot.Lib.Handlers
 {
-    public interface IThingHandler
+    public interface IMessageHandler
     {
         bool Process(object thing);
     }
