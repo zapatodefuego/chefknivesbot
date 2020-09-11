@@ -44,7 +44,7 @@ namespace ChefKnivesBot.Lib.Handlers.Posts
                         var message = $"Please ensure you have filled out the Questionnaire and consider reviewing our Getting Started guide: \n\n" +
                         $"*Questionnaire: {_questionnaireUrl}\n" +
                         $"*Getting Started guide: {_gettingStartedUrl}\n\n" +
-                        $"Failure to fill out the questionnaire without a good reason or asking questions already answered in the wiki is considered low effort and will result in low effort responses.";
+                        $"Failure to fill out the questionnaire without a good reason or asking questions already answered in the wiki is considered low effort and will likely result in low effort responses.";
 
                         var replyComment = post
                             .Reply(message)
