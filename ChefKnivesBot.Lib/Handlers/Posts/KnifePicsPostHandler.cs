@@ -15,7 +15,7 @@ using ChefKnivesBot.Data;
 
 namespace ChefKnivesBot.Lib.Handlers.Posts
 {
-    public class KnifePicsPostHandler : HandlerBase, IControllerHandler
+    public class KnifePicsPostHandler : HandlerBase, IPostHandler
     {
         private ILogger _logger;
         private readonly ChefKnivesService _service;
