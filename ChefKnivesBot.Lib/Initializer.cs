@@ -50,6 +50,7 @@ namespace ChefKnivesBot.Lib
             service.SubscribeToPostFeed();
             service.SubscribeToCommentFeed();
             service.SubscribeToMessageFeed();
+
             service.RegisterRepeatForCommentAndPostDataPull();
 
             return service;
@@ -63,8 +64,7 @@ namespace ChefKnivesBot.Lib
 
             foreach (var handler in handlers)
             {
-                dynamic instance = Activator.CreateInstance(handler, new object[] { logger, service, dryRun });
-                yield return instance;
+                yield return Activator.CreateInstance(handler, new object[] { logger, service, dryRun });
             }
         }
     }
