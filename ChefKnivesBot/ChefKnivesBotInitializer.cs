@@ -8,11 +8,11 @@ using System.Linq;
 
 namespace ChefKnivesBot
 {
-    public class Initializer
+    public class ChefKnivesBotInitializer
     {
         private const string _subredditName = "chefknives";
 
-        public static SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false)
+        public SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false)
         {
             logger.Information("Application started...");
 
@@ -22,11 +22,7 @@ namespace ChefKnivesBot
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(_subredditName));
-            var account = redditClient.Account;
-            var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
-
-            var service = new SubredditService(logger, configuration, redditClient, subreddit, account);
+            var service = new SubredditService(logger, configuration, redditClient, _subredditName);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
             {
@@ -52,9 +48,9 @@ namespace ChefKnivesBot
             return service;
         }
 
-        private static IEnumerable<dynamic> GetHandlers(Type type, ILogger logger, SubredditService service, bool dryRun)
+        private IEnumerable<dynamic> GetHandlers(Type type, ILogger logger, SubredditService service, bool dryRun)
         {
-            var handlers = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
+            var handlers = GetType().Assembly.GetTypes()
                 .Where(x => type.IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
                 .ToList();
 

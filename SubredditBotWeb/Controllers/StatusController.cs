@@ -33,7 +33,9 @@ namespace SubredditBotWeb.Controllers
         {
             Diagnostics.Reset();
             Program.ChefKnivesService.Dispose();
-            Program.ChefKnivesService = Initializer.Start(Log.Logger, _configuration, Program.DryRun);
+
+            var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
+            Program.ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, Program.DryRun);
             return RedirectToAction(nameof(Index));
         }
     }

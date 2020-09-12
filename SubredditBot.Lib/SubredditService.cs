@@ -23,18 +23,14 @@ namespace SubredditBot.Lib
         private readonly IConfiguration _configuration;
         private CancellationTokenSource _cancellationToken;
 
-        public SubredditService(
-            ILogger logger,
-            IConfiguration configuration,
-            RedditClient redditClient,
-            Subreddit subreddit,
-            Account account)
+        public SubredditService(ILogger logger, IConfiguration configuration, RedditClient redditClient, string subredditName)
         {
             _logger = logger;
             _configuration = configuration;
             RedditClient = redditClient;
-            Subreddit = subreddit;
-            Account = account;
+
+            Subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(subredditName));
+            Account = redditClient.Account;
 
             RedditPostDatabase = new DatabaseService<SubredditBot.Data.Post>(
                 configuration["ConnectionString"],

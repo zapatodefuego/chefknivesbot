@@ -45,7 +45,8 @@ namespace SubredditBot.Cli
             var account = redditClient.Account;
             var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
 
-            ChefKnivesService = new SubredditService(Log.Logger, _configuration, redditClient, subreddit, account);
+            var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
+            ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
 
             var commentSeedUtility = new CommentSeedUtility(ChefKnivesService);
             await commentSeedUtility.Execute();

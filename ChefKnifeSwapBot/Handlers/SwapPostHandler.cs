@@ -1,7 +1,7 @@
 ﻿using Reddit.Controllers;
 using SubredditBot.Lib;
 
-namespace ChefKnifeSwapBot
+namespace ChefKnifeSwapBot.Handlers
 {
     public class SwapPostHandler : HandlerBase, IPostHandler
     {

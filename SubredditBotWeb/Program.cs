@@ -6,12 +6,15 @@ using Serilog;
 using System;
 using System.Linq;
 using ChefKnivesBot;
+using ChefKnifeSwapBot;
 
 namespace SubredditBotWeb
 {
     public class Program
     {
         public static SubredditService ChefKnivesService { get; set; }
+
+        public static SubredditService ChefKnifeSwapService { get; set; }
 
         public static bool DryRun { get; private set; }
 
@@ -41,7 +44,12 @@ namespace SubredditBotWeb
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
                 DryRun = args.Any(a => a.Equals("--dryrun"));
-                ChefKnivesService = Initializer.Start(Log.Logger, _configuration, DryRun);
+
+                var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
+                ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
+
+                var chefknivesSwapBotInitializer = new ChefKnifeSwapBotInitializer();
+                ChefKnifeSwapService = chefknivesSwapBotInitializer.Start(Log.Logger, _configuration, DryRun);
             }
 
             CreateHostBuilder(args).Build().Run();

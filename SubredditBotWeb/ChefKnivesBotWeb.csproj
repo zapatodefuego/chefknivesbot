@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChefKnifeSwapBot\ChefKnifeSwapBot.csproj" />
     <ProjectReference Include="..\ChefKnivesBot\ChefKnivesBot.csproj" />
     <ProjectReference Include="..\SubredditBot.Lib\SubredditBot.Lib.csproj" />
   </ItemGroup>
