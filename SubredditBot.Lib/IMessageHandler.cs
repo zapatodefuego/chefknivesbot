@@ -1,4 +1,4 @@
-﻿namespace SubredditBot.Lib.Handlers
+﻿namespace SubredditBot.Lib
 {
     public interface IMessageHandler
     {

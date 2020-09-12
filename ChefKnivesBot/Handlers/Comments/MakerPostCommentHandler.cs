@@ -1,14 +1,13 @@
 ﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Account = Reddit.Controllers.Account;
 using Comment = Reddit.Controllers.Comment;
-using Subreddit = Reddit.Controllers.Subreddit;
 
-namespace SubredditBot.Lib.Handlers.Comments
+namespace ChefKnivesBot.Handlers.Comments
 {
     public class MakerPostCommentHandler : HandlerBase, ICommentHandler
     {

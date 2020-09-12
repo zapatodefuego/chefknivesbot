@@ -5,8 +5,9 @@ using Reddit.Controllers;
 using Serilog;
 using System.Linq;
 using Comment = Reddit.Controllers.Comment;
+using SubredditBot.Lib;
 
-namespace SubredditBot.Lib.Handlers.Comments
+namespace ChefKnivesBot.Handlers.Comments
 {
     public class MakerPostReviewCommand : HandlerBase, ICommentHandler
     {

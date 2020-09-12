@@ -1,8 +1,8 @@
 ﻿using Reddit.Controllers;
 
-namespace SubredditBot.Lib.Handlers
+namespace SubredditBot.Lib
 {
-    public interface IPostHandler
+    public interface ICommentHandler
     {
         /// <summary>
         /// Processess the controller

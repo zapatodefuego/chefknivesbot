@@ -1,12 +1,12 @@
 ﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Lib;
 using System;
 using System.Linq;
-using Account = Reddit.Controllers.Account;
 using Post = Reddit.Controllers.Post;
 
-namespace SubredditBot.Lib.Handlers.Posts
+namespace ChefKnivesBot.Handlers.Posts
 {
     public class MakerPostHandler : HandlerBase, IPostHandler
     {

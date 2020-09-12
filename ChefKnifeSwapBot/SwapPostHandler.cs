@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SubredditBot.Lib.Handlers.Posts
+﻿namespace ChefKnifeSwapBot
 {
     public class SwapPostHandler
     {

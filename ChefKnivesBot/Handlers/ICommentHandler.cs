@@ -1,6 +1,6 @@
 ﻿using Reddit.Controllers;
 
-namespace SubredditBot.Lib.Handlers
+namespace ChefKnivesBot.Handlers
 {
     public interface ICommentHandler
     {

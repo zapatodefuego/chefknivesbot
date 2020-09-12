@@ -2,7 +2,6 @@
 using Reddit;
 using Serilog;
 using SubredditBot.Lib;
-using SubredditBot.Lib.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

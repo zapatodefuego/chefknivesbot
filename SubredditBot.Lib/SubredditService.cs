@@ -1,18 +1,17 @@
-﻿using SubredditBot.Data;
-using SubredditBot.DataAccess;
-using SubredditBot.Lib.Handlers;
-using SubredditBot.Lib.Utilities;
+﻿using ChefKnivesCommentsDatabase;
 using Microsoft.Extensions.Configuration;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Controllers.EventArgs;
 using Reddit.Exceptions;
 using Serilog;
+using SubredditBot.Data;
+using SubredditBot.DataAccess;
+using SubredditBot.Lib.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using ChefKnivesCommentsDatabase;
 
 namespace SubredditBot.Lib
 {

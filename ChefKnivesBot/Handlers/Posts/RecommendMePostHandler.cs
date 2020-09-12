@@ -1,14 +1,13 @@
-﻿using SubredditBot.Data;
-using SubredditBot.Lib.DataExtensions;
-using Reddit.Controllers;
+﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Data;
+using SubredditBot.Lib;
+using SubredditBot.Lib.DataExtensions;
 using System.Linq;
-using System.Timers;
-using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
 
-namespace SubredditBot.Lib.Handlers.Posts
+namespace ChefKnivesBot.Handlers.Posts
 {
     public class RecommendMePostHandler : HandlerBase, IPostHandler
     {

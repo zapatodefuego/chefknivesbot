@@ -6,8 +6,9 @@ using Serilog;
 using System;
 using System.Linq;
 using Post = Reddit.Controllers.Post;
+using SubredditBot.Lib;
 
-namespace SubredditBot.Lib.Handlers.Posts
+namespace ChefKnivesBot.Handlers.Posts
 {
     public class TenToOnePostHandler : HandlerBase, IPostHandler
     {

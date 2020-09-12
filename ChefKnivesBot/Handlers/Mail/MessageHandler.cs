@@ -1,10 +1,9 @@
-﻿using Reddit;
-using Reddit.Controllers;
-using Reddit.Inputs.LinksAndComments;
+﻿using Reddit.Inputs.LinksAndComments;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Lib;
 
-namespace SubredditBot.Lib.Handlers.Mail
+namespace ChefKnivesBot.Handlers.Mail
 {
     public class MessageHandler : HandlerBase, IMessageHandler
     {

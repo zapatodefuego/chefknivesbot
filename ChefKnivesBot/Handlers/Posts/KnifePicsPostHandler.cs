@@ -1,19 +1,16 @@
-﻿using Reddit;
-using Reddit.Controllers;
+﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Data;
+using SubredditBot.Lib;
+using SubredditBot.Lib.DataExtensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Subreddit = Reddit.Controllers.Subreddit;
-using Post = Reddit.Controllers.Post;
 using System.Timers;
 using Comment = Reddit.Controllers.Comment;
-using SubredditBot.Lib.DataExtensions;
-using SubredditBot.Data;
+using Post = Reddit.Controllers.Post;
 
-namespace SubredditBot.Lib.Handlers.Posts
+namespace ChefKnivesBot.Handlers.Posts
 {
     public class KnifePicsPostHandler : HandlerBase, IPostHandler
     {
