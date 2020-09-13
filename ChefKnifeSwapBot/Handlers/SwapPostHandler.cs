@@ -173,7 +173,7 @@ namespace ChefKnifeSwapBot.Handlers
 
                 if (hasError)
                 {
-                    errorResponse.AppendLine("\n\nThis post has been removed. Please correct the above issues and resubmit. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table)");
+                    errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues and resubmit. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
 
                     if (!DryRun)
                     {
