@@ -9,34 +9,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Comment = Reddit.Controllers.Comment;
-using Post = Reddit.Controllers.Post;
 
 namespace ChefKnifeSwapBot.Handlers
 {
     public class SwapPostHandler : HandlerBase, IPostHandler
     {
-        private const string _titleRow = "Selling table";
-        private const string _nameRow = "Item Name(s)";
-        private const string _descriptionRow = "Description(s)";
-        private const string _priceRow = "Asking price(s)";
-        private const string _shippingRow = "Shipping included in price?";
-        private const string _regionRow = "Region";
-        private const string _productRow = "Product page link(s)";
-        private const string _pictureRow = "Picture album link";
+        private const int _numEntrys = 9;
+        private const string _titleEntry = "Selling table. All items mandatory. One table per post. This header must be included";
+        private const string _nameEntry = "Item Name(s)";
+        private const string _descriptionEntry = "Description(s)";
+        private const string _priceEntry = "Asking price(s)";
+        private const string _shippingEntry = "Shipping included in price?";
+        private const string _regionEntry = "Region";
+        private const string _productEntry = "Product page link(s)";
+        private const string _pictureEntry = "Picture album link";
+        private const string _endEntry = "End";
         private static string _table =
-            $"|{_titleRow }|All rows mandatory. One table per post. Do not edit these headers or the first row|\n" +
-            $"|:-|:-|\n" +
-            $"|{_nameRow}|<a name for the item being sold>|\n" +
-            $"|{_descriptionRow}|<a description of the item>|\n" +
-            $"|{_priceRow}|<asking price>|\n" +
-            $"|{_shippingRow}|<yes or no>|\n" +
-            $"|{_regionRow}|<us, eu, conus, uk and us, etc.>|\n" +
-            $"|{_productRow}|<link to where the item is being sold or to a page about the maker if selling a custom item>|\n" +
-            $"|{_pictureRow}|<link to an album of pictures. every picture must contain the timestamp>|\n";
+            $"~{_titleEntry}:\n" +
+            $"~{_nameEntry}:\n" +
+            $"~{_descriptionEntry}:\n" +
+            $"~{_priceEntry}:\n" +
+            $"~{_shippingEntry}:\n" +
+            $"~{_regionEntry}:\n" +
+            $"~{_productEntry}:\n" +
+            $"~{_pictureEntry}:\n" +
+            $"~{_endEntry}\n";
 
-        private static Dictionary<string, Regex> _regexCache = new Dictionary<string, Regex>();
-        private static Regex _tableIdentifierRegex = new Regex("\\|:-\\|:-\\|", RegexOptions.Compiled);
+        private static Regex _tableIdentifierRegex = new Regex("~", RegexOptions.Compiled);
 
         private ILogger _logger;
         private readonly SubredditService _service;
@@ -74,7 +73,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post is missing the required table. Please submit a new post containing the following table:\n\n {_table}";
+                        var response = $"It looks like your Selling post is missing the required table or it is formatted incorrectly. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table):\n\n {_table}";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -82,11 +81,11 @@ namespace ChefKnifeSwapBot.Handlers
                     }
                     return true;
                 }
-                else if(tableMatches.Count > 1)
+                else if(tableMatches.Count < _numEntrys)
                 {
                     if (!DryRun)
                     {
-                        var response = "It looks like your Selling post contains multiple items. Only one item may be listed in each Selling post.";
+                        var response = $"It looks like your Selling post does not contain all of the expected entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table):\n\n {_table}";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -95,12 +94,14 @@ namespace ChefKnifeSwapBot.Handlers
 
                     return true;
                 }
-                else if (body.Contains("<") || body.Contains(">"))
+                else if (tableMatches.Count > _numEntrys)
                 {
                     if (!DryRun)
                     {
-                        var reply = post.Reply("I found a \"<\" or a \">\" in your post. Did you forget to fill something out?").Distinguish("yes", true);
+                        var response = $"It looks like your Selling post containes too many entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table):\n\n {_table}";
+                        var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
+
                         _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
                     }
 
@@ -111,21 +112,27 @@ namespace ChefKnifeSwapBot.Handlers
                 var errorResponse = new StringBuilder();
                 errorResponse.AppendLine("The following issues were found in your submission:");
 
-                if (!GetRow(body, _titleRow, out string titleValue))
+                var parts = body
+                    .Split('~', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Split(':', StringSplitOptions.RemoveEmptyEntries))
+                    .Where(s => s.Length == 2)
+                    .ToDictionary(s => s[0], s => s[1]);
+
+                if (!GetEntry(parts, _titleEntry, out string titleValue))
                 {
-                    errorResponse.AppendLine("* Title row was modified, missing, or incorrectly formatted");
+                    errorResponse.AppendLine("* Title entry was modified, missing, or incorrectly formatted");
                     hasError = true;
                 }
 
-                if (!GetRow(body, _nameRow, out string nameValue))
+                if (!GetEntry(parts, _nameEntry, out string nameValue))
                 {
-                    errorResponse.AppendLine("* Item name row was missing or incorrectly formatted.");
+                    errorResponse.AppendLine("* Item name entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
 
-                if (!GetRow(body, _descriptionRow, out string descriptionValue))
+                if (!GetEntry(parts, _descriptionEntry, out string descriptionValue))
                 {
-                    errorResponse.AppendLine("* Description row was missing or incorrectly formatted.");
+                    errorResponse.AppendLine("* Description entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
                 else if (descriptionValue.Length < 50)
@@ -134,49 +141,44 @@ namespace ChefKnifeSwapBot.Handlers
                     hasError = true;
                 }
 
-                if (!GetRow(body, _priceRow, out string priceValue))
+                if (!GetEntry(parts, _priceEntry, out string priceValue))
                 {
-                    errorResponse.AppendLine("* Price row was missing or incorrectly formatted.");
+                    errorResponse.AppendLine("* Price entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
 
-                if (!GetRow(body, _shippingRow, out string shippingValue))
+                if (!GetEntry(parts, _shippingEntry, out string shippingValue))
                 {
-                    errorResponse.AppendLine("* Shipping row was missing or incorrectly formatted.");
+                    errorResponse.AppendLine("* Shipping entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
                 else if (!new string[]{ "yes", "no" }.Any(shippingValue.Contains))
                 {
-                    errorResponse.AppendLine("* Shipping row value should be \"yes\" or \"no\".");
+                    errorResponse.AppendLine("* Shipping entry value should be \"yes\" or \"no\".");
                     hasError = true;
                 }
 
-                if (!GetRow(body, _regionRow, out string regionValue))
+                if (!GetEntry(parts, _regionEntry, out string regionValue))
                 {
-                    errorResponse.AppendLine("* Region row was missing or incorrectly formatted.");
+                    errorResponse.AppendLine("* Region entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
 
-                if (!GetRow(body, _productRow, out string productValue))
+                if (!GetEntry(parts, _productEntry, out string productValue))
                 {
-                    errorResponse.AppendLine("* The product link row was missing or incorrectly formatted.");
+                    errorResponse.AppendLine("* The product link entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
 
-                if (!GetRow(body, _pictureRow, out string pictureValue))
+                if (!GetEntry(parts, _pictureEntry, out string pictureValue))
                 {
-                    errorResponse.AppendLine("* The album link row was missing or incorrectly formatted.");
-                    hasError = true;
-                }
-                else if (Uri.TryCreate(pictureValue, UriKind.Absolute, out _))
-                {
-                    errorResponse.AppendLine("* The album link was not a valid url.");
+                    errorResponse.AppendLine("* The album link entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
 
                 if (hasError)
                 {
-                    errorResponse.AppendLine("\n\nThis post has been removed. Please correct the above issues and resubmit.");
+                    errorResponse.AppendLine("\n\nThis post has been removed. Please correct the above issues and resubmit. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table)");
 
                     if (!DryRun)
                     {
@@ -193,12 +195,30 @@ namespace ChefKnifeSwapBot.Handlers
 
                 if (!DryRun)
                 {
-                    var reply = post
-                    .Reply("I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job. Please message the moderators if you have any feed to offer me. Do not respond to this comment since no one will see it.")
-                    .Distinguish("yes", true);
+                    var postHistory = _service.RedditPostDatabase.GetByAuthor(post.Author).Result;
 
-                    //post.Remove();
+                    var replyMessage = new StringBuilder();
+                    replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job. " +
+                    "Please message the moderators if you have any feed to offer me. Do not respond to this comment since no one will see it.");
+
+                    if (!postHistory.Any())
+                    {
+                        replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
+                    }
+                    else
+                    {
+                        replyMessage.AppendLine("Here are some past selling posts from u/{post.Author}");
+                        postHistory
+                            .ToList()
+                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_service.Subreddit.URL})/{p.Id}"));
+                    }
+
+                    var reply = post
+                        .Reply(replyMessage.ToString())
+                        .Distinguish("yes", true);
+
                     _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                    _service.RedditPostDatabase.Upsert(post.ToPost());
                 }
 
             }
@@ -206,25 +226,16 @@ namespace ChefKnifeSwapBot.Handlers
             return false;
         }
 
-        private bool GetRow(string body, string name, out string value)
+        private bool GetEntry(Dictionary<string, string> parts, string name, out string value)
         {
-            if (!_regexCache.TryGetValue(name, out Regex rowRegex))
+            if (parts.TryGetValue(name, out string partValue))
             {
-                rowRegex = new Regex(@$"\|{name}\|.*\|");
-                _regexCache.Add(name, rowRegex);
-            }
-
-            var matches = rowRegex.Match(body);
-            if (matches.Success)
-            {
-                value = matches.Value;
+                value = partValue;
                 return true;
             }
-            else
-            {
-                value = null;
-                return false;
-            }
+
+            value = null;
+            return false;
         }
     }
 }
