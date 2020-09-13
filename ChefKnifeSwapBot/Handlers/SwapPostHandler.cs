@@ -73,7 +73,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post is missing the required table or it is formatted incorrectly. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table):\n\n {_table}";
+                        var response = $"It looks like your Selling post is missing the required table or it is formatted incorrectly. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/):\n\n {_table}";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -85,7 +85,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post does not contain all of the expected entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table):\n\n {_table}";
+                        var response = $"It looks like your Selling post does not contain all of the expected entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/):\n\n {_table}";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -98,7 +98,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post containes too many entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/wiki/index/selling_table):\n\n {_table}";
+                        var response = $"It looks like your Selling post containes too many entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/):\n\n {_table}";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -193,8 +193,8 @@ namespace ChefKnifeSwapBot.Handlers
                     var postHistory = _service.RedditPostDatabase.GetByAuthor(post.Author).Result;
 
                     var replyMessage = new StringBuilder();
-                    replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job. " +
-                    "Please message the moderators if you have any feed to offer me. Do not respond to this comment since no one will see it.");
+                    replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job yet. " +
+                    "Please message the moderators if you have any feedback to offer. Do not respond to this comment since no one will see it.");
 
                     if (postHistory != null && !postHistory.Any())
                     {
@@ -203,8 +203,7 @@ namespace ChefKnifeSwapBot.Handlers
                     else
                     {
                         replyMessage.AppendLine("Here are some past selling posts from u/{post.Author}");
-                        postHistory
-                            .ToList()
+                        postHistory.Take(5).ToList()
                             .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_service.Subreddit.URL})/{p.Id}"));
                     }
 

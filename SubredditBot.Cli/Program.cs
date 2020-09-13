@@ -11,7 +11,8 @@ namespace SubredditBot.Cli
 {
     class Program
     {
-        private const string _subreddit = "chefknives";
+        private const string _chefKnivesName = "chefknives";
+        private const string _chefKnifeSwapName = "chefknifeswap";
 
         public static SubredditService ChefKnivesService { get; set; }
 
@@ -40,10 +41,18 @@ namespace SubredditBot.Cli
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
+            SeedFor(_chefKnivesName).RunSynchronously();
+            SeedFor(_chefKnifeSwapName).RunSynchronously();
+
+            Console.WriteLine("Done");
+            Console.ReadLine();
+        }
+
+        private static async Task SeedFor(string subredditName)
+        {
             var redditClient = new RedditClient(appId: _configuration["AppId"], appSecret: _configuration["AppSecret"], refreshToken: _configuration["RefreshToken"]);
-            var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(_subreddit));
+            var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(subredditName));
             var account = redditClient.Account;
-            var makerPostFlair = subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
 
             var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
             ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
@@ -53,9 +62,6 @@ namespace SubredditBot.Cli
 
             var postSeedUtility = new PostSeedUtility(ChefKnivesService);
             await postSeedUtility.Execute();
-
-            Console.WriteLine("Done");
-            Console.ReadLine();
         }
     }
 }
