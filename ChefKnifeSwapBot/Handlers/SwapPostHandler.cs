@@ -14,7 +14,7 @@ namespace ChefKnifeSwapBot.Handlers
 {
     public class SwapPostHandler : HandlerBase, IPostHandler
     {
-        private const int _numEntrys = 9;
+        private const int _numEntrys = 18;
         private const string _titleEntry = "Selling table. All items mandatory. One table per post. This header must be included";
         private const string _nameEntry = "Item Name(s)";
         private const string _descriptionEntry = "Description(s)";
@@ -25,17 +25,17 @@ namespace ChefKnifeSwapBot.Handlers
         private const string _pictureEntry = "Picture album link";
         private const string _endEntry = "End";
         private static string _table =
-            $"~{_titleEntry}:\n" +
-            $"~{_nameEntry}:\n" +
-            $"~{_descriptionEntry}:\n" +
-            $"~{_priceEntry}:\n" +
-            $"~{_shippingEntry}:\n" +
-            $"~{_regionEntry}:\n" +
-            $"~{_productEntry}:\n" +
-            $"~{_pictureEntry}:\n" +
-            $"~{_endEntry}\n";
+            $";{_titleEntry};\n" +
+            $";{_nameEntry};\n" +
+            $";{_descriptionEntry};\n" +
+            $";{_priceEntry};\n" +
+            $";{_shippingEntry};\n" +
+            $";{_regionEntry};\n" +
+            $";{_productEntry};\n" +
+            $";{_pictureEntry};\n" +
+            $";{_endEntry};\n";
 
-        private static Regex _tableIdentifierRegex = new Regex("~", RegexOptions.Compiled);
+        private static Regex _tableIdentifierRegex = new Regex(";", RegexOptions.Compiled);
 
         private ILogger _logger;
         private readonly SubredditService _service;
@@ -112,12 +112,7 @@ namespace ChefKnifeSwapBot.Handlers
                 var errorResponse = new StringBuilder();
                 errorResponse.AppendLine("The following issues were found in your submission:");
 
-                var parts = body
-                    .Split('~', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(p => p.Split(':', StringSplitOptions.RemoveEmptyEntries))
-                    .Where(s => s.Length == 2)
-                    .ToDictionary(s => s[0], s => s[1]);
-
+                var parts = body.Split(';').Select(s => s.ToLower()).ToArray();
                 if (!GetEntry(parts, _titleEntry, out string titleValue))
                 {
                     errorResponse.AppendLine("* Title entry was modified, missing, or incorrectly formatted");
@@ -152,7 +147,7 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* Shipping entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
-                else if (!new string[]{ "yes", "no" }.Any(shippingValue.Contains))
+                else if (!new string[] { "yes", "no" }.Any(s => shippingValue.Contains(s.ToLower())))
                 {
                     errorResponse.AppendLine("* Shipping entry value should be \"yes\" or \"no\".");
                     hasError = true;
@@ -201,7 +196,7 @@ namespace ChefKnifeSwapBot.Handlers
                     replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job. " +
                     "Please message the moderators if you have any feed to offer me. Do not respond to this comment since no one will see it.");
 
-                    if (!postHistory.Any())
+                    if (postHistory != null && !postHistory.Any())
                     {
                         replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
                     }
@@ -226,11 +221,12 @@ namespace ChefKnifeSwapBot.Handlers
             return false;
         }
 
-        private bool GetEntry(Dictionary<string, string> parts, string name, out string value)
+        private bool GetEntry(string[] parts, string name, out string value)
         {
-            if (parts.TryGetValue(name, out string partValue))
+            var index = Array.IndexOf(parts, name.ToLower());
+            if (index + 1 < parts.Length)
             {
-                value = partValue;
+                value = parts[index+1];
                 return true;
             }
 
