@@ -1,0 +1,14 @@
+﻿@model TestPageModel;
+
+@{
+    ViewData["Title"] = "Test Functions Page";
+}
+<h1>@ViewData["Title"]</h1>
+
+<label>Result:</label><p>@Model.Message</p>
+
+<form asp-controller="TestPage" asp-action="Index" method="post">
+    <label>Username:</label>
+    <input type="text" asp-for="Username" />
+    <button class="btn btn-danger" type="submit" value="Submit">Review</button>
+</form>
