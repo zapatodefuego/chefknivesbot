@@ -13,8 +13,10 @@ namespace ChefKnivesBot.Handlers.Comments
     public class RykyPraiseCommandHandler : HandlerBase, ICommentHandler
     {
         private static List<string> _rykyPhrases = new List<string> { "ryky", "burrfection" };
+        private static List<string> _rykyAuthors = new List<string> { "BarashkaZ", "barclid" };
         private ILogger _logger;
         private readonly SubredditService _service;
+        private Random _random = new Random(Guid.NewGuid().GetHashCode());
 
         public RykyPraiseCommandHandler(ILogger logger, SubredditService service, bool dryRun)
             : base(dryRun)
@@ -41,17 +43,26 @@ namespace ChefKnivesBot.Handlers.Comments
             {
                 if (!DryRun)
                 {
-                    Comment reply;
-                    if (comment.Author.Equals("BarashkaZ", StringComparison.OrdinalIgnoreCase))
+                    Comment reply = null;
+                    if (_rykyAuthors.Any(p => comment.Author.Equals("p", StringComparison.OrdinalIgnoreCase)))
                     {
-                        reply = comment.Reply("Our Ryky who art on YouTube hallowed be thy brick Thy combo stone come, thy will be done Give us this day our daily brick And forgive us our dull knives as we forgive those who have dulled them Lead us not into actual good knives But deliver us a sponsored recommendation, amen");
+                        if (_random.Next(100) >= 75)
+                        {
+                            reply = comment.Reply("Our Ryky who art on YouTube hallowed be thy brick Thy combo stone come, thy will be done Give us this day our daily brick And forgive us our dull knives as we forgive those who have dulled them Lead us not into actual good knives But deliver us a sponsored recommendation, amen");
+                        }
                     }
                     else
                     {
-                        reply = comment.Reply("Praise be!");
+                        if (_random.Next(100) >= 50)
+                        {
+                            reply = comment.Reply("Praise be!");
+                        }
                     }
 
-                    _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(comment.ParentId, RedditThingType.Comment));
+                    if (reply != null)
+                    {
+                        _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(comment.ParentId, RedditThingType.Comment));
+                    }
                 }
             }
 
