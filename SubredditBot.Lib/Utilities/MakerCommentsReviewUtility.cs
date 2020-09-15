@@ -1,9 +1,9 @@
-﻿using SubredditBot.Data;
-using SubredditBot.Lib.Data;
-using ChefKnivesCommentsDatabase;
-using Reddit;
+﻿using Reddit;
 using Reddit.Inputs.Search;
 using Serilog;
+using SubredditBot.Data;
+using SubredditBot.DataAccess;
+using SubredditBot.Lib.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;

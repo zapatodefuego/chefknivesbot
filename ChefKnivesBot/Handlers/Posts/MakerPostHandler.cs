@@ -1,7 +1,9 @@
 ﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Data;
 using SubredditBot.Lib;
+using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Linq;
 using Post = Reddit.Controllers.Post;
@@ -29,6 +31,11 @@ namespace ChefKnivesBot.Handlers.Posts
                 return false;
             }
 
+            if (!_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
+            {
+                return false;
+            }
+
             var linkFlairId = post.Listing.LinkFlairTemplateId;
 
             // Check that the tile contains [maker post] or that the link flair matches the maker post flair (does the work for updates? i don't know yet)
@@ -44,12 +51,14 @@ namespace ChefKnivesBot.Handlers.Posts
                 {
                     if (!DryRun)
                     {
-                        post
+                        var reply = post
                             .Reply(
                                 "This post has been identified as a maker post! If you have not done so please review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq). \n\n " +
                                 "As a reminder to all readers, you may not discuss sales, pricing, for OP to make you something, or where to buy what OP is displaying or similar in this thread or anywhere on r/chefknives. Use private messages for any such communication. \n\n " +
                                 "^(I am a bot. Beep boop.)")
                             .Distinguish("yes", true);
+
+                        _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
                     }
 
                     _logger.Information($"Commented with maker warning on post by {post.Author}");

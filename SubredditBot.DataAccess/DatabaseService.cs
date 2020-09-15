@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChefKnivesCommentsDatabase
+namespace SubredditBot.DataAccess
 {
     public class DatabaseService<T> : IDisposable where T : RedditThing
     {
