@@ -1,6 +1,7 @@
 ﻿using ChefKnivesCommentsDatabase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SubredditBot.Data;
+using SubredditBot.DataAccess;
 using System;
 using System.Collections.Generic;
 

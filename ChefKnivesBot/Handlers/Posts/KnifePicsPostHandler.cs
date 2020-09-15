@@ -48,7 +48,8 @@ namespace ChefKnivesBot.Handlers.Posts
                             .Reply(
                                 $"Please ensure you fulfill Rule #5 by posting a top level comment with a description within 15 minutes. Any post not in compliance will be removed. See Rule #5 below for more information: \n\n" +
                                 "---\n\n" +
-                                $"{_rulefive.Description}")
+                                $"{_rulefive.Description}\n\n" +
+                                "*This message will sell destruct in 15 minutes.*")
                             .Distinguish("yes", true);
 
                         _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));

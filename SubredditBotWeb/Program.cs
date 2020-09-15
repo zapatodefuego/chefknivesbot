@@ -7,6 +7,8 @@ using System;
 using System.Linq;
 using ChefKnivesBot;
 using ChefKnifeSwapBot;
+using RykyBot;
+using System.Collections.Generic;
 
 namespace SubredditBotWeb
 {
@@ -28,7 +30,7 @@ namespace SubredditBotWeb
 
             var redditSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RedditSettingsFile"]);
             var compoundConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", false, true);
+                .AddJsonFile("appsettings.json", false, false);
 
             if (!string.IsNullOrEmpty(redditSettingsFile))
             {
@@ -36,6 +38,17 @@ namespace SubredditBotWeb
             }
 
             _configuration = compoundConfiguration.Build();
+
+            var rykySettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RykySettingsFile"]);
+            var rykyConfigBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, false);
+
+            if (!string.IsNullOrEmpty(rykySettingsFile))
+            {
+                rykyConfigBuilder.AddJsonFile(rykySettingsFile, true, false);
+            }
+
+            var rykyConfig = rykyConfigBuilder.Build();
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
@@ -45,11 +58,9 @@ namespace SubredditBotWeb
             {
                 DryRun = args.Any(a => a.Equals("--dryrun"));
 
-                var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
-                ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
-
-                var chefknivesSwapBotInitializer = new ChefKnifeSwapBotInitializer();
-                ChefKnifeSwapService = chefknivesSwapBotInitializer.Start(Log.Logger, _configuration, DryRun);
+                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, _configuration, DryRun);
+                ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, _configuration, DryRun);
+                var rykyBotInitializer = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
             }
 
             CreateHostBuilder(args).Build().Run();

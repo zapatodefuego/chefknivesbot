@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿ using Microsoft.Extensions.Configuration;
 using Reddit;
 using Serilog;
 using SubredditBot.Lib;
@@ -22,7 +22,7 @@ namespace ChefKnifeSwapBot
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var service = new SubredditService(logger, configuration, redditClient, _subredditName);
+            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
             {

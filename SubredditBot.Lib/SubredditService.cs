@@ -23,26 +23,26 @@ namespace SubredditBot.Lib
         private readonly IConfiguration _configuration;
         private CancellationTokenSource _cancellationToken;
 
-        public SubredditService(ILogger logger, IConfiguration configuration, RedditClient redditClient, string subredditName)
+        public SubredditService(ILogger logger, IConfiguration configuration, RedditClient redditClient, string subredditName, string databaseName)
         {
             _logger = logger;
             _configuration = configuration;
             RedditClient = redditClient;
 
-            Subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(subredditName));
+            Subreddit = redditClient.Subreddit(subredditName);
             Account = redditClient.Account;
 
             RedditPostDatabase = new DatabaseService<SubredditBot.Data.Post>(
                 configuration["ConnectionString"],
-                databaseName: Subreddit.Name,
+                databaseName: databaseName,
                 collectionName: DatabaseConstants.PostsCollectionName);
             RedditCommentDatabase = new DatabaseService<SubredditBot.Data.Comment>(
                 configuration["ConnectionString"],
-                databaseName: Subreddit.Name,
+                databaseName: databaseName,
                 collectionName: DatabaseConstants.CommentsCollectionName);
             SelfCommentDatabase = new DatabaseService<SelfComment>(
                 configuration["ConnectionString"],
-                databaseName: Subreddit.Name,
+                databaseName: databaseName,
                 collectionName: DatabaseConstants.SelfCommentsCollectionName);
         }
 

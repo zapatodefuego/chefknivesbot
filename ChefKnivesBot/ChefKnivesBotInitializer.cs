@@ -22,7 +22,7 @@ namespace ChefKnivesBot
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var service = new SubredditService(logger, configuration, redditClient, _subredditName);
+            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
             {
