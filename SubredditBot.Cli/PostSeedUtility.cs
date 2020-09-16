@@ -23,7 +23,7 @@ namespace SubredditBot.Cli
             var count = 0;
             var oldestPost = posts.First();
             var stopTime = DateTimeOffset.Now.AddYears(-2);
-            while (oldestPost.Listing.CreatedUTC > stopTime || count == 1000 || tries > 20)
+            while ((oldestPost.Listing.CreatedUTC > stopTime || count == 1000) && tries < 20)
             {
                 Console.WriteLine("Current date: " + oldestPost.Listing.CreatedUTC);
                 foreach (var post in posts)
