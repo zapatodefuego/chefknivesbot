@@ -4,6 +4,7 @@ using Serilog;
 using SubredditBot.Data;
 using SubredditBot.DataAccess;
 using SubredditBot.Lib.Data;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,24 +47,18 @@ namespace SubredditBot.Lib.Utilities
             return result;
         }
 
+        [Obsolete]
         public static MakerReviewResult ReviewViaApi(ILogger logger, string author, string subreddit, RedditClient redditClient, int limit = 60)
         {
             _stopWatch.Reset();
             _stopWatch.Start();
 
-            var potentialUsers = redditClient.SearchUsers(new SearchGetSearchInput(author));
-            var user = potentialUsers.SingleOrDefault(u => u.Name.Equals(author));
-
-            if (user == null)
-            {
-                return new MakerReviewResult { Error = $"Unable to find user {author}" };
-            }
-
-            user.GetCommentHistory(limit);
+            var user = redditClient.User(author).About();
+            user.GetCommentHistory(limit: limit);
             var commentHistoryForChefknives =
                 user
                     .CommentHistory
-                    //.Where(c => c.Subreddit.Equals(subreddit))
+                    .Where(c => c.Subreddit.Equals(subreddit))
                     .ToList();
 
             var selfPostComments = 0;

@@ -36,12 +36,9 @@ namespace ChefKnivesBot.Handlers.Posts
 
             // Checkc that the tile contains [maker post] or that the link flair matches the maker post flair
             if (post.Title.Contains("[maker post]", StringComparison.OrdinalIgnoreCase)
-                    || (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
-               )
+                    || (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id)))
             {
-                //var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase);
-                var result = MakerCommentsReviewUtility.ReviewViaApi(_logger, post.Author, _service.Subreddit.Name, _service.RedditClient);
-
+                var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase).Result;
                 if (result.OtherComments < 2)
                 {
                     SendNeverContributedWarningMessage(post);

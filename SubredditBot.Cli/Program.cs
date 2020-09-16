@@ -41,8 +41,8 @@ namespace SubredditBot.Cli
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            SeedFor(_chefKnivesName).RunSynchronously();
-            SeedFor(_chefKnifeSwapName).RunSynchronously();
+            await SeedFor(_chefKnivesName);
+            //await SeedFor(_chefKnifeSwapName);
 
             Console.WriteLine("Done");
             Console.ReadLine();
@@ -57,11 +57,11 @@ namespace SubredditBot.Cli
             var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
             ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
 
-            var commentSeedUtility = new CommentSeedUtility(ChefKnivesService);
-            await commentSeedUtility.Execute();
-
             var postSeedUtility = new PostSeedUtility(ChefKnivesService);
             await postSeedUtility.Execute();
+
+            var commentSeedUtility = new CommentSeedUtility(ChefKnivesService);
+            await commentSeedUtility.Execute();
         }
     }
 }
