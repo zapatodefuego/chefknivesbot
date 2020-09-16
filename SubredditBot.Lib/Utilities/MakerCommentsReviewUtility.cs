@@ -51,19 +51,12 @@ namespace SubredditBot.Lib.Utilities
             _stopWatch.Reset();
             _stopWatch.Start();
 
-            var potentialUsers = redditClient.SearchUsers(new SearchGetSearchInput(author));
-            var user = potentialUsers.SingleOrDefault(u => u.Name.Equals(author));
-
-            if (user == null)
-            {
-                return new MakerReviewResult { Error = $"Unable to find user {author}" };
-            }
-
-            user.GetCommentHistory(limit);
+            var user = redditClient.User(author).About();
+            user.GetCommentHistory(limit: limit);
             var commentHistoryForChefknives =
                 user
                     .CommentHistory
-                    //.Where(c => c.Subreddit.Equals(subreddit))
+                    .Where(c => c.Subreddit.Equals(subreddit))
                     .ToList();
 
             var selfPostComments = 0;

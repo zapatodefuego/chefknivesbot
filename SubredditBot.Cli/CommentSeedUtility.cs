@@ -1,4 +1,5 @@
-﻿using SubredditBot.Lib;
+﻿using Reddit.Controllers;
+using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Threading.Tasks;
@@ -26,7 +27,15 @@ namespace SubredditBot.Cli
             foreach (var post in posts)
             {
                 postCount++;
-                var comments = _service.RedditClient.Post($"t3_{post.Id}").Comments.GetComments();
+
+                // Because we seed with one invalid post object
+                if (string.IsNullOrEmpty(post.Kind))
+                {
+                    continue;
+                }
+
+                var postController = _service.RedditClient.Post($"t3_{post.Id}");
+                var comments = postController.Comments.GetComments();
                 foreach (var comment in comments)
                 {
                     commentCount++;
