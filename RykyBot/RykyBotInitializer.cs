@@ -8,7 +8,7 @@ namespace RykyBot
 {
     public class RykyBotInitializer
     {
-        private const string _subredditName = "zapatodefuego";
+        private const string _subredditName = "chefknives";
 
         public SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false)
         {
