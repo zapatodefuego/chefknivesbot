@@ -4,6 +4,7 @@ using Serilog;
 using SubredditBot.Data;
 using SubredditBot.DataAccess;
 using SubredditBot.Lib.Data;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,6 +47,7 @@ namespace SubredditBot.Lib.Utilities
             return result;
         }
 
+        [Obsolete]
         public static MakerReviewResult ReviewViaApi(ILogger logger, string author, string subreddit, RedditClient redditClient, int limit = 60)
         {
             _stopWatch.Reset();

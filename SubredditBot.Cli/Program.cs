@@ -57,8 +57,8 @@ namespace SubredditBot.Cli
             var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
             ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
 
-            //var postSeedUtility = new PostSeedUtility(ChefKnivesService);
-            //await postSeedUtility.Execute();
+            var postSeedUtility = new PostSeedUtility(ChefKnivesService);
+            await postSeedUtility.Execute();
 
             var commentSeedUtility = new CommentSeedUtility(ChefKnivesService);
             await commentSeedUtility.Execute();

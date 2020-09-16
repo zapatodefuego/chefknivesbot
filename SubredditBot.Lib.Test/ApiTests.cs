@@ -48,10 +48,10 @@ namespace SubredditBot.Lib.Tests
         }
 
         [Test]
-        [TestCase("fvazzz")]
+        [TestCase("zapatodefuego")]
         public void TestCanReviewByUsername(string username)
         {
-            var result = MakerCommentsReviewUtility.ReviewViaApi(Log.Logger, username, _subreddit.Name, _redditClient, 500);
+            var result = MakerCommentsReviewUtility.ReviewViaApi(Log.Logger, username, _subreddit.Name, _redditClient, 100);
         }
 
         [Test]
