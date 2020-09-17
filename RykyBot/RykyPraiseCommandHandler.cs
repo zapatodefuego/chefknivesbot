@@ -44,7 +44,7 @@ namespace ChefKnivesBot.Handlers.Comments
                 if (!DryRun)
                 {
                     Comment reply = null;
-                    if (_rykyAuthors.Any(p => comment.Author.Equals("p", StringComparison.OrdinalIgnoreCase)))
+                    if (_rykyAuthors.Any(p => comment.Author.Equals(p, StringComparison.OrdinalIgnoreCase)))
                     {
                         if (_random.Next(100) >= 75)
                         {
