@@ -22,7 +22,7 @@ namespace SubredditBot.Lib.Utilities
             _stopWatch.Start();
             var result = new MakerReviewResult();
 
-            var comments = await commentDatabase.GetByAuthor(author);
+            var comments = await commentDatabase.GetBy(nameof(RedditThing.Author), author);
             foreach (var comment in comments)
             {
                 var post = postDatabase.GetById(ConvertListingIdToPostId(comment.PostLinkId));

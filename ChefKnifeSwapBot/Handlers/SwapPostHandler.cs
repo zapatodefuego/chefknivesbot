@@ -189,7 +189,7 @@ namespace ChefKnifeSwapBot.Handlers
 
                 if (!DryRun)
                 {
-                    var postHistory = _service.RedditPostDatabase.GetByAuthor(post.Author).Result;
+                    var postHistory = _service.RedditPostDatabase.GetBy(nameof(RedditThing.Author), post.Author).Result;
 
                     var replyMessage = new StringBuilder();
                     replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job yet. " +

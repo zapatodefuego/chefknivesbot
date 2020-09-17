@@ -59,6 +59,27 @@ namespace SubredditBot.DataAccess
             }
         }
 
+        public T GetById(string id)
+        {
+            if (_cache.GetById(id, out T cacheResult))
+            {
+                return cacheResult;
+            }
+
+            var collection = GetMongoCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+            var queryResult = collection.Find(filter).FirstOrDefault();
+
+            if (queryResult != null)
+            {
+                var results = BsonSerializer.Deserialize<T>(queryResult);
+                _cache.Add(results);
+                return results;
+            }
+
+            return null;
+        }
+
         public async Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue)
         {
             if (propertyName.Equals(nameof(RedditThing.Id)))
@@ -66,34 +87,18 @@ namespace SubredditBot.DataAccess
                 throw new InvalidOperationException($"Use {nameof(GetById)} to query by Id");
             }
 
+            var cached = _cache.GetBy(propertyName, propertyValue);
+            if (cached.Any())
+            {
+                return cached;
+            }
+
             var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
-            return await GetByFilter(filter);
-        }
+            var result = await GetByFilter(filter);
+            _cache.AddRange(result);
 
-        public T GetById(string id)
-        {
-            if (_cache.GetById(id, out T cacheResult))
-            {
-                return cacheResult;
-            }
-            
-            var collection = GetMongoCollection();
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
-            var queryResult = collection.Find(filter).FirstOrDefault();
-
-            if (queryResult != null)
-            {
-                return BsonSerializer.Deserialize<T>(queryResult);
-            }
-
-            return null;
-        }
-
-        public async Task<IEnumerable<T>> GetByAuthor(string author)
-        {
-            var filter = Builders<BsonDocument>.Filter.Eq("Author", author);
-            return await GetByFilter(filter);
-        }
+            return result;
+        } 
 
         public async Task<IEnumerable<T>> GetAll()
         {
