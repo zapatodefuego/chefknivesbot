@@ -33,7 +33,7 @@ namespace ChefKnivesBot.Handlers.Comments
                 return false;
             }
 
-            if (_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), comment.Id).Result.Any())
+            if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), comment.Id).Result)
             {
                 _logger.Information($"[{nameof(RykyPraiseCommandHandler)}]: Comment {comment.Id} has already been replied to");
                 return false;

@@ -1,15 +1,15 @@
 ﻿using Reddit;
-using Reddit.Inputs.Search;
 using Serilog;
 using SubredditBot.Data;
 using SubredditBot.DataAccess;
+using SubredditBot.Lib;
 using SubredditBot.Lib.Data;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SubredditBot.Lib.Utilities
+namespace ChefKnivesBot.Utilities
 {
 
     public class MakerCommentsReviewUtility

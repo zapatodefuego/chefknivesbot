@@ -40,7 +40,7 @@ namespace ChefKnivesBot.Handlers.Posts
             if (linkFlairId != null && linkFlairId.Equals(_knifePicsFlair.Id))
             {
                 // Check if we already commented on this post
-                if (!_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
+                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     if (!DryRun)
                     {

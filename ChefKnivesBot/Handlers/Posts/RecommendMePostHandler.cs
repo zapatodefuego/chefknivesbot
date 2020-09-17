@@ -36,7 +36,7 @@ namespace ChefKnivesBot.Handlers.Posts
             var linkFlairId = post.Listing.LinkFlairTemplateId;
             if (linkFlairId != null && linkFlairId.Equals(_flair.Id))
             {
-                if (!_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
+                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     if (!DryRun)
                     {

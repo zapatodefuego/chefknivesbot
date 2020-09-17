@@ -61,7 +61,7 @@ namespace ChefKnifeSwapBot.Handlers
                 // Set the flair
                 post.SetFlair(_flair.Text, _flair.Id);
 
-                if (_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
+                if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     return false;
                 }

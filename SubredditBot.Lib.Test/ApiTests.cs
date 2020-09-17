@@ -46,18 +46,5 @@ namespace SubredditBot.Lib.Tests
             _redditClient = null;
             _subreddit = null;
         }
-
-        [Test]
-        [TestCase("zapatodefuego")]
-        public void TestCanReviewByUsername(string username)
-        {
-            var result = MakerCommentsReviewUtility.ReviewViaApi(Log.Logger, username, _subreddit.Name, _redditClient, 100);
-        }
-
-        [Test]
-        public void SetupModMailConversation()
-        {
-            // var converstation = _redditClient.Account.Modmail.NewConversation(body: "Placeholder for bot replies", subject: "CKBot Message Queue", srName: _subreddit.Name, to: "chefknives");
-        }
     }
 }

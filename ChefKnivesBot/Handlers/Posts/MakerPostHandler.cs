@@ -31,7 +31,7 @@ namespace ChefKnivesBot.Handlers.Posts
                 return false;
             }
 
-            if (!_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
+            if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
             {
                 return false;
             }
@@ -47,7 +47,7 @@ namespace ChefKnivesBot.Handlers.Posts
                 post.SetFlair(_makerPostFlair.Text, _makerPostFlair.Id);
 
                 // Check if we already commented on this post
-                if (!post.Comments.New.Any(c => c.Author.Equals(_service.Account.Me.Name) && c.Body.StartsWith("This post has been identified")))
+                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     if (!DryRun)
                     {

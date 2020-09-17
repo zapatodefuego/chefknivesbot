@@ -1,12 +1,12 @@
-﻿using SubredditBot.Lib.Data;
-using SubredditBot.Lib.Utilities;
+﻿using ChefKnivesBot.Utilities;
 using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Lib;
+using SubredditBot.Lib.Data;
 using System;
 using System.Linq;
 using Post = Reddit.Controllers.Post;
-using SubredditBot.Lib;
 
 namespace ChefKnivesBot.Handlers.Posts
 {

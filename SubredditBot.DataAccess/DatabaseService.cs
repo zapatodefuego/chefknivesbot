@@ -49,14 +49,25 @@ namespace SubredditBot.DataAccess
         {
             foreach (T thing in things)
             {
-                if (_cache.Contains(thing))
+                if (!_cache.Contains(thing))
                 {
-                    continue;
+                    _cache.Add(thing);
+                    UpsertIntoCollection(thing);
                 }
-
-                _cache.Add(thing);
-                UpsertIntoCollection(thing);
             }
+        }
+
+        /// <summary>
+        /// Tries to get any item by item first from the cache and then from the database
+        /// </summary>
+        public async Task<bool> ContainsAny(string propertyName, string propertyValue)
+        {
+            if (!_cache.GetBy(propertyName, propertyValue).Any())
+            {
+                return (await GetBy(propertyName, propertyValue)).Any();
+            }
+
+            return true;
         }
 
         public T GetById(string id)
@@ -87,22 +98,31 @@ namespace SubredditBot.DataAccess
                 throw new InvalidOperationException($"Use {nameof(GetById)} to query by Id");
             }
 
-            var cached = _cache.GetBy(propertyName, propertyValue);
-            if (cached.Any())
+            var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
+            var results = await GetByFilter(filter);
+            foreach (var result in results)
             {
-                return cached;
+                if (!_cache.Contains(result))
+                {
+                    _cache.Add(result);
+                }
             }
 
-            var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
-            var result = await GetByFilter(filter);
-            _cache.AddRange(result);
-
-            return result;
+            return results;
         } 
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await GetByFilter(Builders<BsonDocument>.Filter.Empty);
+            var results = await GetByFilter(Builders<BsonDocument>.Filter.Empty);
+            foreach (var result in results)
+            {
+                if (!_cache.Contains(result))
+                {
+                    _cache.Add(result);
+                }
+            }
+
+            return results;
         }
 
         public void Delete(string id)

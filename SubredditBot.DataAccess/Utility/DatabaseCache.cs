@@ -33,14 +33,6 @@ namespace SubredditBot.DataAccess.Utility
             _list.AddFirst(item);
         }
 
-        public void AddRange(IEnumerable<T> items)
-        {
-            foreach (var item in items)
-            {
-                Add(item);
-            }
-        }
-
         public bool Contains(T item)
         {
             return _set.Contains(item);

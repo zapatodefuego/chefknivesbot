@@ -119,14 +119,6 @@ namespace SubredditBot.Lib
             Repeater.Repeat(() => PullCommentsAndPosts(), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
         }
 
-        public string ReviewUser(string username)
-        {
-            var reviewTask = MakerCommentsReviewUtility.Review(username, RedditPostDatabase, RedditCommentDatabase);
-            var result = reviewTask.GetAwaiter().GetResult();
-
-            return $"SelfPostComments: {result.SelfPostComments}, OtherComments: {result.OtherComments}, ReviewTime: {result.ReviewTime} (ms), Error: {result.Error}";
-        }
-
         public void PullCommentsAndPosts(int postCount = 100, int commentCount = 100)
         {
             _logger.Information($"Pulling {postCount} posts and {commentCount} comments. Interval: {_commentAndPostPullIntervalMinutes} minutes");
