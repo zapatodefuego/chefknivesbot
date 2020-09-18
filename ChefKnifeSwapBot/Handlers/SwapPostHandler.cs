@@ -13,6 +13,7 @@ namespace ChefKnifeSwapBot.Handlers
 {
     public class SwapPostHandler : HandlerBase, IPostHandler
     {
+        private const string _postUrlFirstPart = "https://www.reddit.com/r/chefknifeswap/comments/";
         private const int _numEntrys = 18;
         private const string _titleEntry = "Selling table. All items mandatory. One table per post. This header must be included";
         private const string _nameEntry = "Item Name(s)";
@@ -193,7 +194,7 @@ namespace ChefKnifeSwapBot.Handlers
 
                     var replyMessage = new StringBuilder();
                     replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job yet. " +
-                    "Please message the moderators if you have any feedback to offer. Do not respond to this comment since no one will see it.");
+                    "Please message the moderators if you have any feedback to offer. Do not respond to this comment since no one will see it.\n\n");
 
                     if (postHistory != null && !postHistory.Any())
                     {
@@ -201,9 +202,9 @@ namespace ChefKnifeSwapBot.Handlers
                     }
                     else
                     {
-                        replyMessage.AppendLine("Here are some past selling posts from u/{post.Author}");
+                        replyMessage.AppendLine($"Here are some past [Selling] posts from u/{post.Author}:");
                         postHistory.Take(5).ToList()
-                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_service.Subreddit.URL})/{p.Id}"));
+                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
                     }
 
                     var reply = post
