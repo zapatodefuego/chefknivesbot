@@ -6,21 +6,19 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using ChefKnivesBot;
+using SubredditBot.DataAccess;
 
 namespace SubredditBot.Cli
 {
-    class Program
+    public static class Program
     {
-        private const string _chefKnivesName = "chefknives";
-        private const string _chefKnifeSwapName = "chefknifeswap";
-
         public static SubredditService ChefKnivesService { get; set; }
 
         public static bool DryRun { get; private set; }
 
         private static IConfigurationRoot _configuration;
 
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var initialConfiguration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, false)
@@ -41,27 +39,58 @@ namespace SubredditBot.Cli
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            await SeedFor(_chefKnivesName);
-            await SeedFor(_chefKnifeSwapName);
+            if (args.Any(a => a.Equals("--seedchefknives")))
+            {
+                Console.WriteLine("Action: Seed for chefknives. Press any key to continue...");
+                Console.ReadLine();
+                await SeedFor("chefknives");
+            }
+            
+            if (args.Any(a => a.Equals("--testchefknivesbot")))
+            {
+                Console.WriteLine("Running ChefKnivesBot on r/zapatodefuego.");
+                Console.WriteLine("Prease CTRL+C to exit...");
+
+                var cancel = false;
+                Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e) {
+                    e.Cancel = true;
+                    cancel = true;
+                };
+
+                var service = new TestSubredditBotInitializer().Start(Log.Logger, _configuration, true);
+                while (!cancel)
+                {
+                }
+
+                service.Dispose();
+                Console.WriteLine("Terminated service");
+            }
 
             Console.WriteLine("Done");
-            Console.ReadLine();
+            Environment.Exit(0);
         }
 
         private static async Task SeedFor(string subredditName)
         {
             var redditClient = new RedditClient(appId: _configuration["AppId"], appSecret: _configuration["AppSecret"], refreshToken: _configuration["RefreshToken"]);
-            var subreddit = redditClient.Account.MyModeratorSubreddits().First(s => s.Name.Equals(subredditName));
-            var account = redditClient.Account;
+            var subreddit = redditClient.Subreddit(subredditName);
 
-            var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
-            ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, DryRun);
+            var postDatabase = new DatabaseService<Data.Post>(
+                _configuration["ConnectionString"],
+                databaseName: subredditName,
+                collectionName: DatabaseConstants.PostsCollectionName);
 
-            var postSeedUtility = new PostSeedUtility(ChefKnivesService);
+            var commentDatabase = new DatabaseService<Data.Comment>(
+                _configuration["ConnectionString"],
+                databaseName: subredditName,
+                collectionName: DatabaseConstants.CommentsCollectionName);
+
+            var postSeedUtility = new PostSeedUtility(subreddit, postDatabase);
             await postSeedUtility.Execute();
 
-            var commentSeedUtility = new CommentSeedUtility(ChefKnivesService);
+            var commentSeedUtility = new CommentSeedUtility(redditClient, postDatabase, commentDatabase);
             await commentSeedUtility.Execute();
         }
+
     }
 }

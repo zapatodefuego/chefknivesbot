@@ -41,8 +41,9 @@ namespace SubredditBot.Lib.Tests
             var data = new Dictionary<string, string>
             {
                 { "ConnectionString", "mongodb://localhost" },
-                { "", "" },
-                { "", "" }
+                { "AppId", "" },
+                { "AppSecret", "" },
+                { "RefreshToken", "" }
             };
 
             _configuration = new ConfigurationBuilder()
@@ -59,7 +60,8 @@ namespace SubredditBot.Lib.Tests
 
         public ISubredditService Build()
         {
-            return new SubredditService(_logger, _configuration, null, "test", "test");
+            _redditClient = new RedditClient(appId: _configuration["AppId"], appSecret: _configuration["AppSecret"], refreshToken: _configuration["RefreshToken"]);
+            return new SubredditService(_logger, _configuration, _redditClient, _subredditName, _databaseName);
         }
     }
 }

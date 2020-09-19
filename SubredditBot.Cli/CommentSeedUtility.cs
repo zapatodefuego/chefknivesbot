@@ -1,4 +1,6 @@
-﻿using Reddit.Controllers;
+﻿using Reddit;
+using Reddit.Controllers;
+using SubredditBot.DataAccess;
 using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
 using System;
@@ -8,11 +10,15 @@ namespace SubredditBot.Cli
 {
     public class CommentSeedUtility
     {
-        private readonly SubredditService _service;
+        private readonly RedditClient _redditClient;
+        private readonly IDatabaseService<Data.Post> _postDatabase;
+        private readonly IDatabaseService<Data.Comment> _commentDatabase;
 
-        public CommentSeedUtility(SubredditService service)
+        public CommentSeedUtility(RedditClient redditClient, IDatabaseService<Data.Post> postDatabase, IDatabaseService<Data.Comment> commentDatabase)
         {
-            _service = service;
+            _redditClient = redditClient;
+            _postDatabase = postDatabase;
+            _commentDatabase = commentDatabase;
         }
 
         public async Task Execute()
@@ -22,7 +28,7 @@ namespace SubredditBot.Cli
 
             Console.WriteLine("Pulling comments for known posts...");
 
-            var posts = await _service.RedditPostDatabase.GetAll();
+            var posts = await _postDatabase.GetAll();
 
             foreach (var post in posts)
             {
@@ -34,13 +40,13 @@ namespace SubredditBot.Cli
                     continue;
                 }
 
-                var postController = _service.RedditClient.Post($"t3_{post.Id}");
+                var postController = _redditClient.Post($"t3_{post.Id}");
                 var comments = postController.Comments.GetComments();
                 foreach (var comment in comments)
                 {
                     commentCount++;
                     var redditComment = comment.ToComment();
-                    _service.RedditCommentDatabase.Upsert(redditComment);
+                    _commentDatabase.Upsert(redditComment);
                 }
 
                 Console.WriteLine($"Post {post.Id} had {comments.Count} comments");
