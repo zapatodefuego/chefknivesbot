@@ -15,11 +15,11 @@ namespace ChefKnivesBot.Handlers.Posts
     public class KnifePicsPostHandler : HandlerBase, IPostHandler
     {
         private ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
         private readonly FlairV2 _knifePicsFlair;
         private readonly Rule _rulefive;
 
-        public KnifePicsPostHandler(ILogger logger, SubredditService service, bool dryRun)
+        public KnifePicsPostHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;

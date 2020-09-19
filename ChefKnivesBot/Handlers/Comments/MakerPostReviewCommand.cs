@@ -12,9 +12,9 @@ namespace ChefKnivesBot.Handlers.Comments
     public class MakerPostReviewCommand : HandlerBase, ICommentHandler
     {
         private ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
 
-        public MakerPostReviewCommand(ILogger logger, SubredditService service, bool dryRun)
+        public MakerPostReviewCommand(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;

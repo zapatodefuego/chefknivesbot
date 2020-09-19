@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SubredditBot.DataAccess
 {
-    public class DatabaseService<T> : IDisposable where T : RedditThing
+    public class DatabaseService<T> : IDisposable, IDatabaseService<T> where T : RedditThing
     {
         private readonly string _databaseName;
         private readonly string _collectionName;
@@ -28,7 +28,7 @@ namespace SubredditBot.DataAccess
             {
                 var defaultObject = (T)Activator.CreateInstance(typeof(T));
                 defaultObject.Id = Guid.NewGuid().ToString();
-                GetMongoCollection().InsertOne(defaultObject.ToBsonDocument()); 
+                GetMongoCollection().InsertOne(defaultObject.ToBsonDocument());
             }
         }
 
@@ -109,7 +109,7 @@ namespace SubredditBot.DataAccess
             }
 
             return results;
-        } 
+        }
 
         public async Task<IEnumerable<T>> GetAll()
         {

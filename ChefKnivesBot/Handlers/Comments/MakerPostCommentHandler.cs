@@ -13,10 +13,10 @@ namespace ChefKnivesBot.Handlers.Comments
     {
         private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private readonly ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
         private readonly FlairV2 _makerPostFlair;
 
-        public MakerPostCommentHandler(ILogger logger, SubredditService service, bool dryRun)
+        public MakerPostCommentHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;

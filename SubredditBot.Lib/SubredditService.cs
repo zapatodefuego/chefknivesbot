@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace SubredditBot.Lib
 {
-    public class SubredditService : IDisposable
+    public class SubredditService : IDisposable, ISubredditService
     {
         private const int _commentAndPostPullIntervalMinutes = 10;
 
@@ -52,11 +52,11 @@ namespace SubredditBot.Lib
 
         public Account Account { get; }
 
-        public DatabaseService<SubredditBot.Data.Post> RedditPostDatabase { get; }
+        public IDatabaseService<SubredditBot.Data.Post> RedditPostDatabase { get; }
 
-        public DatabaseService<SubredditBot.Data.Comment> RedditCommentDatabase { get; }
+        public IDatabaseService<SubredditBot.Data.Comment> RedditCommentDatabase { get; }
 
-        public DatabaseService<SelfComment> SelfCommentDatabase { get; }
+        public IDatabaseService<SelfComment> SelfCommentDatabase { get; }
 
         public void Dispose()
         {
@@ -140,7 +140,7 @@ namespace SubredditBot.Lib
             {
                 foreach (var message in e.NewMessages)
                 {
-                    MessageHandlers.ForEach(c => 
+                    MessageHandlers.ForEach(c =>
                     {
                         Diagnostics.SeenMessages++;
                         if (c.Process(message))

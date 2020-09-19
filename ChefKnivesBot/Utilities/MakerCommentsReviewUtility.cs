@@ -16,7 +16,7 @@ namespace ChefKnivesBot.Utilities
     {
         private static Stopwatch _stopWatch = new Stopwatch();
 
-        public static async Task<MakerReviewResult> Review(string author, DatabaseService<Post> postDatabase, DatabaseService<Comment> commentDatabase)
+        public static async Task<MakerReviewResult> Review(string author, IDatabaseService<Post> postDatabase, IDatabaseService<Comment> commentDatabase)
         {
             _stopWatch.Reset();
             _stopWatch.Start();

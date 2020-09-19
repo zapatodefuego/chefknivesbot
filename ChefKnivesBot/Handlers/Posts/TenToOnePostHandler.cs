@@ -13,10 +13,10 @@ namespace ChefKnivesBot.Handlers.Posts
     public class TenToOnePostHandler : HandlerBase, IPostHandler
     {
         private readonly ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
         private readonly FlairV2 _makerPostFlair;
 
-        public TenToOnePostHandler(ILogger logger, SubredditService service, bool dryRun)
+        public TenToOnePostHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;

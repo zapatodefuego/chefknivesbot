@@ -171,30 +171,18 @@ namespace ChefKnifeSwapBot.Handlers
                     hasError = true;
                 }
 
-                if (hasError)
-                {
-                    errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues and resubmit. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
-
-                    if (!DryRun)
-                    {
-                        var reply = post
-                        .Reply(errorResponse.ToString())
-                        .Distinguish("yes", true);
-
-                        //post.Remove();
-                        _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
-                    }
-
-                    return true;
-                }
-
                 if (!DryRun)
                 {
                     var postHistory = _service.RedditPostDatabase.GetBy(nameof(RedditThing.Author), post.Author).Result;
-
                     var replyMessage = new StringBuilder();
-                    replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job yet. " +
-                    "Please message the moderators if you have any feedback to offer. Do not respond to this comment since no one will see it.\n\n");
+                    if (hasError)
+                    {
+                        //post.Remove();
+
+                        errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues ~and resubmit~. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
+                        errorResponse.AppendLine("---\n");
+                        replyMessage = errorResponse;
+                    }
 
                     if (postHistory != null && !postHistory.Any())
                     {

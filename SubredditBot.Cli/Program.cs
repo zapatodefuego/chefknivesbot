@@ -42,7 +42,7 @@ namespace SubredditBot.Cli
                 .CreateLogger();
 
             await SeedFor(_chefKnivesName);
-            //await SeedFor(_chefKnifeSwapName);
+            await SeedFor(_chefKnifeSwapName);
 
             Console.WriteLine("Done");
             Console.ReadLine();

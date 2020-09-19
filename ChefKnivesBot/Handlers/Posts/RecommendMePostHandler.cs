@@ -14,10 +14,10 @@ namespace ChefKnivesBot.Handlers.Posts
         private const string _gettingStartedUrl = "https://www.reddit.com/r/chefknives/wiki/gettingstarted";
         private const string _questionnaireUrl = "https://www.reddit.com/r/chefknives/wiki/questionnaire";
         private ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
         private readonly FlairV2 _flair;
 
-        public RecommendMePostHandler(ILogger logger, SubredditService service, bool dryRun)
+        public RecommendMePostHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;

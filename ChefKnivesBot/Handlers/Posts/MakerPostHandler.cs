@@ -13,10 +13,10 @@ namespace ChefKnivesBot.Handlers.Posts
     public class MakerPostHandler : HandlerBase, IPostHandler
     {
         private readonly ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
         private FlairV2 _makerPostFlair;
 
-        public MakerPostHandler(ILogger logger, SubredditService service, bool dryRun)
+        public MakerPostHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;

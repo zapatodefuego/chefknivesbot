@@ -1,9 +1,7 @@
-﻿using SubredditBot.Lib.Utilities;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Reddit;
 using Reddit.Controllers;
-using Reddit.Inputs.Modmail;
 using Serilog;
 using System;
 using System.Linq;

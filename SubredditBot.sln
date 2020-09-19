@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4F6ECC43
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubredditBot.Lib", "SubredditBot.Lib\SubredditBot.Lib.csproj", "{C7D89C3C-7E38-4576-99E6-CA0FCD02BEED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubredditBot.Lib.Test", "SubredditBot.Lib.Test\SubredditBot.Lib.Test.csproj", "{6F50F74D-CCE4-40A5-BE65-8258B381E450}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubredditBot.Lib.Tests", "SubredditBot.Lib.Test\SubredditBot.Lib.Tests.csproj", "{6F50F74D-CCE4-40A5-BE65-8258B381E450}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubredditBot.Cli", "SubredditBot.Cli\SubredditBot.Cli.csproj", "{81B24306-D22B-4499-AF22-B00DAE1E0306}"
 EndProject
@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnifeSwapBot", "ChefKni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefknivesBot.DataAccess.Tests", "SubredditBot.DataAccess.Tests\ChefknivesBot.DataAccess.Tests.csproj", "{877F9BAE-7F1C-4730-8E7E-8E609715AB4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RykyBot", "RykyBot\RykyBot.csproj", "{D4CD04F4-D6D9-4710-9AC0-43DD962BEC49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RykyBot", "RykyBot\RykyBot.csproj", "{D4CD04F4-D6D9-4710-9AC0-43DD962BEC49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChefKnivesBot.Tests", "ChefKnivesBot.Tests\ChefKnivesBot.Tests.csproj", "{2222147E-5C96-4ECA-B853-E56E58A16C2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{D4CD04F4-D6D9-4710-9AC0-43DD962BEC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4CD04F4-D6D9-4710-9AC0-43DD962BEC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4CD04F4-D6D9-4710-9AC0-43DD962BEC49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +84,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{6F50F74D-CCE4-40A5-BE65-8258B381E450} = {4F6ECC43-9A40-4CC1-859D-8BE380BD6516}
 		{877F9BAE-7F1C-4730-8E7E-8E609715AB4B} = {4F6ECC43-9A40-4CC1-859D-8BE380BD6516}
+		{2222147E-5C96-4ECA-B853-E56E58A16C2D} = {4F6ECC43-9A40-4CC1-859D-8BE380BD6516}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7C3C08FB-04F0-4145-B1A4-0309C4D436CE}
