@@ -49,25 +49,12 @@ namespace SubredditBot.Cli
             if (args.Any(a => a.Equals("--testchefknivesbot")))
             {
                 Console.WriteLine("Running ChefKnivesBot on r/zapatodefuego.");
-                Console.WriteLine("Prease CTRL+C to exit...");
+                Console.WriteLine("Press any key to exit...");
 
-                var cancel = false;
-                Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e) {
-                    e.Cancel = true;
-                    cancel = true;
-                };
-
-                var service = new TestSubredditBotInitializer().Start(Log.Logger, _configuration, true);
-                while (!cancel)
-                {
-                }
-
-                service.Dispose();
-                Console.WriteLine("Terminated service");
+                var service = new TestSubredditBotInitializer().Start(Log.Logger, _configuration, false);
             }
 
-            Console.WriteLine("Done");
-            Environment.Exit(0);
+            Console.ReadLine();
         }
 
         private static async Task SeedFor(string subredditName)
