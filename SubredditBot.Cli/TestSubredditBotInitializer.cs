@@ -37,7 +37,6 @@ namespace SubredditBot.Cli
             service.PostHandlers.Add(new KnifePicsPostHandler(logger, service, dryRun));
             service.PostHandlers.Add(new MakerPostHandler(logger, service, dryRun));
             service.PostHandlers.Add(new RecommendMePostHandler(logger, service, dryRun));
-            service.PostHandlers.Add(new TenToOnePostHandler(logger, service, dryRun));
 
             // chefknives messages
             //service.MessageHandlers.Add(new MessageHandler(logger, service, dryRun));
@@ -46,7 +45,7 @@ namespace SubredditBot.Cli
             service.PostHandlers.Add(new SwapPostHandler(logger, service, dryRun));
 
             // ryky comments
-            service.CommentHandlers.Add(new RykyPraiseCommandHandler(logger, service, dryRun));
+            //service.CommentHandlers.Add(new RykyPraiseCommandHandler(logger, service, dryRun));
 
             service.SubscribeToPostFeed();
             service.SubscribeToCommentFeed();

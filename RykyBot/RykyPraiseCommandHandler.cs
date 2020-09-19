@@ -53,7 +53,7 @@ namespace ChefKnivesBot.Handlers.Comments
                     }
                     else
                     {
-                        if (_random.Next(100) >= 50)
+                        if (_random.Next(100) >= 75)
                         {
                             reply = comment.Reply("Praise be!");
                         }

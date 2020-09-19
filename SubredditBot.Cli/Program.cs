@@ -52,9 +52,10 @@ namespace SubredditBot.Cli
                 Console.WriteLine("Press any key to exit...");
 
                 var service = new TestSubredditBotInitializer().Start(Log.Logger, _configuration, false);
-            }
 
-            Console.ReadLine();
+                Console.ReadKey();
+                service.Dispose();
+            }
         }
 
         private static async Task SeedFor(string subredditName)

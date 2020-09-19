@@ -184,13 +184,13 @@ namespace ChefKnifeSwapBot.Handlers
                         replyMessage = errorResponse;
                     }
 
-                    if (postHistory != null && !postHistory.Any())
+                    if (postHistory == null || !postHistory.Any())
                     {
                         replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
                     }
                     else
                     {
-                        replyMessage.AppendLine($"Here are some past [Selling] posts from u/{post.Author}:");
+                        replyMessage.AppendLine($"Here are some past posts from u/{post.Author}:");
                         postHistory.Take(5).ToList()
                             .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
                     }
