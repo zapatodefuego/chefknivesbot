@@ -35,12 +35,9 @@ namespace ChefKnivesBot.Handlers.Comments
             var linkFlairId = comment.Root.Listing.LinkFlairTemplateId;
 
             // Check if the link flair matches the maker post flait and that the author is not a moderator
-            if (linkFlairId != null &&
-                linkFlairId.Equals(_makerPostFlair.Id) &&
-                !_service.Subreddit.Moderators.Any(m => m.Name.Equals(comment.Author)))
+            if (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
             {
-                // TODO: Check if we replied with the right thing first...
-                if (comment.Removed || comment.Listing.Approved || comment.Replies.Any(c => c.Author.Equals(_service.Account.Me.Name)))
+                if (comment.Removed || comment.Listing.Approved)
                 {
                     return false;
                 }

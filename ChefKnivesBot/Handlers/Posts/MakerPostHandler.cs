@@ -41,8 +41,7 @@ namespace ChefKnivesBot.Handlers.Posts
 
             // Check that the tile contains [maker post] or that the link flair matches the maker post flair (does the work for updates? i don't know yet)
             if (post.Title.Contains("[maker post]", StringComparison.OrdinalIgnoreCase) || 
-                (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
-               )
+                (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id)))
             {
                 // Set the flair
                 post.SetFlair(_makerPostFlair.Text, _makerPostFlair.Id);
@@ -55,7 +54,7 @@ namespace ChefKnivesBot.Handlers.Posts
                     {
                         SendNeverContributedWarningMessage(post);
                     }
-                    else if (result.OtherComments < (result.SelfPostComments * 0.75))
+                    else if (result.OtherComments < (result.SelfPostComments * 0.4))
                     {
                         SendTenToOneWarningMessage(post, result);
                     }
@@ -73,46 +72,40 @@ namespace ChefKnivesBot.Handlers.Posts
 
         private void SendNeverContributedWarningMessage(Post post)
         {
-            if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+            if (!DryRun)
             {
-                if (!DryRun)
-                {
-                    var reply = post
-                        .Reply(
-                            $"It looks like you haven't recently commented on any posts within this community. " +
-                            $"Please sufficiently interact with r/{_service.Subreddit.Name} outside of your own posts before submitting a Maker Post.\n\n" +
-                            $"For more information please review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
-                        .Distinguish("yes", false);
+                var reply = post
+                    .Reply(
+                        $"It looks like you haven't recently commented on any posts within this community. " +
+                        $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a Maker Post.\n\n" +
+                        $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
+                    .Distinguish("yes", false);
 
-                    _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
 
-                    post.Remove();
-                }
-
-                _logger.Information($"Commented with SendNeverContributedWarningMessage on post by {post.Author}");
+                post.Remove();
             }
+
+            _logger.Information($"Commented with SendNeverContributedWarningMessage on post by {post.Author}");
         }
 
         private void SendTenToOneWarningMessage(Post post, MakerReviewResult result)
         {
-            if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+            if (!DryRun)
             {
-                if (!DryRun)
-                {
-                    var reply = post
-                        .Reply(
-                            $"Of your recent comments in {_service.Subreddit.Name}, {result.OtherComments} occured outside of your own posts while {result.SelfPostComments} were made on posts your authored. \n\n " +
-                            $"Please sufficiently interact with r/{_service.Subreddit.Name} commenting on posts other than of your own before submitting a Maker Post.\n\n" +
-                            $"For more information please review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
-                        .Distinguish("yes", false);
+                var reply = post
+                    .Reply(
+                        $"Of your recent comments in {_service.Subreddit.Name}, {result.OtherComments} occured outside of your own posts while only {result.SelfPostComments} were made on posts you authored. \n\n " +
+                        $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a Maker Post.\n\n" +
+                        $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
+                    .Distinguish("yes", false);
 
-                    _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
 
-                    post.Remove();
-                }
-
-                _logger.Information($"Commented with SendTenToOneWarningMessage on post by {post.Author}. ");
+                post.Remove();
             }
+
+            _logger.Information($"Commented with SendTenToOneWarningMessage on post by {post.Author}.");
         }
 
         private void SendMakerPostSticky(Post post)
@@ -121,11 +114,11 @@ namespace ChefKnivesBot.Handlers.Posts
             replyMessage.AppendLine(
                 "This post has been identified as a maker post! If you have not done so please review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq). \n\n " +
                 "As a reminder to all readers, you may not discuss sales, pricing, for OP to make you something, or where to buy what OP is displaying or similar in this thread " +
-                "or anywhere on r/chefknives. Use private messages for any such communication. \n\n");
+                "or anywhere on r/chefknives. Use private messages for any such inquiries. \n\n");
 
             var postHistory = _service.RedditPostDatabase
                 .GetBy(nameof(RedditThing.Author), post.Author).Result
-                .Where(p => p.Flair.Equals(_makerPostName));
+                .Where(p => p.Flair != null && p.Flair.Equals(_makerPostName));
             if (postHistory != null && postHistory.Any())
             {
                 replyMessage.AppendLine("---");
