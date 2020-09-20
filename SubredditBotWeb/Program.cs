@@ -9,6 +9,7 @@ using ChefKnivesBot;
 using ChefKnifeSwapBot;
 using RykyBot;
 using System.Collections.Generic;
+using CuttingBoardsBot;
 
 namespace SubredditBotWeb
 {
@@ -24,31 +25,46 @@ namespace SubredditBotWeb
 
         public static void Main(string[] args)
         {
+            // Base config
             var initialConfiguration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, false)
                 .Build();
 
-            var redditSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RedditSettingsFile"]);
+            // ChefKnives config
+            var chefKnivesSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["ChefKnivesSettingsFile"]);
             var compoundConfiguration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, false);
 
-            if (!string.IsNullOrEmpty(redditSettingsFile))
+            if (!string.IsNullOrEmpty(chefKnivesSettingsFile))
             {
-                compoundConfiguration.AddJsonFile(redditSettingsFile, true, false);
+                compoundConfiguration.AddJsonFile(chefKnivesSettingsFile, false, false);
             }
 
             _configuration = compoundConfiguration.Build();
 
+            // Ryky config
             var rykySettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RykySettingsFile"]);
             var rykyConfigBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true, false);
 
             if (!string.IsNullOrEmpty(rykySettingsFile))
             {
-                rykyConfigBuilder.AddJsonFile(rykySettingsFile, true, false);
+                rykyConfigBuilder.AddJsonFile(rykySettingsFile, false, false);
             }
 
             var rykyConfig = rykyConfigBuilder.Build();
+
+            // CuttingBoards config
+            var cuttingBoardsSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["CuttingBoardsSettingsFile"]);
+            var cuttingBoardsConfigBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, false);
+
+            if (!string.IsNullOrEmpty(cuttingBoardsSettingsFile))
+            {
+                cuttingBoardsConfigBuilder.AddJsonFile(cuttingBoardsSettingsFile, false, false);
+            }
+
+            var cuttingBoardsConfig = cuttingBoardsConfigBuilder.Build();
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
@@ -60,7 +76,8 @@ namespace SubredditBotWeb
 
                 ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, _configuration, DryRun);
                 ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, _configuration, DryRun);
-                var rykyBotInitializer = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
+                var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
+                var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, cuttingBoardsConfig, DryRun);
             }
 
             CreateHostBuilder(args).Build().Run();

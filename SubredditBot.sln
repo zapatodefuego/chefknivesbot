@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefknivesBot.DataAccess.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RykyBot", "RykyBot\RykyBot.csproj", "{D4CD04F4-D6D9-4710-9AC0-43DD962BEC49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChefKnivesBot.Tests", "ChefKnivesBot.Tests\ChefKnivesBot.Tests.csproj", "{2222147E-5C96-4ECA-B853-E56E58A16C2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChefKnivesBot.Tests", "ChefKnivesBot.Tests\ChefKnivesBot.Tests.csproj", "{2222147E-5C96-4ECA-B853-E56E58A16C2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuttingBoardsBot", "CuttingBoardsBot\CuttingBoardsBot.csproj", "{2122B489-8479-48DA-8C91-CBD5468254B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2222147E-5C96-4ECA-B853-E56E58A16C2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2122B489-8479-48DA-8C91-CBD5468254B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2122B489-8479-48DA-8C91-CBD5468254B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2122B489-8479-48DA-8C91-CBD5468254B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2122B489-8479-48DA-8C91-CBD5468254B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

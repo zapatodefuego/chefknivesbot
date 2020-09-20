@@ -21,13 +21,13 @@ namespace SubredditBot.Lib.Tests
                 .AddJsonFile("appsettings.json", false, false)
                 .Build();
 
-            var redditSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RedditSettingsFile"]);
+            var ChefKnivesSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["ChefKnivesSettingsFile"]);
             var compoundConfiguration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true);
 
-            if (!string.IsNullOrEmpty(redditSettingsFile))
+            if (!string.IsNullOrEmpty(ChefKnivesSettingsFile))
             {
-                compoundConfiguration.AddJsonFile(redditSettingsFile, true, false);
+                compoundConfiguration.AddJsonFile(ChefKnivesSettingsFile, true, false);
             }
 
             var configuration = compoundConfiguration.Build();
