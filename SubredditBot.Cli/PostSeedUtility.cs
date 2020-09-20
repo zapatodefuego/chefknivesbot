@@ -1,29 +1,33 @@
-﻿using SubredditBot.Lib;
+﻿using Reddit.Controllers;
+using SubredditBot.DataAccess;
 using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Post = SubredditBot.Data.Post;
 
 namespace SubredditBot.Cli
 {
     public class PostSeedUtility
     {
-        private readonly SubredditService _service;
+        private readonly Subreddit _subreddit;
+        private readonly IDatabaseService<Post> _postDatabase;
 
-        public PostSeedUtility(SubredditService service)
+        public PostSeedUtility(Subreddit subreddit, IDatabaseService<Post> postDatabase)
         {
-            _service = service;
+            _subreddit = subreddit;
+            _postDatabase = postDatabase;
         }
 
         public async Task Execute()
         {
-            var posts = _service.Subreddit.Posts.GetNew(limit: 100);
+            var posts = _subreddit.Posts.GetNew(limit: 100);
 
             var tries = 0;
             var count = 0;
             var oldestPost = posts.First();
-            var stopTime = DateTimeOffset.Now.AddYears(-2);
-            while (oldestPost.Listing.CreatedUTC > stopTime || count == 1000 || tries > 20)
+            var stopTime = DateTimeOffset.Now.AddMonths(-6);
+            while ((oldestPost.Listing.CreatedUTC > stopTime || count == 1000) && tries < 20)
             {
                 Console.WriteLine("Current date: " + oldestPost.Listing.CreatedUTC);
                 foreach (var post in posts)
@@ -33,11 +37,11 @@ namespace SubredditBot.Cli
                         oldestPost = post;
                     }
 
-                    _service.RedditPostDatabase.Upsert(post.ToPost());
+                    _postDatabase.Upsert(post.ToPost());
                     count++;
                 }
 
-                posts = _service.Subreddit.Posts.GetNew(limit: 100, after: oldestPost.Listing.Name);
+                posts = _subreddit.Posts.GetNew(limit: 100, after: oldestPost.Listing.Name);
                 tries++;
             }
 

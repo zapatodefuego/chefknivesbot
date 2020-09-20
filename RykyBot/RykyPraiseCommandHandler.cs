@@ -33,7 +33,7 @@ namespace ChefKnivesBot.Handlers.Comments
                 return false;
             }
 
-            if (_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), comment.Id).Result.Any())
+            if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), comment.Id).Result)
             {
                 _logger.Information($"[{nameof(RykyPraiseCommandHandler)}]: Comment {comment.Id} has already been replied to");
                 return false;
@@ -44,7 +44,7 @@ namespace ChefKnivesBot.Handlers.Comments
                 if (!DryRun)
                 {
                     Comment reply = null;
-                    if (_rykyAuthors.Any(p => comment.Author.Equals("p", StringComparison.OrdinalIgnoreCase)))
+                    if (_rykyAuthors.Any(p => comment.Author.Equals(p, StringComparison.OrdinalIgnoreCase)))
                     {
                         if (_random.Next(100) >= 75)
                         {
@@ -53,7 +53,7 @@ namespace ChefKnivesBot.Handlers.Comments
                     }
                     else
                     {
-                        if (_random.Next(100) >= 50)
+                        if (_random.Next(100) >= 75)
                         {
                             reply = comment.Reply("Praise be!");
                         }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SubredditBot.DataAccess
 {
-    public class DatabaseService<T> : IDisposable where T : RedditThing
+    public class DatabaseService<T> : IDisposable, IDatabaseService<T> where T : RedditThing
     {
         private readonly string _databaseName;
         private readonly string _collectionName;
@@ -28,7 +28,7 @@ namespace SubredditBot.DataAccess
             {
                 var defaultObject = (T)Activator.CreateInstance(typeof(T));
                 defaultObject.Id = Guid.NewGuid().ToString();
-                GetMongoCollection().InsertOne(defaultObject.ToBsonDocument()); 
+                GetMongoCollection().InsertOne(defaultObject.ToBsonDocument());
             }
         }
 
@@ -49,14 +49,46 @@ namespace SubredditBot.DataAccess
         {
             foreach (T thing in things)
             {
-                if (_cache.Contains(thing))
+                if (!_cache.Contains(thing))
                 {
-                    continue;
+                    _cache.Add(thing);
+                    UpsertIntoCollection(thing);
                 }
-
-                _cache.Add(thing);
-                UpsertIntoCollection(thing);
             }
+        }
+
+        /// <summary>
+        /// Tries to get any item by item first from the cache and then from the database
+        /// </summary>
+        public async Task<bool> ContainsAny(string propertyName, string propertyValue)
+        {
+            if (!_cache.GetBy(propertyName, propertyValue).Any())
+            {
+                return (await GetBy(propertyName, propertyValue)).Any();
+            }
+
+            return true;
+        }
+
+        public T GetById(string id)
+        {
+            if (_cache.GetById(id, out T cacheResult))
+            {
+                return cacheResult;
+            }
+
+            var collection = GetMongoCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+            var queryResult = collection.Find(filter).FirstOrDefault();
+
+            if (queryResult != null)
+            {
+                var results = BsonSerializer.Deserialize<T>(queryResult);
+                _cache.Add(results);
+                return results;
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue)
@@ -67,37 +99,30 @@ namespace SubredditBot.DataAccess
             }
 
             var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
-            return await GetByFilter(filter);
-        }
-
-        public T GetById(string id)
-        {
-            if (_cache.GetById(id, out T cacheResult))
+            var results = await GetByFilter(filter);
+            foreach (var result in results)
             {
-                return cacheResult;
-            }
-            
-            var collection = GetMongoCollection();
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
-            var queryResult = collection.Find(filter).FirstOrDefault();
-
-            if (queryResult != null)
-            {
-                return BsonSerializer.Deserialize<T>(queryResult);
+                if (!_cache.Contains(result))
+                {
+                    _cache.Add(result);
+                }
             }
 
-            return null;
-        }
-
-        public async Task<IEnumerable<T>> GetByAuthor(string author)
-        {
-            var filter = Builders<BsonDocument>.Filter.Eq("Author", author);
-            return await GetByFilter(filter);
+            return results;
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await GetByFilter(Builders<BsonDocument>.Filter.Empty);
+            var results = await GetByFilter(Builders<BsonDocument>.Filter.Empty);
+            foreach (var result in results)
+            {
+                if (!_cache.Contains(result))
+                {
+                    _cache.Add(result);
+                }
+            }
+
+            return results;
         }
 
         public void Delete(string id)

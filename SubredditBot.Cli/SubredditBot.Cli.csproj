@@ -20,11 +20,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
-    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChefKnifeSwapBot\ChefKnifeSwapBot.csproj" />
     <ProjectReference Include="..\ChefKnivesBot\ChefKnivesBot.csproj" />
+    <ProjectReference Include="..\RykyBot\RykyBot.csproj" />
     <ProjectReference Include="..\SubredditBot.Lib\SubredditBot.Lib.csproj" />
   </ItemGroup>
 

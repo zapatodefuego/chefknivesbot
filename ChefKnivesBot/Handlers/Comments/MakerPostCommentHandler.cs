@@ -13,10 +13,10 @@ namespace ChefKnivesBot.Handlers.Comments
     {
         private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private readonly ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
         private readonly FlairV2 _makerPostFlair;
 
-        public MakerPostCommentHandler(ILogger logger, SubredditService service, bool dryRun)
+        public MakerPostCommentHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
@@ -35,12 +35,9 @@ namespace ChefKnivesBot.Handlers.Comments
             var linkFlairId = comment.Root.Listing.LinkFlairTemplateId;
 
             // Check if the link flair matches the maker post flait and that the author is not a moderator
-            if (linkFlairId != null &&
-                linkFlairId.Equals(_makerPostFlair.Id) &&
-                !_service.Subreddit.Moderators.Any(m => m.Name.Equals(comment.Author)))
+            if (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
             {
-                // TODO: Check if we replied with the right thing first...
-                if (comment.Removed || comment.Listing.Approved || comment.Replies.Any(c => c.Author.Equals(_service.Account.Me.Name)))
+                if (comment.Removed || comment.Listing.Approved)
                 {
                     return false;
                 }

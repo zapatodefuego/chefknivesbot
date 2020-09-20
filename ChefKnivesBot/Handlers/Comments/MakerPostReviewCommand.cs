@@ -1,20 +1,20 @@
-﻿using SubredditBot.Data;
-using SubredditBot.Lib.DataExtensions;
-using SubredditBot.Lib.Utilities;
+﻿using ChefKnivesBot.Utilities;
 using Reddit.Controllers;
 using Serilog;
+using SubredditBot.Data;
+using SubredditBot.Lib;
+using SubredditBot.Lib.DataExtensions;
 using System.Linq;
 using Comment = Reddit.Controllers.Comment;
-using SubredditBot.Lib;
 
 namespace ChefKnivesBot.Handlers.Comments
 {
     public class MakerPostReviewCommand : HandlerBase, ICommentHandler
     {
         private ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
 
-        public MakerPostReviewCommand(ILogger logger, SubredditService service, bool dryRun)
+        public MakerPostReviewCommand(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
@@ -29,7 +29,7 @@ namespace ChefKnivesBot.Handlers.Comments
                 return false;
             }
 
-            if (_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), comment.Id).Result.Any())
+            if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), comment.Id).Result)
             {
                 _logger.Information($"[{nameof(MakerPostReviewCommand)}]: Comment {comment.Id} has already been replied to");
                 return false;

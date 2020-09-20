@@ -13,6 +13,7 @@ namespace ChefKnifeSwapBot.Handlers
 {
     public class SwapPostHandler : HandlerBase, IPostHandler
     {
+        private const string _postUrlFirstPart = "https://www.reddit.com/r/chefknifeswap/comments/";
         private const int _numEntrys = 18;
         private const string _titleEntry = "Selling table. All items mandatory. One table per post. This header must be included";
         private const string _nameEntry = "Item Name(s)";
@@ -61,7 +62,7 @@ namespace ChefKnifeSwapBot.Handlers
                 // Set the flair
                 post.SetFlair(_flair.Text, _flair.Id);
 
-                if (_service.SelfCommentDatabase.GetBy(nameof(SelfComment.ParentId), post.Id).Result.Any())
+                if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     return false;
                 }
@@ -170,40 +171,28 @@ namespace ChefKnifeSwapBot.Handlers
                     hasError = true;
                 }
 
-                if (hasError)
-                {
-                    errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues and resubmit. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
-
-                    if (!DryRun)
-                    {
-                        var reply = post
-                        .Reply(errorResponse.ToString())
-                        .Distinguish("yes", true);
-
-                        //post.Remove();
-                        _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
-                    }
-
-                    return true;
-                }
-
                 if (!DryRun)
                 {
-                    var postHistory = _service.RedditPostDatabase.GetByAuthor(post.Author).Result;
-
+                    var postHistory = _service.RedditPostDatabase.GetBy(nameof(RedditThing.Author), post.Author).Result;
                     var replyMessage = new StringBuilder();
-                    replyMessage.AppendLine($"I've reviewed this post and it looks good. However, I'm a new bot and am not great at my job yet. " +
-                    "Please message the moderators if you have any feedback to offer. Do not respond to this comment since no one will see it.");
+                    if (hasError)
+                    {
+                        //post.Remove();
 
-                    if (postHistory != null && !postHistory.Any())
+                        errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues ~and resubmit~. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
+                        errorResponse.AppendLine("---\n");
+                        replyMessage = errorResponse;
+                    }
+
+                    if (postHistory == null || !postHistory.Any())
                     {
                         replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
                     }
                     else
                     {
-                        replyMessage.AppendLine("Here are some past selling posts from u/{post.Author}");
+                        replyMessage.AppendLine($"Here are some past posts from u/{post.Author}:");
                         postHistory.Take(5).ToList()
-                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_service.Subreddit.URL})/{p.Id}"));
+                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
                     }
 
                     var reply = post

@@ -49,9 +49,12 @@ namespace SubredditBot.DataAccess.Utility
             return false;
         }
 
-        public IEnumerable<T> GetByAuthor(string author)
+        public IEnumerable<T> GetBy(string property, string value)
         {
-            return _set.Where(o => o.Author.Equals(author));
+            return _set.Where(o => 
+            {
+                return (string)o.GetType().GetProperty(property).GetValue(o) == value;
+            });
         }
 
         public IEnumerator GetEnumerator()

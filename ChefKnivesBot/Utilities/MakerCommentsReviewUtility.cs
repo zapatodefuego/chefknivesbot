@@ -1,28 +1,28 @@
 ﻿using Reddit;
-using Reddit.Inputs.Search;
 using Serilog;
 using SubredditBot.Data;
 using SubredditBot.DataAccess;
+using SubredditBot.Lib;
 using SubredditBot.Lib.Data;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SubredditBot.Lib.Utilities
+namespace ChefKnivesBot.Utilities
 {
 
     public class MakerCommentsReviewUtility
     {
         private static Stopwatch _stopWatch = new Stopwatch();
 
-        public static async Task<MakerReviewResult> Review(string author, DatabaseService<Post> postDatabase, DatabaseService<Comment> commentDatabase)
+        public static async Task<MakerReviewResult> Review(string author, IDatabaseService<Post> postDatabase, IDatabaseService<Comment> commentDatabase)
         {
             _stopWatch.Reset();
             _stopWatch.Start();
             var result = new MakerReviewResult();
 
-            var comments = await commentDatabase.GetByAuthor(author);
+            var comments = await commentDatabase.GetBy(nameof(RedditThing.Author), author);
             foreach (var comment in comments)
             {
                 var post = postDatabase.GetById(ConvertListingIdToPostId(comment.PostLinkId));

@@ -4,28 +4,27 @@ using Serilog;
 using SubredditBot.Data;
 using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
-using System;
 using System.Linq;
 using System.Timers;
 using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
 
-namespace ChefKnivesBot.Handlers.Posts
+namespace CuttingBoardsBot.Handlers
 {
-    public class KnifePicsPostHandler : HandlerBase, IPostHandler
+    public class BoardPicsPostHandler : HandlerBase, IPostHandler
     {
         private ILogger _logger;
         private readonly ISubredditService _service;
         private readonly FlairV2 _knifePicsFlair;
         private readonly Rule _rulefive;
 
-        public KnifePicsPostHandler(ILogger logger, ISubredditService service, bool dryRun)
+        public BoardPicsPostHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
             _service = service;
-            _knifePicsFlair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Knife Pics"));
-            _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive Content"));
+            _knifePicsFlair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Board Pics"));
+            _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive content"));
         }
 
         public bool Process(BaseController baseController)
@@ -56,7 +55,7 @@ namespace ChefKnivesBot.Handlers.Posts
                         ScheduleDelayedCheck(post, replyComment);
                     }
 
-                    _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
+                    _logger.Information($"[{nameof(BoardPicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
                 }
 
                 return true;
@@ -78,7 +77,7 @@ namespace ChefKnivesBot.Handlers.Posts
                 if (!comments.Any(c => c.Depth == 0 && c.Author.Equals(post.Author)))
                 {
                     post.Remove();
-                    _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
+                    _logger.Information($"[{nameof(BoardPicsPostHandler)}]: Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
                 }
 
                 replyComment.Delete();

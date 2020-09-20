@@ -24,17 +24,19 @@ namespace SubredditBot.Data
             hash = hash * 31 + (Author == null ? 0 : Author.GetHashCode());
             hash = hash * 31 + (Kind == null ? 0 : Kind.GetHashCode());
             hash = hash * 31 + (CreateDate == null ? 0 : CreateDate.GetHashCode());
+            hash = hash * 31 + IsDeleted.GetHashCode();
             return hash;
         }
 
         public override bool Equals(object o)
         {
-            if (o is Post other)
+            if (o is RedditThing other)
             {
                 return Id.Equals(other.Id)
                     && Author.Equals(other.Author)
                     && Kind.Equals(other.Kind)
-                    && (CreateDate == null || CreateDate.Equals(other.CreateDate));
+                    && (CreateDate == null || CreateDate.Equals(other.CreateDate))
+                    && IsDeleted.Equals(other.IsDeleted);
             }
 
             return false;

@@ -10,9 +10,9 @@ namespace ChefKnivesBot.Handlers.Mail
         private const string _status = "!status";
 
         private readonly ILogger _logger;
-        private readonly SubredditService _service;
+        private readonly ISubredditService _service;
 
-        public MessageHandler(ILogger logger, SubredditService service, bool dryRun)
+        public MessageHandler(ILogger logger, ISubredditService service, bool dryRun)
             : base(dryRun)
         {
             _logger = logger;
