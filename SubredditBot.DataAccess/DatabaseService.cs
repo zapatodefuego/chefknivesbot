@@ -61,8 +61,8 @@ namespace SubredditBot.DataAccess
                 // and capture the updated object
                 if (_cache.Contains(thing))
                 {
+                    updatedThings.Add(GetById(thing.Id));
                     _cache.Remove(thing);
-                    updatedThings.Add(thing);
                 }
 
                 // Add and upsert the item 

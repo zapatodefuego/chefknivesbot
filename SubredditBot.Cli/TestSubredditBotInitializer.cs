@@ -1,15 +1,10 @@
 ﻿using ChefKnifeSwapBot.Handlers;
 using ChefKnivesBot.Handlers.Comments;
-using ChefKnivesBot.Handlers.Mail;
 using ChefKnivesBot.Handlers.Posts;
 using Microsoft.Extensions.Configuration;
 using Reddit;
 using Serilog;
 using SubredditBot.Lib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace SubredditBot.Cli
 {

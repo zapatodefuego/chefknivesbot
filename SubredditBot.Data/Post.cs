@@ -19,8 +19,8 @@
             if (o is Post other)
             {
                 return base.Equals(o) 
-                    && Title.Equals(other.Title)
-                    && Flair.Equals(other.Flair);
+                    && Equals(Title, other.Title)
+                    && Equals(Flair, other.Flair);
             }
 
             return false;

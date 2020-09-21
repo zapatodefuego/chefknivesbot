@@ -19,8 +19,8 @@
             if (o is SelfComment other)
             {
                 return base.Equals(o)
-                    && ParentId.Equals(other.ParentId)
-                    && ParentType.Equals(other.ParentType);
+                    && Equals(ParentId, other.ParentId)
+                    && Equals(ParentType, other.ParentType);
             }
 
             return false;

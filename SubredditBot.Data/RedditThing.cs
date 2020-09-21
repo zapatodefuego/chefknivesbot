@@ -34,11 +34,11 @@ namespace SubredditBot.Data
         {
             if (o is RedditThing other)
             {
-                return Id.Equals(other.Id)
-                    && Author.Equals(other.Author)
-                    && Kind.Equals(other.Kind)
-                    && (CreateDate == null || CreateDate.Equals(other.CreateDate))
-                    && IsDeleted.Equals(other.IsDeleted);
+                return Equals(Id, other.Id)
+                    && Equals(Author, other.Author)
+                    && Equals(Kind, other.Kind)
+                    && Equals(CreateDate, other.CreateDate)
+                    && Equals(IsDeleted, other.IsDeleted);
             }
 
             return false;

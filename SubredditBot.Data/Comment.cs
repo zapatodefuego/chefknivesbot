@@ -19,8 +19,8 @@
             if (o is Comment other)
             {
                 return base.Equals(o)
-                    && Body.Equals(other.Body)
-                    && PostLinkId.Equals(other.PostLinkId);
+                    && Equals(Body, other.Body)
+                    && Equals(PostLinkId, other.PostLinkId);
             }
 
             return false;

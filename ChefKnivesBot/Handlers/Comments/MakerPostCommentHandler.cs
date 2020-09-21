@@ -55,7 +55,7 @@ namespace ChefKnivesBot.Handlers.Comments
                             srName: _service.Subreddit.Name,
                             to: "chefknives");
 
-                        _logger.Information($"Removed comment from {comment.Author}: {comment.Body.Substring(0, 100)}");
+                        _logger.Information($"Removed comment from {comment.Author}: {string.Concat(comment.Body.Take(100))}");
                     }
 
                     return true;

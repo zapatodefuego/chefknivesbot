@@ -133,7 +133,7 @@ namespace SubredditBot.Lib
                 {
                     PostHandlers.ForEach(c =>
                     {
-                        var postController = RedditClient.Post(updatedPost.Fullname);
+                        var postController = RedditClient.Post(updatedPost.Fullname).Info();
                         c.Process(postController);
                     });
                 }
