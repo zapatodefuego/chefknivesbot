@@ -45,14 +45,12 @@ namespace CuttingBoardsBot.Handlers
                     {
                         var replyComment = post
                             .Reply(
-                                $"Please ensure you fulfill Rule #5 by posting a top level comment with a description within 15 minutes. Any post not in compliance will be removed. See Rule #5 below for more information: \n\n" +
+                                $"Please ensure you fulfill Rule #5 by posting a top level comment with a description. Any post not in compliance may be removed. See Rule #5 below for more information: \n\n" +
                                 "---\n\n" +
-                                $"{_rulefive.Description}\n\n" +
-                                "*This message will self destruct in 15 minutes.*")
+                                $"{_rulefive.Description}\n\n")
                             .Distinguish("yes", true);
 
                         _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));
-                        ScheduleDelayedCheck(post, replyComment);
                     }
 
                     _logger.Information($"[{nameof(BoardPicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
@@ -62,34 +60,6 @@ namespace CuttingBoardsBot.Handlers
             }
 
             return false;
-        }
-
-        private void ScheduleDelayedCheck(Post post, Comment replyComment)
-        {
-            // 900000 ms is 15 minutes
-            var timer = new Timer { Interval = 900000 };
-            timer.Elapsed += (object sender, ElapsedEventArgs e) => 
-            {
-                timer.Stop();
-                timer.Dispose();
-
-                var comments = post.Comments.GetComments();
-                if (!comments.Any(c => c.Depth == 0 && c.Author.Equals(post.Author)))
-                {
-                    post.Remove();
-                    _logger.Information($"[{nameof(BoardPicsPostHandler)}]: Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
-                }
-
-                replyComment.Delete();
-
-                // Update the comment in the database. There has to be a more elegant way to do this...
-                var databaseComment = replyComment.ToSelfComment(post.Id, RedditThingType.Post);
-                databaseComment.IsDeleted = true;
-                _service.SelfCommentDatabase.Upsert(databaseComment);
-            };
-
-            timer.Enabled = true;
-            timer.Start();
         }
     }
 }

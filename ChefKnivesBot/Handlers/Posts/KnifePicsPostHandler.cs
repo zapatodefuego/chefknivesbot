@@ -14,6 +14,7 @@ namespace ChefKnivesBot.Handlers.Posts
 {
     public class KnifePicsPostHandler : HandlerBase, IPostHandler
     {
+        private const int _timeLimitMinutes = 30;
         private ILogger _logger;
         private readonly ISubredditService _service;
         private readonly FlairV2 _knifePicsFlair;
@@ -46,10 +47,10 @@ namespace ChefKnivesBot.Handlers.Posts
                     {
                         var replyComment = post
                             .Reply(
-                                $"Please ensure you fulfill Rule #5 by posting a top level comment with a description within 15 minutes. Any post not in compliance will be removed. See Rule #5 below for more information: \n\n" +
+                                $"Please ensure you fulfill Rule #5 by posting a top level comment with a description within {_timeLimitMinutes} minutes. Any post not in compliance will be removed. See Rule #5 below for more information: \n\n" +
                                 "---\n\n" +
                                 $"{_rulefive.Description}\n\n" +
-                                "*This message will self destruct in 15 minutes.*")
+                                $"*This message will self destruct in {_timeLimitMinutes} minutes.*")
                             .Distinguish("yes", true);
 
                         _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));
@@ -67,8 +68,7 @@ namespace ChefKnivesBot.Handlers.Posts
 
         private void ScheduleDelayedCheck(Post post, Comment replyComment)
         {
-            // 900000 ms is 15 minutes
-            var timer = new Timer { Interval = 900000 };
+            var timer = new Timer { Interval = TimeSpan.FromMinutes(_timeLimitMinutes).TotalMilliseconds };
             timer.Elapsed += (object sender, ElapsedEventArgs e) => 
             {
                 timer.Stop();
