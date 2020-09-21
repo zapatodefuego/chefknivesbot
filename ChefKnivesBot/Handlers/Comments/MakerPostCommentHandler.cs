@@ -37,7 +37,7 @@ namespace ChefKnivesBot.Handlers.Comments
             // Check if the link flair matches the maker post flait and that the author is not a moderator
             if (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
             {
-                if (comment.Removed || comment.Listing.Approved)
+                if (comment.Removed || comment.Listing.Approved || comment.Author.Equals(_service.Account.Me.Name))
                 {
                     return false;
                 }
