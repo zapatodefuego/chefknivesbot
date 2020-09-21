@@ -13,6 +13,7 @@ namespace SubredditBot.Lib.DataExtensions
             {
                 Author = comment.Author,
                 Body = comment.Body,
+                Fullname = comment.Fullname,
                 Id = comment.Id,
                 Kind = "t1",
                 PostLinkId = comment.Listing.LinkId,

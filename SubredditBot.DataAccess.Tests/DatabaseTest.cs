@@ -39,6 +39,22 @@ namespace ChefknivesBot.DataAccess.Tests
         }
     }
 
+    internal class TestPostDatabaseWithNoUpsert : DatabaseService<Post>
+    {
+        public TestPostDatabaseWithNoUpsert(string databaseName)
+            : base(GetConnectionString(), databaseName, databaseName) { }
+
+        protected override void UpsertIntoCollection(RedditThing thing)
+        {
+            return;
+        }
+
+        public static string GetConnectionString()
+        {
+            return "mongodb://localhost";
+        }
+    }
+
     [TestClass]
     public class DatabaseTest
     {
@@ -83,6 +99,32 @@ namespace ChefknivesBot.DataAccess.Tests
 
             // second insert must be caught by the cache, else we have a serious problem
             database.Upsert(posts);
+        }
+
+        [TestMethod]
+        public void ObjectUpdateWithNewValuesReturnsUpdatedObject()
+        {
+            var database = new TestPostDatabaseWithNoUpsert(databaseName: "test");
+            var post1 = new Post
+            {
+                Id = "Id",
+                Fullname = "Fullname"
+            };
+
+            var post2 = new Post
+            {
+                Id = "Id",
+                Fullname = "Fullname",
+                Flair = "Flair"
+            };
+
+            var result1 = database.Upsert(post1);
+            var result2 = database.Upsert(post2);
+            var result3 = database.Upsert(post2);
+
+            Assert.AreEqual(null, result1);
+            Assert.AreEqual(post2, result2);
+            Assert.AreEqual(null, result3);
         }
     }
 }

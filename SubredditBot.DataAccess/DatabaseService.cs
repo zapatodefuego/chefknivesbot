@@ -35,26 +35,42 @@ namespace SubredditBot.DataAccess
         /// <summary>
         /// Ensures a post is in is in the database
         /// </summary>
-        /// <param name="post"></param>
-        public void Upsert(T thing)
+        /// <returns>The original value, if any</returns>
+        public T Upsert(T thing)
         {
-            Upsert(new List<T> { thing });
+            return Upsert(new List<T> { thing }).SingleOrDefault();
         }
 
         /// <summary>
         /// Ensures each post in the collection is in the database
         /// </summary>
-        /// <param name="posts"></param>
-        public void Upsert(IEnumerable<T> things)
+        /// <returns>The original values, if any</returns>
+        public IEnumerable<T> Upsert(IEnumerable<T> things)
         {
+            var updatedThings = new List<T>();
             foreach (T thing in things)
             {
-                if (!_cache.Contains(thing))
+                // If an object in the cache matches fully, do nothing and return
+                if (_cache.Contains(thing, new CacheAllPropertiesComparer<T>()))
                 {
-                    _cache.Add(thing);
-                    UpsertIntoCollection(thing);
+                    return updatedThings;
                 }
+
+                // If an object in the cache matches by the default comparer, 
+                // then this upsert is updating something so remove it
+                // and capture the updated object
+                if (_cache.Contains(thing))
+                {
+                    _cache.Remove(thing);
+                    updatedThings.Add(thing);
+                }
+
+                // Add and upsert the item 
+                _cache.Add(thing);
+                UpsertIntoCollection(thing);
             }
+
+            return updatedThings;
         }
 
         /// <summary>

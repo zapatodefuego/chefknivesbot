@@ -11,7 +11,7 @@ namespace SubredditBot.DataAccess.Utility
     /// </summary>
     public class DatabaseCache<T> : IEnumerable, IDisposable where T : RedditThing
     {
-        private readonly ISet<T> _set = new HashSet<T>();
+        private readonly ISet<T> _set = new HashSet<T>(new CacheIdAndNameComparer<T>());
         private readonly LinkedList<T> _list = new LinkedList<T>();
         public int MaxSize { get; set; }
 
@@ -33,9 +33,20 @@ namespace SubredditBot.DataAccess.Utility
             _list.AddFirst(item);
         }
 
+        public void Remove(T item)
+        {
+            _set.Remove(item);
+            _list.Remove(item);
+        }
+
         public bool Contains(T item)
         {
             return _set.Contains(item);
+        }
+
+        public bool Contains(T item, IEqualityComparer<T> comparer)
+        {
+            return _set.Contains(item, comparer);
         }
 
         public bool GetById(string id, out T result)

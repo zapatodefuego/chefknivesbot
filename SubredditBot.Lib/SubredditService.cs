@@ -126,7 +126,18 @@ namespace SubredditBot.Lib
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
             var recentPosts = redditReader.GetRecentPosts(numPosts: postCount);
-            RedditPostDatabase.Upsert(recentPosts);
+            foreach (var postToUpdate in recentPosts)
+            {
+                var updatedPost = RedditPostDatabase.Upsert(postToUpdate);
+                if (updatedPost != null && postToUpdate.Flair != updatedPost.Flair)
+                {
+                    PostHandlers.ForEach(c =>
+                    {
+                        var postController = RedditClient.Post(updatedPost.Fullname);
+                        c.Process(postController);
+                    });
+                }
+            }
 
             var recentComments = redditReader.GetRecentComments(numComments: commentCount);
             RedditCommentDatabase.Upsert(recentComments);

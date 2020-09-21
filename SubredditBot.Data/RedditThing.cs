@@ -8,6 +8,8 @@ namespace SubredditBot.Data
     {
         public string Id { get; set; } = string.Empty;
 
+        public string Fullname { get; set; } = string.Empty;
+
         public string Author { get; set; } = string.Empty;
 
         [BsonRepresentation(BsonType.DateTime)]

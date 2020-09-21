@@ -11,6 +11,7 @@ namespace SubredditBot.Lib.DataExtensions
                 Author = comment.Author,
                 Body = comment.Body,
                 Id = comment.Id,
+                Fullname = comment.Fullname,
                 Kind = "t1",
                 PostLinkId = comment.Listing.LinkId,
                 CreateDate = comment.Created,

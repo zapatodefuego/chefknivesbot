@@ -15,6 +15,7 @@ namespace SubredditBot.Lib.DataExtensions
                 Title = post.Title,
                 Flair = post.Listing.LinkFlairText,
                 Id = post.Id,
+                Fullname = post.Fullname,
                 Kind = "t3",
                 CreateDate = post.Created
             };

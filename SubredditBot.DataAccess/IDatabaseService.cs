@@ -12,7 +12,7 @@ namespace SubredditBot.DataAccess
         Task<IEnumerable<T>> GetAll();
         Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue);
         T GetById(string id);
-        void Upsert(IEnumerable<T> things);
-        void Upsert(T thing);
+        IEnumerable<T> Upsert(IEnumerable<T> things);
+        T Upsert(T thing);
     }
 }
