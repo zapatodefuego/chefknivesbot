@@ -76,8 +76,6 @@ namespace ChefKnivesBot.Utilities
             }
 
             _stopWatch.Stop();
-
-            Diagnostics.AddReviewTime(_stopWatch.ElapsedMilliseconds);
             logger.Information($"[{nameof(MakerCommentsReviewUtility)}] Queried for {limit} comments for {author} in [{_stopWatch.ElapsedMilliseconds}] miliseconds");
 
             return new MakerReviewResult

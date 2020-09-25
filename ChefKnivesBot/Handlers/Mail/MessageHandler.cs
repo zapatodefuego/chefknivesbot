@@ -29,8 +29,7 @@ namespace ChefKnivesBot.Handlers.Mail
 
             if (message.Body.Equals(_status))
             {
-                var text = Diagnostics.GetStatusMessage();
-                _service.Account.Messages.Reply(new LinksAndCommentsThingInput(text, message.Id));
+                _service.Account.Messages.Reply(new LinksAndCommentsThingInput("not implemented", message.Id));
                 return true;
             }
 

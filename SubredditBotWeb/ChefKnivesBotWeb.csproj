@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChefKnifeSwapBot\ChefKnifeSwapBot.csproj" />
     <ProjectReference Include="..\ChefKnivesBot\ChefKnivesBot.csproj" />
+    <ProjectReference Include="..\ChefKnivesDiscord\ChefKnivesDiscord.csproj" />
     <ProjectReference Include="..\CuttingBoardsBot\CuttingBoardsBot.csproj" />
     <ProjectReference Include="..\RykyBot\RykyBot.csproj" />
     <ProjectReference Include="..\SubredditBot.Lib\SubredditBot.Lib.csproj" />

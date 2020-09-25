@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using ChefKnivesBot;
+using System;
 
 namespace SubredditBotWeb.Controllers
 {
     [Authorize(Policy = "SubredditModerator")]
     public class StatusController : Controller
     {
+        private static DateTime _startTime = DateTime.Now;
         private readonly IConfiguration _configuration;
 
         public StatusController(IConfiguration configuration)
@@ -23,7 +25,7 @@ namespace SubredditBotWeb.Controllers
         {
             var model = new StatusModel
             {
-                Message = Diagnostics.GetStatusMessage()
+                Message = $"Uptime: {DateTime.Now - _startTime}"
             };
             return View(model);
         }
@@ -31,11 +33,9 @@ namespace SubredditBotWeb.Controllers
         [HttpPost]
         public IActionResult RestartService()
         {
-            Diagnostics.Reset();
             Program.ChefKnivesService.Dispose();
-
             var chefKnivesBotInitializer = new ChefKnivesBotInitializer();
-            Program.ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, Program.DryRun);
+            Program.ChefKnivesService = chefKnivesBotInitializer.Start(Log.Logger, _configuration, Program.DiscordService.SendModChannelMessage, Program.DryRun);
             return RedirectToAction(nameof(Index));
         }
     }

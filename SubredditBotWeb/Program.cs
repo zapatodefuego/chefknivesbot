@@ -1,20 +1,22 @@
-using SubredditBot.Lib;
+using ChefKnifeSwapBot;
+using ChefKnivesBot;
+using ChefKnivesDiscord;
+using CuttingBoardsBot;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using SubredditBot.Lib;
 using System;
 using System.Linq;
-using ChefKnivesBot;
-using ChefKnifeSwapBot;
-using RykyBot;
-using System.Collections.Generic;
-using CuttingBoardsBot;
+using System.Threading.Tasks;
 
 namespace SubredditBotWeb
 {
     public class Program
     {
+        public static DiscordService DiscordService { get; set; }
+
         public static SubredditService ChefKnivesService { get; set; }
 
         public static SubredditService ChefKnifeSwapService { get; set; }
@@ -70,11 +72,14 @@ namespace SubredditBotWeb
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
+            DiscordService = new DiscordService(Log.Logger, _configuration);
+            DiscordService.Start().GetAwaiter().GetResult();
+
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
                 DryRun = args.Any(a => a.Equals("--dryrun"));
 
-                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, _configuration, DryRun);
+                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, _configuration, DiscordService.SendModChannelMessage, DryRun);
                 ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, _configuration, DryRun);
                 //var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
                 var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, cuttingBoardsConfig, DryRun);

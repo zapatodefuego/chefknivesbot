@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SubredditBot.Lib
 {
@@ -21,14 +22,21 @@ namespace SubredditBot.Lib
 
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly Func<string, Task> _callback;
         private CancellationTokenSource _cancellationToken;
 
-        public SubredditService(ILogger logger, IConfiguration configuration, RedditClient redditClient, string subredditName, string databaseName)
+        public SubredditService(
+            ILogger logger,
+            IConfiguration configuration,
+            RedditClient redditClient,
+            string subredditName,
+            string databaseName,
+            Func<string, Task> callback = null)
         {
             _logger = logger;
             _configuration = configuration;
             RedditClient = redditClient;
-
+            _callback = callback;
             Subreddit = redditClient.Subreddit(subredditName);
             Account = redditClient.Account;
 
@@ -153,68 +161,53 @@ namespace SubredditBot.Lib
                 {
                     MessageHandlers.ForEach(c =>
                     {
-                        Diagnostics.SeenMessages++;
                         if (c.Process(message))
                         {
-                            Diagnostics.ProcessedMessages++;
                         }
                     });
                 }
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                Diagnostics.RedditGatewayTimeoutException++;
                 _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
                 Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
                 Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (Exception exception)
             {
-                Diagnostics.OtherExceptionCount++;
                 _logger.Error(exception, $"Unexpected exception caught in {nameof(Messages_UnreadUpdated)}");
             }
         }
 
-        private void Comments_NewUpdated(object sender, CommentsUpdateEventArgs e)
+        private async void Comments_NewUpdated(object sender, CommentsUpdateEventArgs e)
         {
             try
             {
                 foreach (var comment in e.NewComments)
                 {
-                    CommentHandlers.ForEach(c =>
-                    {
-                        Diagnostics.SeenComments++;
-                        if (c.Process(comment))
-                        {
-                            Diagnostics.ProcessedComments++;
-                        }
-                    });
+                    Parallel.ForEach(CommentHandlers, c => c.Process(comment, _callback));
                 }
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                Diagnostics.RedditGatewayTimeoutException++;
                 _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
                 Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
                 SubscribeToCommentFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
                 Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
                 SubscribeToCommentFeed();
             }
             catch (Exception exception)
             {
-                Diagnostics.OtherExceptionCount++;
                 _logger.Error(exception, $"Unexpected exception caught in {nameof(Comments_NewUpdated)}");
             }
         }
@@ -227,31 +220,26 @@ namespace SubredditBot.Lib
                 {
                     PostHandlers.ForEach(c =>
                     {
-                        Diagnostics.SeenPosts++;
                         if (c.Process(post))
                         {
-                            Diagnostics.ProcessedPosts++;
                         }
                     });
                 }
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                Diagnostics.RedditGatewayTimeoutException++;
                 _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
                 Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
                 Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (Exception exception)
             {
-                Diagnostics.OtherExceptionCount++;
                 _logger.Error(exception, $"Unexpected exception caught in {nameof(Posts_NewUpdated_OrEdited)}");
             }
         }

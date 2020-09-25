@@ -6,6 +6,7 @@ using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Comment = Reddit.Controllers.Comment;
 
 namespace ChefKnivesBot.Handlers.Comments
@@ -25,7 +26,7 @@ namespace ChefKnivesBot.Handlers.Comments
             _service = service;
         }
 
-        public bool Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController, Func<string, Task> callback)
         {
             var comment = baseController as Comment;
             if (comment == null)
