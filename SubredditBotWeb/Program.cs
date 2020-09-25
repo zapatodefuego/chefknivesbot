@@ -76,7 +76,7 @@ namespace SubredditBotWeb
 
                 ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, _configuration, DryRun);
                 ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, _configuration, DryRun);
-                var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
+                //var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
                 var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, cuttingBoardsConfig, DryRun);
             }
 
