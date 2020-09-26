@@ -12,7 +12,7 @@ namespace ChefKnivesBot.Handlers.Comments
 {
     public class MakerPostCommentHandler : HandlerBase, ICommentHandler
     {
-        private const string _urlRoot = "https://www.reddit.com/r/chefknives";
+        private const string _urlRoot = "https://www.reddit.com";
         private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private readonly ILogger _logger;
         private readonly ISubredditService _service;
@@ -52,7 +52,7 @@ namespace ChefKnivesBot.Handlers.Comments
 
                         if (callback != null)
                         {
-                            await callback($"@administrator Removed comment by {comment.Author} on a Maker Post: {_urlRoot}{comment.Permalink}");
+                            await callback($"Removed comment by {comment.Author} on a Maker Post: {_urlRoot}{comment.Permalink}");
                         }
 
                         _logger.Information($"Removed comment from {comment.Author}: {string.Concat(comment.Body.Take(100))}");

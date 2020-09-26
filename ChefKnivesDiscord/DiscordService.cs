@@ -33,7 +33,7 @@ namespace ChefKnivesDiscord
         public async Task SendModChannelMessage(string message)
         {
             var channel = _client.GetChannel(751633580748308490) as IMessageChannel;
-            await channel.SendMessageAsync(message);
+            await channel.SendMessageAsync($"<@&373225640125530112> {message}");
         }
 
         private Task LogAsync(LogMessage log)
