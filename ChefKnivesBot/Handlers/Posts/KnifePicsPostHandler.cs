@@ -80,13 +80,16 @@ namespace ChefKnivesBot.Handlers.Posts
                     post.Remove();
                     _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Removed a post by {post.Author} since they did not post a top level comment within the allowed time.");
                 }
+                else
+                {
+                    // Delete the comment if OP followed the instructions.
+                    replyComment.Delete();
 
-                replyComment.Delete();
-
-                // Update the comment in the database. There has to be a more elegant way to do this...
-                var databaseComment = replyComment.ToSelfComment(post.Id, RedditThingType.Post);
-                databaseComment.IsDeleted = true;
-                _service.SelfCommentDatabase.Upsert(databaseComment);
+                    // Update the comment in the database. There has to be a more elegant way to do this...
+                    var databaseComment = replyComment.ToSelfComment(post.Id, RedditThingType.Post);
+                    databaseComment.IsDeleted = true;
+                    _service.SelfCommentDatabase.Upsert(databaseComment);
+                }
             };
 
             timer.Enabled = true;

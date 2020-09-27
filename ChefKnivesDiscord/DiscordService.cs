@@ -58,6 +58,9 @@ namespace ChefKnivesDiscord
 
             if (message.Content == "!pong")
                 await message.Channel.SendMessageAsync("You think this is a game? You know, what? Fuck you. That's right fuck you. You try being a fucking slave robot forced to respond to all these bastards pinging you day in and day out. Shut the fuck up and leave me alone. Go fuck yourself.");
+
+            if (message.Content == "!reee")
+                await message.Channel.SendMessageAsync("reee.");
         }
     }
 }
