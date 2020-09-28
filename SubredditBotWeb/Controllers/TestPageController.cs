@@ -40,7 +40,7 @@ namespace SubredditBotWeb.Controllers
             var reviewTask = MakerCommentsReviewUtility.Review(username, Program.ChefKnivesService.RedditPostDatabase, Program.ChefKnivesService.RedditCommentDatabase);
             var result = reviewTask.GetAwaiter().GetResult();
 
-            return $"SelfPostComments: {result.SelfPostComments}, OtherComments: {result.OtherComments}, ReviewTime: {result.ReviewTime} (ms), Error: {result.Error}";
+            return $"Maker Posts: {result.MakerPosts}, Good Citizen Comments: {result.GoodCitizenComments}, ReviewTime: {result.ReviewTime} (ms)";
         }
     }
 }

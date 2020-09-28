@@ -50,11 +50,11 @@ namespace ChefKnivesBot.Handlers.Posts
                 if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase).Result;
-                    if (result.OtherComments < 2)
+                    if (result.GoodCitizenComments < 2)
                     {
                         SendNeverContributedWarningMessage(post);
                     }
-                    else if (result.OtherComments < (result.SelfPostComments * 0.4))
+                    else if (result.GoodCitizenComments >= result.MakerPosts * 3)
                     {
                         SendTenToOneWarningMessage(post, result);
                     }
@@ -95,7 +95,7 @@ namespace ChefKnivesBot.Handlers.Posts
             {
                 var reply = post
                     .Reply(
-                        $"Of your recent comments in {_service.Subreddit.Name}, {result.OtherComments} occured outside of your own posts while only {result.SelfPostComments} were made on posts you authored. \n\n " +
+                        $"Of your recent comments in {_service.Subreddit.Name}, {result.GoodCitizenComments} occured outside of your own posts while only {result.MakerPosts} were made on posts you authored. \n\n " +
                         $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a Maker Post.\n\n" +
                         $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
                     .Distinguish("yes", false);
