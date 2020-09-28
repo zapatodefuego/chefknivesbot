@@ -26,7 +26,6 @@ namespace SubredditBot.Cli
 
             // chefknives comments
             service.CommentHandlers.Add(new MakerPostCommentHandler(logger, service, dryRun));
-            service.CommentHandlers.Add(new MakerPostReviewCommand(logger, service, dryRun));
 
             // chefknives posts
             service.PostHandlers.Add(new KnifePicsPostHandler(logger, service, dryRun));
