@@ -108,6 +108,10 @@ namespace ChefKnifeSwapBot.Handlers
                     return true;
                 }
 
+                var formattedRedditTable = new StringBuilder();
+                formattedRedditTable.AppendLine("|Selling table. All items mandatory. One table per post. This header must be included||");
+                formattedRedditTable.AppendLine(":--|:--|");
+
                 var hasError = false;
                 var errorResponse = new StringBuilder();
                 errorResponse.AppendLine("The following issues were found in your submission:");
@@ -118,11 +122,19 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* Title entry was modified, missing, or incorrectly formatted");
                     hasError = true;
                 }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_titleEntry}|{titleValue}|");
+                }
 
                 if (!GetEntry(parts, _nameEntry, out string nameValue))
                 {
                     errorResponse.AppendLine("* Item name entry was missing or incorrectly formatted.");
                     hasError = true;
+                }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_nameEntry}|{nameValue}|");
                 }
 
                 if (!GetEntry(parts, _descriptionEntry, out string descriptionValue))
@@ -135,11 +147,19 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* C'mon you can write more of a description then that...");
                     hasError = true;
                 }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_descriptionEntry}|{descriptionValue}|");
+                }
 
                 if (!GetEntry(parts, _priceEntry, out string priceValue))
                 {
                     errorResponse.AppendLine("* Price entry was missing or incorrectly formatted.");
                     hasError = true;
+                }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_priceEntry}|{priceValue}|");
                 }
 
                 if (!GetEntry(parts, _shippingEntry, out string shippingValue))
@@ -152,11 +172,19 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* Shipping entry value should be \"yes\" or \"no\".");
                     hasError = true;
                 }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_shippingEntry}|{shippingValue}|");
+                }
 
                 if (!GetEntry(parts, _regionEntry, out string regionValue))
                 {
                     errorResponse.AppendLine("* Region entry was missing or incorrectly formatted.");
                     hasError = true;
+                }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_regionEntry}|{regionValue}|");
                 }
 
                 if (!GetEntry(parts, _productEntry, out string productValue))
@@ -164,11 +192,19 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* The product link entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_productEntry}|{productValue}|");
+                }
 
                 if (!GetEntry(parts, _pictureEntry, out string pictureValue))
                 {
                     errorResponse.AppendLine("* The album link entry was missing or incorrectly formatted.");
                     hasError = true;
+                }
+                else
+                {
+                    formattedRedditTable.AppendLine($"|{_pictureEntry}|{pictureValue}|");
                 }
 
                 if (!DryRun)
@@ -180,19 +216,23 @@ namespace ChefKnifeSwapBot.Handlers
                         //post.Remove();
 
                         errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues ~and resubmit~. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
-                        errorResponse.AppendLine("---\n");
                         replyMessage = errorResponse;
-                    }
-
-                    if (postHistory == null || !postHistory.Any())
-                    {
-                        replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
                     }
                     else
                     {
-                        replyMessage.AppendLine($"Here are some past posts from u/{post.Author}:");
-                        postHistory.Take(5).ToList()
-                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
+                        replyMessage.Append(formattedRedditTable.ToString());
+                        replyMessage.AppendLine("---\n");
+
+                        if (postHistory == null || !postHistory.Any())
+                        {
+                            replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
+                        }
+                        else
+                        {
+                            replyMessage.AppendLine($"Here are some past posts from u/{post.Author}:");
+                            postHistory.Take(5).ToList()
+                                .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
+                        }
                     }
 
                     var reply = post
