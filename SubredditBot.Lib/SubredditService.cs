@@ -127,7 +127,7 @@ namespace SubredditBot.Lib
             Repeater.Repeat(() => PullCommentsAndPosts(), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
         }
 
-        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 1000)
+        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 500)
         {
             _logger.Information($"Pulling {postCount} posts and {commentCount} comments. Interval: {_commentAndPostPullIntervalMinutes} minutes");
 
