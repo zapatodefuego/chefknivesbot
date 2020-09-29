@@ -16,6 +16,7 @@ namespace ChefKnivesCommentsDatabase
         private const string _redditUrlCommentsRequest = "/comments.json";
         private const string _redditUrlPostsRequest = "/new/.json";
         private const string _redditUrlLimitString = "?limit=";
+        private const string _redditUrlAfterString = "&after=";
         private readonly HttpClient _httpClient = new HttpClient();
 
         public RedditHttpsReader(string subreddit)
@@ -23,20 +24,32 @@ namespace ChefKnivesCommentsDatabase
             _subreddit = subreddit;
         }
 
-        private string GetRecentPostsRequestUrl(int numPosts)
+        private string GetRecentPostsRequestUrl(int numPosts, string after = null)
         {
-            return $"{ _redditUrlPrefix}{_subreddit}{_redditUrlPostsRequest}{_redditUrlLimitString}{numPosts}";
+            var url = $"{ _redditUrlPrefix}{_subreddit}{_redditUrlPostsRequest}{_redditUrlLimitString}{numPosts}";
+            if (!string.IsNullOrEmpty(after))
+            {
+                url = $"{url}{_redditUrlAfterString}{after}";
+            }
+
+            return url;
         }
 
-        private string GetRecentCommentsRequestUrl(int numComments)
+        private string GetRecentCommentsRequestUrl(int numComments, string after = null)
         {
-            return $"{ _redditUrlPrefix}{_subreddit}{_redditUrlCommentsRequest}{_redditUrlLimitString}{numComments}";
+            var url = $"{ _redditUrlPrefix}{_subreddit}{_redditUrlCommentsRequest}{_redditUrlLimitString}{numComments}";
+            if (!string.IsNullOrEmpty(after))
+            {
+                url = $"{url}{_redditUrlAfterString}{after}";
+            }
+
+            return url;
         }
 
-        public IEnumerable<SubredditBot.Data.Post> GetRecentPosts(int numPosts)
+        public IEnumerable<SubredditBot.Data.Post> GetRecentPosts(int numPosts, string after = null)
         {
             var output = new List<SubredditBot.Data.Post>();
-            using (var httpResponse = _httpClient.GetAsync(GetRecentPostsRequestUrl(numPosts)).Result)
+            using (var httpResponse = _httpClient.GetAsync(GetRecentPostsRequestUrl(numPosts, after)).Result)
             {
                 var content = httpResponse.Content;
                 if (httpResponse.StatusCode != HttpStatusCode.OK || content == null)
@@ -54,10 +67,10 @@ namespace ChefKnivesCommentsDatabase
             return output;
         }
 
-        public IEnumerable<SubredditBot.Data.Comment> GetRecentComments(int numComments)
+        public IEnumerable<SubredditBot.Data.Comment> GetRecentComments(int numComments, string after = null)
         {
             var output = new List<SubredditBot.Data.Comment>();
-            using (var httpResponse = _httpClient.GetAsync(GetRecentCommentsRequestUrl(numComments)).Result)
+            using (var httpResponse = _httpClient.GetAsync(GetRecentCommentsRequestUrl(numComments, after)).Result)
             {
                 var content = httpResponse.Content;
                 if (httpResponse.StatusCode != HttpStatusCode.OK || content == null)

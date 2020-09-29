@@ -127,7 +127,7 @@ namespace SubredditBot.Lib
             Repeater.Repeat(() => PullCommentsAndPosts(), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
         }
 
-        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 100)
+        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 1000)
         {
             _logger.Information($"Pulling {postCount} posts and {commentCount} comments. Interval: {_commentAndPostPullIntervalMinutes} minutes");
 
@@ -149,6 +149,28 @@ namespace SubredditBot.Lib
 
             var recentComments = redditReader.GetRecentComments(numComments: commentCount);
             RedditCommentDatabase.Upsert(recentComments);
+
+            var tries = 0;
+            var count = 0;
+            var oldestComment = recentComments.First();
+            while (count < commentCount && tries < 10)
+            {
+                var newComments = new List<SubredditBot.Data.Comment>();
+                foreach (var comment in recentComments)
+                {
+                    if (comment.CreateDate < oldestComment.CreateDate)
+                    {
+                        oldestComment = comment;
+                    }
+
+                    newComments.Add(comment);
+                    count++;
+                }
+
+                RedditCommentDatabase.Upsert(newComments);
+                recentComments = redditReader.GetRecentComments(numComments: commentCount, after: oldestComment.Fullname);
+                tries++;
+            }
 
             _logger.Information($"Fineshed pulling posts and comments.");
         }
