@@ -24,16 +24,6 @@ namespace ChefKnifeSwapBot.Handlers
         private const string _productEntry = "Product page link(s)";
         private const string _pictureEntry = "Picture album link";
         private const string _endEntry = "End";
-        private static string _table =
-            $";{_titleEntry};\n" +
-            $";{_nameEntry};\n" +
-            $";{_descriptionEntry};\n" +
-            $";{_priceEntry};\n" +
-            $";{_shippingEntry};\n" +
-            $";{_regionEntry};\n" +
-            $";{_productEntry};\n" +
-            $";{_pictureEntry};\n" +
-            $";{_endEntry};\n";
 
         private static Regex _tableIdentifierRegex = new Regex(";", RegexOptions.Compiled);
 
@@ -73,7 +63,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post is missing the required table or it is formatted incorrectly. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/):\n\n {_table}";
+                        var response = $"It looks like your Selling post is missing the required table or it is formatted incorrectly. [Follow this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -85,7 +75,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post does not contain all of the expected entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/):\n\n {_table}";
+                        var response = $"It looks like your Selling post does not contain all of the expected entries. [Follow this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -98,7 +88,7 @@ namespace ChefKnifeSwapBot.Handlers
                 {
                     if (!DryRun)
                     {
-                        var response = $"It looks like your Selling post containes too many entries. Please submit a new post containing the following table or [click this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/):\n\n {_table}";
+                        var response = $"It looks like your Selling post containes too many entries. [Following this link to find out more](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)";
                         var reply = post.Reply(response).Distinguish("yes", true);
                         //post.Remove();
 
@@ -163,11 +153,6 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* Shipping entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
-                else if (!new string[] { "yes", "no" }.Any(s => shippingValue.Contains(s.ToLower())))
-                {
-                    errorResponse.AppendLine("* Shipping entry value should be \"yes\" or \"no\".");
-                    hasError = true;
-                }
                 else
                 {
                     formattedRedditTable.AppendLine($"|{_shippingEntry}|{shippingValue.Trim()}|");
@@ -211,24 +196,24 @@ namespace ChefKnifeSwapBot.Handlers
                     {
                         //post.Remove();
 
-                        errorResponse.AppendLine("\n\nThis post has [NOT] been removed. Please correct the above issues ~and resubmit~. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
+                        errorResponse.AppendLine("Please correct the above issues. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
+                        errorResponse.AppendLine("---\n");
+                        errorResponse.AppendLine("There were errors but I tried to format the table:");
                         replyMessage = errorResponse;
+                    }
+
+                    replyMessage.Append(formattedRedditTable.ToString());
+                    replyMessage.AppendLine("---\n");
+
+                    if (postHistory == null || !postHistory.Any())
+                    {
+                        replyMessage.AppendLine($"u/{post.Author} has not submitted any posts in r/{_service.Subreddit.Name} since I've gained sentience");
                     }
                     else
                     {
-                        replyMessage.Append(formattedRedditTable.ToString());
-                        replyMessage.AppendLine("---\n");
-
-                        if (postHistory == null || !postHistory.Any())
-                        {
-                            replyMessage.AppendLine($"u/{post.Author} has not submitted any [Selling] posts in r/{_service.Subreddit.Name} since I've gained sentience");
-                        }
-                        else
-                        {
-                            replyMessage.AppendLine($"Here are some past posts from u/{post.Author}:");
-                            postHistory.Take(5).ToList()
-                                .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
-                        }
+                        replyMessage.AppendLine($"Here are some past posts from u/{post.Author}:");
+                        postHistory.Take(5).ToList()
+                            .ForEach(p => replyMessage.AppendLine($"* [{p.Title}]({_postUrlFirstPart}{p.Id})"));
                     }
 
                     var reply = post
