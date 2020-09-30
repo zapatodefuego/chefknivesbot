@@ -109,7 +109,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
 
                 var formattedRedditTable = new StringBuilder();
-                formattedRedditTable.AppendLine("|Selling table. All items mandatory. One table per post. This header must be included||");
+                formattedRedditTable.AppendLine("|Selling table|this was formatted by the bot and may contain errors|");
                 formattedRedditTable.AppendLine(":--|:--|");
 
                 var hasError = false;
@@ -122,10 +122,6 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* Title entry was modified, missing, or incorrectly formatted");
                     hasError = true;
                 }
-                else
-                {
-                    formattedRedditTable.AppendLine($"|{_titleEntry}|{titleValue}|");
-                }
 
                 if (!GetEntry(parts, _nameEntry, out string nameValue))
                 {
@@ -134,7 +130,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_nameEntry}|{nameValue}|");
+                    formattedRedditTable.AppendLine($"|{_nameEntry}|{nameValue.Trim()}|");
                 }
 
                 if (!GetEntry(parts, _descriptionEntry, out string descriptionValue))
@@ -149,7 +145,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_descriptionEntry}|{descriptionValue}|");
+                    formattedRedditTable.AppendLine($"|{_descriptionEntry}|{descriptionValue.Trim()}|");
                 }
 
                 if (!GetEntry(parts, _priceEntry, out string priceValue))
@@ -159,7 +155,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_priceEntry}|{priceValue}|");
+                    formattedRedditTable.AppendLine($"|{_priceEntry}|{priceValue.Trim()}|");
                 }
 
                 if (!GetEntry(parts, _shippingEntry, out string shippingValue))
@@ -174,7 +170,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_shippingEntry}|{shippingValue}|");
+                    formattedRedditTable.AppendLine($"|{_shippingEntry}|{shippingValue.Trim()}|");
                 }
 
                 if (!GetEntry(parts, _regionEntry, out string regionValue))
@@ -184,7 +180,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_regionEntry}|{regionValue}|");
+                    formattedRedditTable.AppendLine($"|{_regionEntry}|{regionValue.Trim()}|");
                 }
 
                 if (!GetEntry(parts, _productEntry, out string productValue))
@@ -194,7 +190,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_productEntry}|{productValue}|");
+                    formattedRedditTable.AppendLine($"|{_productEntry}|{productValue.Trim()}|");
                 }
 
                 if (!GetEntry(parts, _pictureEntry, out string pictureValue))
@@ -204,7 +200,7 @@ namespace ChefKnifeSwapBot.Handlers
                 }
                 else
                 {
-                    formattedRedditTable.AppendLine($"|{_pictureEntry}|{pictureValue}|");
+                    formattedRedditTable.AppendLine($"|{_pictureEntry}|{pictureValue.Trim()}|");
                 }
 
                 if (!DryRun)
