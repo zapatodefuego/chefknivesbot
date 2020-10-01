@@ -128,11 +128,6 @@ namespace ChefKnifeSwapBot.Handlers
                     errorResponse.AppendLine("* Description entry was missing or incorrectly formatted.");
                     hasError = true;
                 }
-                else if (descriptionValue.Length < 50)
-                {
-                    errorResponse.AppendLine("* C'mon you can write more of a description then that...");
-                    hasError = true;
-                }
                 else
                 {
                     formattedRedditTable.AppendLine($"|{_descriptionEntry}|{descriptionValue.Trim()}|");
@@ -197,13 +192,13 @@ namespace ChefKnifeSwapBot.Handlers
                         //post.Remove();
 
                         errorResponse.AppendLine("Please correct the above issues. [Click this link to find out more.](https://www.reddit.com/r/chefknifeswap/comments/irpqd2/we_will_be_testing_out_new_bot_functions_over_the/)");
-                        errorResponse.AppendLine("---\n");
-                        errorResponse.AppendLine("There were errors but I tried to format the table:");
+                        errorResponse.AppendLine("\n\n---\n\n");
+                        errorResponse.AppendLine("There were errors but I tried to format the table:\n\n");
                         replyMessage = errorResponse;
                     }
 
                     replyMessage.Append(formattedRedditTable.ToString());
-                    replyMessage.AppendLine("---\n");
+                    replyMessage.AppendLine("\n\n---\n\n");
 
                     if (postHistory == null || !postHistory.Any())
                     {
