@@ -95,8 +95,8 @@ namespace ChefKnivesBot.Handlers.Posts
             {
                 var reply = post
                     .Reply(
-                        $"Of your recent comments in {_service.Subreddit.Name}, {result.GoodCitizenComments} occured outside of your own posts while only {result.MakerPosts} were made on posts you authored. \n\n " +
-                        $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a Maker Post.\n\n" +
+                        $"It looks like you've submitted {result.MakerPosts} Maker Posts but only authored {result.GoodCitizenComments} comments outside of your own Maker Posts. " +
+                        $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a new Maker Post.\n\n" +
                         $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
                     .Distinguish("yes", false);
 
