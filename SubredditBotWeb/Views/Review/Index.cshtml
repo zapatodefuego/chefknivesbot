@@ -22,7 +22,8 @@
                 <th style="width: 10%">@Html.DisplayNameFor(model => model.Posts[0].Id)</th>
                 <th style="width: 10%">@Html.DisplayNameFor(model => model.Posts[0].CreateDate)</th>
                 <th style="width: 25%">@Html.DisplayNameFor(model => model.Posts[0].Permalink)</th>
-                <th style="width: 55%">@Html.DisplayNameFor(model => model.Posts[0].Title)</th>
+                <th style="width: 45%">@Html.DisplayNameFor(model => model.Posts[0].Title)</th>
+                <th style="width: 10%">@Html.DisplayNameFor(model => model.Posts[0].Flair)</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,7 @@
                     <td>@Html.DisplayFor(modelItem => item.CreateDate)</td>
                     <td><a href="@Html.DisplayFor(modelItem => item.Permalink)">Link</a></td>
                     <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Flair)</td>
                 </tr>
             }
         </tbody>
