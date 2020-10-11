@@ -43,10 +43,10 @@ namespace SubredditBotWeb.Controllers
             var result = reviewTask.GetAwaiter().GetResult();
 
             model.Message = $"Reviewed {model.Username} in {result.ReviewTime} (ms). Found {result.MakerPosts.Count()} maker posts and {result.Comments.Count() - result.MakerComments.Count()} total non-maker comments.";
-            model.Comments = result.Comments.ToList();
+            model.Comments = result.Comments.OrderByDescending(o => o.CreateDate).ToList();
             model.Comments.ForEach(c => c.Permalink = $"{urlRoot}{c.Permalink}");
 
-            model.Posts = result.Posts.ToList();
+            model.Posts = result.Posts.OrderByDescending(o => o.CreateDate).ToList();
             model.Posts.ForEach(p => p.Permalink = $"{urlRoot}{p.Permalink}");
         }
     }
