@@ -9,12 +9,11 @@ using System;
 
 namespace SubredditBotWeb.Controllers
 {
-    internal static class Statistics
-    {
-        public static DateTime StartTime { get; } = DateTime.Now;
-    }
-
+#if DEBUG
+    [AllowAnonymous]
+#else
     [Authorize(Policy = "SubredditModerator")]
+#endif
     public class StatusController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -29,7 +28,7 @@ namespace SubredditBotWeb.Controllers
         {
             var model = new StatusModel
             {
-                Message = $"Uptime: {DateTime.Now - Statistics.StartTime}"
+                Message = $"Uptime: {DateTime.Now - Program.StartTime}"
             };
             return View(model);
         }

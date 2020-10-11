@@ -49,7 +49,7 @@ namespace SubredditBot.Cli
                     _commentDatabase.Upsert(redditComment);
                 }
 
-                Console.WriteLine($"Post {post.Id} had {comments.Count} comments");
+                Console.WriteLine($"Post {post.Id} had {comments.Count} comments. Post created: {post.CreateDate}");
             }
 
             Console.WriteLine($"Pulled {commentCount} comments from {postCount} posts");

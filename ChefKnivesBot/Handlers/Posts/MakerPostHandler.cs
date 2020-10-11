@@ -50,13 +50,16 @@ namespace ChefKnivesBot.Handlers.Posts
                 if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
                 {
                     var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase).Result;
-                    if (result.GoodCitizenComments < 2)
+                    var nonMakerCommentCount = result.Comments.Count() - result.MakerComments.Count();
+                    var makerPostCount = result.MakerPosts.Count();
+
+                    if (nonMakerCommentCount < 2)
                     {
                         SendNeverContributedWarningMessage(post);
                     }
-                    else if (result.GoodCitizenComments >= result.MakerPosts * 3)
+                    else if (nonMakerCommentCount < makerPostCount * 3)
                     {
-                        SendTenToOneWarningMessage(post, result);
+                        SendTenToOneWarningMessage(post, nonMakerCommentCount, makerPostCount);
                     }
                     else
                     {
@@ -89,13 +92,13 @@ namespace ChefKnivesBot.Handlers.Posts
             _logger.Information($"Commented with SendNeverContributedWarningMessage on post by {post.Author}");
         }
 
-        private void SendTenToOneWarningMessage(Post post, MakerReviewResult result)
+        private void SendTenToOneWarningMessage(Post post, int nonMakerComments, int makerPostCount)
         {
             if (!DryRun)
             {
                 var reply = post
                     .Reply(
-                        $"It looks like you've submitted {result.MakerPosts} Maker Posts but only authored {result.GoodCitizenComments} comments outside of your own Maker Posts. " +
+                        $"It looks like you've submitted {makerPostCount} Maker Posts but only authored {nonMakerComments} comments outside of your own Maker Posts. " +
                         $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a new Maker Post.\n\n" +
                         $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
                     .Distinguish("yes", false);

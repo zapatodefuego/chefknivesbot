@@ -11,6 +11,7 @@ namespace SubredditBot.DataAccess.DataExtensions
             return new Data.Post
             {
                 Id = expandedPost.id,
+                Permalink = expandedPost.permalink,
                 Fullname = expandedPost.name,
                 Author = expandedPost.author,
                 Title = expandedPost.title,

@@ -9,12 +9,13 @@ using Serilog;
 using SubredditBot.Lib;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SubredditBotWeb
 {
     public class Program
     {
+        public static DateTime StartTime { get; } = DateTime.Now;
+
         public static DiscordService DiscordService { get; set; }
 
         public static SubredditService ChefKnivesService { get; set; }

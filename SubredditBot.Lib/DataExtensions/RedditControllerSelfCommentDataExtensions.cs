@@ -9,6 +9,7 @@ namespace SubredditBot.Lib.DataExtensions
             return new SelfComment
             {
                 Author = comment.Author,
+                Permalink = comment.Permalink,
                 Body = comment.Body,
                 Id = comment.Id,
                 Fullname = comment.Fullname,

@@ -19,6 +19,8 @@ namespace SubredditBot.Data
 
         public bool IsDeleted { get; set; }
 
+        public string Permalink { get; set; } = string.Empty;
+
         public override int GetHashCode()
         {
             int hash = 17;

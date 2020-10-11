@@ -12,6 +12,7 @@ namespace SubredditBot.Lib.DataExtensions
             return new Post
             {
                 Author = post.Author,
+                Permalink = post.Permalink,
                 Title = post.Title,
                 Flair = post.Listing.LinkFlairText,
                 Id = post.Id,

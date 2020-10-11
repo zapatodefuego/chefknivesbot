@@ -5,6 +5,7 @@ using SubredditBot.DataAccess;
 using SubredditBot.Lib;
 using SubredditBot.Lib.Data;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,10 +22,11 @@ namespace ChefKnivesBot.Utilities
             _stopWatch.Reset();
             _stopWatch.Start();
 
-            var posts = (await postDatabase.GetBy(nameof(RedditThing.Author), author)).Where(p => p.Flair != null && p.Flair.Equals("Maker Post"));
-
-            var commentCount = 0;
+            var result = new MakerReviewResult();
+            var posts = await postDatabase.GetBy(nameof(RedditThing.Author), author);
+            var makerPosts = posts.Where(p => p.Flair != null && p.Flair.Equals("Maker Post"));
             var comments = await commentDatabase.GetBy(nameof(RedditThing.Author), author);
+            var makerComments = new List<Comment>();
             foreach (var comment in comments)
             {
                 var post = postDatabase.GetById(ConvertListingIdToPostId(comment.PostLinkId));
@@ -33,9 +35,9 @@ namespace ChefKnivesBot.Utilities
                     continue;
                 }
 
-                if (!post.Author.Equals(author) || !(post.Flair != null && post.Flair.Equals("Maker Post")))
+                if (post.Author.Equals(author) && post.Flair != null && post.Flair.Equals("Maker Post"))
                 {
-                    commentCount++;
+                    makerComments.Add(comment);
                 }
             }
 
@@ -43,8 +45,10 @@ namespace ChefKnivesBot.Utilities
 
             return new MakerReviewResult
             {
-                MakerPosts = posts.Count(),
-                GoodCitizenComments = commentCount,
+                Posts = posts,
+                MakerPosts = makerPosts,
+                Comments = comments,
+                MakerComments = makerComments,
                 ReviewTime = _stopWatch.ElapsedMilliseconds
 
             };

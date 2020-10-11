@@ -1,12 +1,15 @@
-﻿namespace SubredditBot.Lib.Data
+﻿using SubredditBot.Data;
+using System.Collections.Generic;
+
+namespace SubredditBot.Lib.Data
 {
     public class MakerReviewResult
     {
-        public int MakerPosts { get; set; }
-
-        public int GoodCitizenComments { get; set; }
-
         public long ReviewTime { get; set; }
+        public IEnumerable<Post> MakerPosts { get; set; }
+        public IEnumerable<Post> Posts { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
+        public IEnumerable<Comment> MakerComments { get; set; }
     }
 
 }

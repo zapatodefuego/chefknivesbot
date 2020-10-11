@@ -11,6 +11,7 @@ namespace SubredditBot.DataAccess.DataExtensions
             return new Data.Comment
             {
                 Author = expandedComment.author,
+                Permalink = expandedComment.permalink,
                 Body = expandedComment.body,
                 Id = expandedComment.id,
                 Fullname = expandedComment.name,

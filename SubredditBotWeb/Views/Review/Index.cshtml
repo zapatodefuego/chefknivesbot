@@ -1,0 +1,65 @@
+﻿@model ReviewModel;
+
+@{
+    ViewData["Title"] = "Review Page";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Review" asp-action="Index" method="post">
+    <label>Username:</label>
+    <input type="text" asp-for="Username" />
+    <button class="btn btn-danger" type="submit" value="Submit">Review</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <p>@Model.Message</p>
+
+    <h4>Posts</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width: 10%">@Html.DisplayNameFor(model => model.Posts[0].Id)</th>
+                <th style="width: 10%">@Html.DisplayNameFor(model => model.Posts[0].CreateDate)</th>
+                <th style="width: 25%">@Html.DisplayNameFor(model => model.Posts[0].Permalink)</th>
+                <th style="width: 55%">@Html.DisplayNameFor(model => model.Posts[0].Title)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Posts)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CreateDate)</td>
+                    <td><a href="@Html.DisplayFor(modelItem => item.Permalink)">Link</a></td>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Comments</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width: 10%">@Html.DisplayNameFor(model => model.Comments[0].Id)</th>
+                <th style="width: 10%">@Html.DisplayNameFor(model => model.Comments[0].CreateDate)</th>
+                <th style="width: 25%">@Html.DisplayNameFor(model => model.Comments[0].Permalink)</th>
+                <th style="width: 50%">@Html.DisplayNameFor(model => model.Comments[0].Body)</th>
+                <th style="width: 5%">@Html.DisplayNameFor(model => model.Comments[0].PostLinkId)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Comments)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CreateDate)</td>
+                    <td><a href="@Html.DisplayFor(modelItem => item.Permalink)">Link</a></td>
+                    <td>@Html.DisplayFor(modelItem => item.Body)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PostLinkId)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
