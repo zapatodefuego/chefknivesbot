@@ -1,17 +1,16 @@
-﻿using SubredditBot.Lib;
+﻿using ChefKnifeSwapBot.Handlers;
+using ChefKnivesBot.Handlers.Comments;
+using ChefKnivesBot.Handlers.Posts;
+using ChefKnivesBot.Wiki;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
 using Reddit;
 using Serilog;
+using SubredditBot.DataAccess;
+using SubredditBot.Lib;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ChefKnivesBot;
-using SubredditBot.DataAccess;
-using ChefKnivesBot.Handlers.Comments;
-using ChefKnivesBot.Handlers.Posts;
-using ChefKnifeSwapBot.Handlers;
-using ChefKnivesBot.Wiki;
-using System.Threading;
 
 namespace SubredditBot.Cli
 {
@@ -81,6 +80,20 @@ namespace SubredditBot.Cli
                 reviewPage.AddReviewLinkToReviewPage("Y", "zapatodefuego", "test entry 14", "https://www.reddit.com/r/chefknives/wiki/edit/reviews");
                 reviewPage.AddReviewLinkToReviewPage("Z", "zapatodefuego", "test entry 15", "https://www.reddit.com/r/chefknives/wiki/edit/reviews");
             }
+
+            //var mongoClient = new MongoClient(_configuration["ConnectionString"]);
+            //var collection = mongoClient.GetDatabase("chefknives").GetCollection<BsonDocument>("comments");
+            //var redditComments = collection.Find(Builders<BsonDocument>.Filter.Eq("_t", "RedditComment")).ToList();
+            //foreach (var redditComment in redditComments)
+            //{
+            //    var comment = BsonSerializer.Deserialize<Comment>(redditComment);
+            //    var bson = comment.ToBsonDocument();
+            //    bson.InsertAt(1, new BsonElement("_t", "Comment"));
+            //    collection.ReplaceOne(
+            //        filter: new BsonDocument("_id", comment.Id),
+            //        options: new ReplaceOptions { IsUpsert = true },
+            //        replacement: bson);
+            //}
         }
 
         private static void InitializeTestServiceFunctions(ILogger logger, SubredditService service, bool dryRun)

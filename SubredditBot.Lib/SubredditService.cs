@@ -1,5 +1,6 @@
 ﻿using ChefKnivesCommentsDatabase;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson.Serialization;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Controllers.EventArgs;

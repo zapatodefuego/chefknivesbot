@@ -24,7 +24,7 @@ namespace SubredditBotWeb
 
         public static bool DryRun { get; private set; }
 
-        private static IConfigurationRoot _configuration;
+        public static IConfigurationRoot Configuration;
 
         public static void Main(string[] args)
         {
@@ -43,7 +43,7 @@ namespace SubredditBotWeb
                 compoundConfiguration.AddJsonFile(chefKnivesSettingsFile, false, false);
             }
 
-            _configuration = compoundConfiguration.Build();
+            Configuration = compoundConfiguration.Build();
 
             // Ryky config
             var rykySettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RykySettingsFile"]);
@@ -73,15 +73,15 @@ namespace SubredditBotWeb
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            DiscordService = new DiscordService(Log.Logger, _configuration);
+            DiscordService = new DiscordService(Log.Logger, Configuration);
             DiscordService.Start().GetAwaiter().GetResult();
 
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
                 DryRun = args.Any(a => a.Equals("--dryrun"));
 
-                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, _configuration, DiscordService.SendModChannelMessage, DryRun);
-                ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, _configuration, DryRun);
+                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, Configuration, DiscordService.SendModChannelMessage, DryRun);
+                ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, Configuration, DryRun);
                 //var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
                 var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, cuttingBoardsConfig, DryRun);
             }
@@ -95,7 +95,7 @@ namespace SubredditBotWeb
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseConfiguration(_configuration);
+                    webBuilder.UseConfiguration(Configuration);
                 });
     }
 }

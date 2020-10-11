@@ -23,6 +23,8 @@ namespace SubredditBot.DataAccess
             _databaseName = databaseName;
             _collectionName = collectionName;
 
+            BsonTypeMapInitializer.RunOnce();
+
             // ensures the database and collection is set up the first time
             if (!_mongoClient.GetDatabase(databaseName).ListCollections(new ListCollectionsOptions { Filter = new BsonDocument("name", collectionName) }).Any())
             {
