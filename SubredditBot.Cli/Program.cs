@@ -3,6 +3,7 @@ using ChefKnivesBot.Handlers.Comments;
 using ChefKnivesBot.Handlers.Posts;
 using ChefKnivesBot.Wiki;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Reddit;
 using Serilog;
@@ -81,8 +82,8 @@ namespace SubredditBot.Cli
                 reviewPage.AddReviewLinkToReviewPage("Z", "zapatodefuego", "test entry 15", "https://www.reddit.com/r/chefknives/wiki/edit/reviews");
             }
 
-            //var mongoClient = new MongoClient(_configuration["ConnectionString"]);
-            //var collection = mongoClient.GetDatabase("chefknives").GetCollection<BsonDocument>("comments");
+            var mongoClient = new MongoClient(_configuration["ConnectionString"]);
+            var collection = mongoClient.GetDatabase("chefknives").GetCollection<BsonDocument>("comments");
             //var redditComments = collection.Find(Builders<BsonDocument>.Filter.Eq("_t", "RedditComment")).ToList();
             //foreach (var redditComment in redditComments)
             //{
@@ -93,6 +94,13 @@ namespace SubredditBot.Cli
             //        filter: new BsonDocument("_id", comment.Id),
             //        options: new ReplaceOptions { IsUpsert = true },
             //        replacement: bson);
+            //}
+
+            //var bsonResults = collection.AsQueryable();
+            //foreach (var r in bsonResults)
+            //{
+            //    var s = r.GetValue("Author");
+            //    var ss = s.AsString.ToLower();
             //}
         }
 

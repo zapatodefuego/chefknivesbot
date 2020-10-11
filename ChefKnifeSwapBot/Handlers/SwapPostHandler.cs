@@ -185,7 +185,7 @@ namespace ChefKnifeSwapBot.Handlers
 
                 if (!DryRun)
                 {
-                    var postHistory = _service.RedditPostDatabase.GetBy(nameof(RedditThing.Author), post.Author).Result;
+                    var postHistory = _service.RedditPostDatabase.GetByFilter(nameof(RedditThing.Author), post.Author).Result;
                     var replyMessage = new StringBuilder();
                     if (hasError)
                     {

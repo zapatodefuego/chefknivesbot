@@ -23,9 +23,9 @@ namespace ChefKnivesBot.Utilities
             _stopWatch.Start();
 
             var result = new MakerReviewResult();
-            var posts = await postDatabase.GetBy(nameof(RedditThing.Author), author);
+            var posts = await postDatabase.GetByQueryable(nameof(RedditThing.Author), author);
             var makerPosts = posts.Where(p => p.Flair != null && p.Flair.Equals("Maker Post"));
-            var comments = await commentDatabase.GetBy(nameof(RedditThing.Author), author);
+            var comments = await commentDatabase.GetByQueryable(nameof(RedditThing.Author), author);
             var makerComments = new List<Comment>();
             foreach (var comment in comments)
             {

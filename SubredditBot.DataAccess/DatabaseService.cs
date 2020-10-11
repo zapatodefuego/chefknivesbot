@@ -82,7 +82,7 @@ namespace SubredditBot.DataAccess
         {
             if (!_cache.GetBy(propertyName, propertyValue).Any())
             {
-                return (await GetBy(propertyName, propertyValue)).Any();
+                return (await GetByFilter(propertyName, propertyValue)).Any();
             }
 
             return true;
@@ -109,7 +109,7 @@ namespace SubredditBot.DataAccess
             return null;
         }
 
-        public async Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue)
+        public async Task<IEnumerable<T>> GetByFilter(string propertyName, string propertyValue)
         {
             if (propertyName.Equals(nameof(RedditThing.Id)))
             {
@@ -118,6 +118,36 @@ namespace SubredditBot.DataAccess
 
             var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
             var results = await GetByFilter(filter);
+            foreach (var result in results)
+            {
+                if (!_cache.Contains(result))
+                {
+                    _cache.Add(result);
+                }
+            }
+
+            return results;
+        }
+
+        public async Task<IEnumerable<T>> GetByQueryable(string propertyName, string propertyValue)
+        {
+            if (propertyName.Equals(nameof(RedditThing.Id)))
+            {
+                throw new InvalidOperationException($"Use {nameof(GetById)} to query by Id");
+            }
+
+            var bsonResults = GetMongoCollection().AsQueryable();
+            var results = new List<T>();
+            foreach (var bsonResult in bsonResults)
+            {
+                if (bsonResult.TryGetValue(propertyName, out BsonValue bsonValue) &&
+                    bsonValue.IsString &&
+                    bsonValue.AsString.ToLower().Equals(propertyValue.ToLower()))
+                {
+                    results.Add(BsonSerializer.Deserialize<T>(bsonResult));
+                }
+            }
+
             foreach (var result in results)
             {
                 if (!_cache.Contains(result))

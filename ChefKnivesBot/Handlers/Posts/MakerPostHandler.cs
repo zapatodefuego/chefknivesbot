@@ -120,7 +120,7 @@ namespace ChefKnivesBot.Handlers.Posts
                 "or anywhere on r/chefknives. Use private messages for any such inquiries. \n\n");
 
             var postHistory = _service.RedditPostDatabase
-                .GetBy(nameof(RedditThing.Author), post.Author).Result
+                .GetByFilter(nameof(RedditThing.Author), post.Author).Result
                 .Where(p => p.Flair != null && p.Flair.Equals(_makerPostName));
             if (postHistory != null && postHistory.Any())
             {
