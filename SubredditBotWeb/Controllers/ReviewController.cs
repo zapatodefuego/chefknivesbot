@@ -13,7 +13,7 @@ namespace SubredditBotWeb.Controllers
 #endif
     public class ReviewController : Controller
     {
-        private const string urlRoot = "https://www.reddit.com/r/chefknives";
+        private const string urlRoot = "https://www.reddit.com";
 
         public ReviewController()
         {
