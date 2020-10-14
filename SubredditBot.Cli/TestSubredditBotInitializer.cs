@@ -7,7 +7,7 @@ namespace SubredditBot.Cli
 {
     public class TestSubredditBotInitializer
     {
-        private const string _subredditName = "chefknives";
+        private const string _subredditName = "zapatodefuego";
 
         public SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false)
         {

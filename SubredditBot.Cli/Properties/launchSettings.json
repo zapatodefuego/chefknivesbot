@@ -1,7 +1,8 @@
 {
   "profiles": {
     "SubredditBot.Cli": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--testchefknivesbot"
     }
   }
 }
