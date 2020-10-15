@@ -24,6 +24,7 @@ namespace SubredditBot.Lib
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly Func<string, Task> _callback;
+        private readonly bool _processOldPosts;
         private CancellationTokenSource _cancellationToken;
 
         public SubredditService(
@@ -32,12 +33,14 @@ namespace SubredditBot.Lib
             RedditClient redditClient,
             string subredditName,
             string databaseName,
-            Func<string, Task> callback = null)
+            Func<string, Task> callback = null,
+            bool processOldPosts = true)
         {
             _logger = logger;
             _configuration = configuration;
             RedditClient = redditClient;
             _callback = callback;
+            _processOldPosts = processOldPosts;
             Subreddit = redditClient.Subreddit(subredditName);
             Account = redditClient.Account;
 
@@ -138,13 +141,18 @@ namespace SubredditBot.Lib
             foreach (var postToUpdate in recentPosts)
             {
                 var updatedPost = RedditPostDatabase.Upsert(postToUpdate);
-                if (updatedPost != null && postToUpdate.Flair != updatedPost.Flair)
+
+                // If process old posts is enabled, re-trigger the handlers for those posts
+                if (_processOldPosts)
                 {
-                    PostHandlers.ForEach(c =>
+                    if (updatedPost != null && postToUpdate.Flair != updatedPost.Flair)
                     {
-                        var postController = RedditClient.Post(updatedPost.Fullname).Info();
-                        c.Process(postController);
-                    });
+                        PostHandlers.ForEach(c =>
+                        {
+                            var postController = RedditClient.Post(updatedPost.Fullname).Info();
+                            c.Process(postController);
+                        });
+                    }
                 }
             }
 

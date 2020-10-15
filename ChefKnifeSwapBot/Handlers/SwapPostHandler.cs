@@ -53,7 +53,10 @@ namespace ChefKnifeSwapBot.Handlers
             if (post.Title.Contains("[Selling]", StringComparison.OrdinalIgnoreCase) || (linkFlair != null && linkFlair.Equals(_flair.Id)))
             {
                 // Set the flair
-                post.SetFlair(_flair.Text, _flair.Id);
+                if (!DryRun)
+                {
+                    post.SetFlair(_flair.Text, _flair.Id);
+                }
 
                 // process as selling post
                 var content = Process(post.SelfText);
