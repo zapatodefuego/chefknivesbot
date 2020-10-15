@@ -38,31 +38,33 @@ namespace ChefKnivesBot.Handlers.Comments
                 return false;
             }
 
-            if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), comment.Id).Result)
+            if (_service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), comment.Id).Result != null)
             {
-                if (!DryRun)
+                return false;
+            }
+
+            if (!DryRun)
+            {
+                var commandParts = Regex.Split(comment.Body, "(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (commandParts.Length == 3)
                 {
-                    var commandParts = Regex.Split(comment.Body, "(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                    if (commandParts.Length == 3)
+                    if (commandParts[1] == "review")
                     {
-                        if (commandParts[1] == "review")
-                        {
-                            var knifeName = commandParts[2].Trim('"');
-                            var post = _service.Subreddit.Post(comment.ParentFullname).Info();
-                            var rewiewPage = new ReviewPage(_logger, _service);
-                            rewiewPage.AddReviewLinkToReviewPage(knifeName, post.Author, post.Title, $"{_urlRoute}{post.Listing.Permalink}");
+                        var knifeName = commandParts[2].Trim('"');
+                        var post = _service.Subreddit.Post(comment.ParentFullname).Info();
+                        var rewiewPage = new ReviewPage(_logger, _service);
+                        rewiewPage.AddReviewLinkToReviewPage(knifeName, post.Author, post.Title, $"{_urlRoute}{post.Listing.Permalink}");
 
-                            var replyComment = comment
-                                .Reply("Added to the wiki: https://www.reddit.com/r/chefknives/wiki/reviews")
-                                .Distinguish("yes");
+                        var replyComment = comment
+                            .Reply("Added to the wiki: https://www.reddit.com/r/chefknives/wiki/reviews")
+                            .Distinguish("yes");
 
-                            _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(comment.Id, RedditThingType.Comment));
-                        }
+                        _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(comment.Id, RedditThingType.Comment, comment.Listing.AuthorFlairTemplateId));
                     }
                 }
-
-                _logger.Information($"[{nameof(WikifyCommentHandler)}]: Commented on command: {comment.Body}");
             }
+
+            _logger.Information($"[{nameof(WikifyCommentHandler)}]: Commented on command: {comment.Body}");
 
             return true;
         }

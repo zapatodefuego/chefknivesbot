@@ -34,9 +34,8 @@ namespace ChefKnivesBot.Handlers.Comments
                 return false;
             }
 
-            if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), comment.Id).Result)
+            if (_service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), comment.Id).Result != null)
             {
-                _logger.Information($"[{nameof(RykyPraiseCommandHandler)}]: Comment {comment.Id} has already been replied to");
                 return false;
             }
 
@@ -62,7 +61,7 @@ namespace ChefKnivesBot.Handlers.Comments
 
                     if (reply != null)
                     {
-                        _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(comment.ParentId, RedditThingType.Comment));
+                        _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(comment.ParentId, RedditThingType.Comment, comment.Listing.AuthorFlairTemplateId));
                     }
                 }
             }

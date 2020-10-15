@@ -4,13 +4,18 @@ using ChefKnivesBot.Handlers.Posts;
 using ChefKnivesBot.Wiki;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Reddit;
 using Serilog;
+using SubredditBot.Data;
 using SubredditBot.DataAccess;
 using SubredditBot.Lib;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SubredditBot.Cli
@@ -49,7 +54,7 @@ namespace SubredditBot.Cli
                 Console.WriteLine("Action: Seed for chefknives. Press any key to continue...");
                 Console.ReadLine();
                 await SeedFor("chefknives");
-            }            
+            }
             else if (args.Any(a => a.Equals("--testchefknivesbot")))
             {
                 Console.WriteLine("Running ChefKnivesBot on r/zapatodefuego.");
@@ -81,27 +86,67 @@ namespace SubredditBot.Cli
                 reviewPage.AddReviewLinkToReviewPage("Y", "zapatodefuego", "test entry 14", "https://www.reddit.com/r/chefknives/wiki/edit/reviews");
                 reviewPage.AddReviewLinkToReviewPage("Z", "zapatodefuego", "test entry 15", "https://www.reddit.com/r/chefknives/wiki/edit/reviews");
             }
+            else if (args.Any(a => a.Equals("--reprocessmongo")))
+            {
 
-            var mongoClient = new MongoClient(_configuration["ConnectionString"]);
-            var collection = mongoClient.GetDatabase("chefknives").GetCollection<BsonDocument>("comments");
-            //var redditComments = collection.Find(Builders<BsonDocument>.Filter.Eq("_t", "RedditComment")).ToList();
-            //foreach (var redditComment in redditComments)
-            //{
-            //    var comment = BsonSerializer.Deserialize<Comment>(redditComment);
-            //    var bson = comment.ToBsonDocument();
-            //    bson.InsertAt(1, new BsonElement("_t", "Comment"));
-            //    collection.ReplaceOne(
-            //        filter: new BsonDocument("_id", comment.Id),
-            //        options: new ReplaceOptions { IsUpsert = true },
-            //        replacement: bson);
-            //}
+                var mongoClient = new MongoClient(_configuration["ConnectionString"]);
+                var collection = mongoClient.GetDatabase("chefknives").GetCollection<BsonDocument>("comments");
+                //var redditComments = collection.Find(Builders<BsonDocument>.Filter.Eq("_t", "RedditComment")).ToList();
+                //foreach (var redditComment in redditComments)
+                //{
+                //    var comment = BsonSerializer.Deserialize<Comment>(redditComment);
+                //    var bson = comment.ToBsonDocument();
+                //    bson.InsertAt(1, new BsonElement("_t", "Comment"));
+                //    collection.ReplaceOne(
+                //        filter: new BsonDocument("_id", comment.Id),
+                //        options: new ReplaceOptions { IsUpsert = true },
+                //        replacement: bson);
+                //}
 
-            //var bsonResults = collection.AsQueryable();
-            //foreach (var r in bsonResults)
-            //{
-            //    var s = r.GetValue("Author");
-            //    var ss = s.AsString.ToLower();
-            //}
+                //var bsonResults = collection.AsQueryable();
+                //foreach (var r in bsonResults)
+                //{
+                //    var s = r.GetValue("Author");
+                //    var ss = s.AsString.ToLower();
+                //}
+            }
+            else if (args.Any(a => a.Equals("--wordcloud")))
+            {
+                var mongoClient = new MongoClient(_configuration["ConnectionString"]);
+                var collection = mongoClient.GetDatabase("chefknives").GetCollection<BsonDocument>("posts");
+                var makerPosts = collection
+                    .Find(Builders<BsonDocument>
+                    .Filter.Eq("Flair", "Maker Post"))
+                    .ToList()
+                    .Select(b => BsonSerializer.Deserialize<Post>(b));
+
+                var cloud = new Dictionary<string, int>();
+                foreach (var makerPost in makerPosts)
+                {
+                    var words = makerPost.Title.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                    words.ForEach(w =>
+                    {
+                        var word = w.ToLower().Trim();
+                        if (cloud.TryGetValue(word, out int value))
+                        {
+                            cloud[word]++;
+                        }
+                        else
+                        {
+                            cloud.Add(word, 1);
+                        }
+                    });
+                }
+
+                var builder = new StringBuilder();
+                foreach (var kvp in from entry in cloud orderby entry.Value descending select entry)
+                {
+                    builder.AppendLine($"{kvp.Key} {kvp.Value}");
+                }
+
+                File.WriteAllText("out.txt", builder.ToString());
+            }
         }
 
         private static void InitializeTestServiceFunctions(ILogger logger, SubredditService service, bool dryRun)

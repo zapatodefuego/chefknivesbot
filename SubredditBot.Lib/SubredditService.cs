@@ -241,12 +241,7 @@ namespace SubredditBot.Lib
             {
                 foreach (var post in e.Added)
                 {
-                    PostHandlers.ForEach(c =>
-                    {
-                        if (c.Process(post))
-                        {
-                        }
-                    });
+                    Parallel.ForEach(PostHandlers, p => p.Process(post));
                 }
             }
             catch (RedditGatewayTimeoutException exception)

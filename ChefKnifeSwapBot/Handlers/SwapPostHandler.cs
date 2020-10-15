@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ChefKnifeSwapBot.Handlers
 {
@@ -32,7 +33,7 @@ namespace ChefKnifeSwapBot.Handlers
             _flair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Selling"));
         }
 
-        public bool Process(BaseController controller)
+        public async Task<bool> Process(BaseController controller)
         {
             var post = controller as SelfPost;
             if (post == null)
@@ -40,7 +41,8 @@ namespace ChefKnifeSwapBot.Handlers
                 return false;
             }
 
-            if (_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+            var result = await _service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), post.Id);
+            if (result != null)
             {
                 return false;
             }
@@ -92,7 +94,7 @@ namespace ChefKnifeSwapBot.Handlers
                     post.Remove();
                 }
 
-                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
                 _service.RedditPostDatabase.Upsert(post.ToPost());
 
                 return true;

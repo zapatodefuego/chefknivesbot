@@ -78,14 +78,15 @@ namespace SubredditBot.DataAccess
         /// <summary>
         /// Tries to get any item by item first from the cache and then from the database
         /// </summary>
-        public async Task<bool> ContainsAny(string propertyName, string propertyValue)
+        public async Task<T> GetAny(string propertyName, string propertyValue)
         {
-            if (!_cache.GetBy(propertyName, propertyValue).Any())
+            var cacheResult = _cache.GetBy(propertyName, propertyValue);
+            if (!cacheResult.Any())
             {
-                return (await GetByFilter(propertyName, propertyValue)).Any();
+                await GetByFilter(propertyName, propertyValue);
             }
 
-            return true;
+            return null;
         }
 
         public T GetById(string id)

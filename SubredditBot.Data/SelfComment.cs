@@ -6,6 +6,8 @@
 
         public RedditThingType ParentType { get; set; }
 
+        public string ParentFlairId { get; set; }
+
         public override int GetHashCode()
         {
             int hash = base.GetHashCode();

@@ -9,6 +9,7 @@ using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Post = Reddit.Controllers.Post;
 
 namespace ChefKnivesBot.Handlers.Posts
@@ -29,7 +30,7 @@ namespace ChefKnivesBot.Handlers.Posts
             _makerPostFlair = _service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals(_makerPostName));
         }
 
-        public bool Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController)
         {
             var post = baseController as Post;
             if (post == null)
@@ -40,34 +41,37 @@ namespace ChefKnivesBot.Handlers.Posts
             var linkFlairId = post.Listing.LinkFlairTemplateId;
 
             // Check that the tile contains [maker post] or that the link flair matches the maker post flair (does the work for updates? i don't know yet)
-            if (post.Title.Contains("[maker post]", StringComparison.OrdinalIgnoreCase) || 
+            if (post.Title.Contains("[maker post]", StringComparison.OrdinalIgnoreCase) ||
                 (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id)))
             {
                 // Set the flair
                 post.SetFlair(_makerPostFlair.Text, _makerPostFlair.Id);
 
                 // Check if we already commented on this post
-                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+                var existing = await _service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), post.Id);
+                if (SelfPostUtilities.PostHasExistingResponse(existing, linkFlairId))
                 {
-                    var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase).Result;
-                    var nonMakerCommentCount = result.Comments.Count() - result.MakerComments.Count();
-                    var makerPostCount = result.MakerPosts.Count();
-
-                    if (nonMakerCommentCount < 2)
-                    {
-                        SendNeverContributedWarningMessage(post);
-                    }
-                    else if (nonMakerCommentCount < makerPostCount * 3)
-                    {
-                        SendTenToOneWarningMessage(post, nonMakerCommentCount, makerPostCount);
-                    }
-                    else
-                    {
-                        SendMakerPostSticky(post);
-                    }
-
-                    return true;
+                    return false;
                 }
+
+                var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase).Result;
+                var nonMakerCommentCount = result.Comments.Count() - result.MakerComments.Count();
+                var makerPostCount = result.MakerPosts.Count();
+
+                if (nonMakerCommentCount < 2)
+                {
+                    SendNeverContributedWarningMessage(post);
+                }
+                else if (nonMakerCommentCount < makerPostCount * 3)
+                {
+                    SendTenToOneWarningMessage(post, nonMakerCommentCount, makerPostCount);
+                }
+                else
+                {
+                    SendMakerPostSticky(post);
+                }
+
+                return true;
             }
 
             return false;
@@ -84,7 +88,7 @@ namespace ChefKnivesBot.Handlers.Posts
                         $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
                     .Distinguish("yes", false);
 
-                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
 
                 post.Remove();
             }
@@ -103,7 +107,7 @@ namespace ChefKnivesBot.Handlers.Posts
                         $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
                     .Distinguish("yes", false);
 
-                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
 
                 post.Remove();
             }
@@ -138,7 +142,7 @@ namespace ChefKnivesBot.Handlers.Posts
                     .Reply(replyMessage.ToString())
                     .Distinguish("yes", true);
 
-                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post));
+                _service.SelfCommentDatabase.Upsert(reply.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
             }
 
             _logger.Information($"Commented with maker warning on post by {post.Author}");

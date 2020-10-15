@@ -5,6 +5,7 @@ using SubredditBot.Data;
 using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
@@ -27,7 +28,7 @@ namespace CuttingBoardsBot.Handlers
             _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive content"));
         }
 
-        public bool Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController)
         {
             var post = baseController as Post;
             if (post == null)
@@ -39,22 +40,25 @@ namespace CuttingBoardsBot.Handlers
             if (linkFlairId != null && linkFlairId.Equals(_knifePicsFlair.Id))
             {
                 // Check if we already commented on this post
-                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+                var existing = await _service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), post.Id);
+                if (existing != null)
                 {
-                    if (!DryRun)
-                    {
-                        var replyComment = post
-                            .Reply(
-                                $"Please ensure you fulfill Rule #5 by posting a top level comment with a description. Any post not in compliance may be removed. See Rule #5 below for more information: \n\n" +
-                                "---\n\n" +
-                                $"{_rulefive.Description}\n\n")
-                            .Distinguish("yes", true);
-
-                        _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));
-                    }
-
-                    _logger.Information($"[{nameof(BoardPicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
+                    return false;
                 }
+
+                if (!DryRun)
+                {
+                    var replyComment = post
+                        .Reply(
+                            $"Please ensure you fulfill Rule #5 by posting a top level comment with a description. Any post not in compliance may be removed. See Rule #5 below for more information: \n\n" +
+                            "---\n\n" +
+                            $"{_rulefive.Description}\n\n")
+                        .Distinguish("yes", true);
+
+                    _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
+                }
+
+                _logger.Information($"[{nameof(BoardPicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
 
                 return true;
             }

@@ -6,7 +6,7 @@ namespace SubredditBot.DataAccess
 {
     public interface IDatabaseService<T> where T : RedditThing
     {
-        Task<bool> ContainsAny(string propertyName, string propertyValue);
+        Task<T> GetAny(string propertyName, string propertyValue);
         void Delete(string id);
         void Dispose();
         Task<IEnumerable<T>> GetAll();

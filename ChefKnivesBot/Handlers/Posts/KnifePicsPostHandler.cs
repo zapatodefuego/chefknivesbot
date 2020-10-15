@@ -1,4 +1,5 @@
-﻿using Reddit.Controllers;
+﻿using ChefKnivesBot.Utilities;
+using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
 using SubredditBot.Data;
@@ -6,6 +7,7 @@ using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using Comment = Reddit.Controllers.Comment;
 using Post = Reddit.Controllers.Post;
@@ -29,7 +31,7 @@ namespace ChefKnivesBot.Handlers.Posts
             _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive Content"));
         }
 
-        public bool Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController)
         {
             var post = baseController as Post;
             if (post == null)
@@ -41,23 +43,26 @@ namespace ChefKnivesBot.Handlers.Posts
             if (linkFlairId != null && linkFlairId.Equals(_knifePicsFlair.Id))
             {
                 // Check if we already commented on this post
-                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+                var existing = await _service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), post.Id);
+                if (SelfPostUtilities.PostHasExistingResponse(existing, linkFlairId))
                 {
-                    if (!DryRun)
-                    {
-                        var replyComment = post
-                            .Reply(
-                                $"Please ensure you fulfill Rule #5 by **posting a top level comment (reply to your own post)** with a description within {_timeLimitMinutes} minutes. " +
-                                $"Any post not in compliance will be removed. [See Rule #5 for more information](https://www.reddit.com/r/chefknives/about/rules).\n\n" +
-                                $"*This message will self destruct in {_timeLimitMinutes} minutes.*")
-                            .Distinguish("yes", true);
-
-                        _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));
-                        ScheduleDelayedCheck(post, replyComment);
-                    }
-
-                    _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
+                    return false;
                 }
+
+                if (!DryRun)
+                {
+                    var replyComment = post
+                        .Reply(
+                            $"Please ensure you fulfill Rule #5 by **posting a top level comment (reply to your own post)** with a description within {_timeLimitMinutes} minutes. " +
+                            $"Any post not in compliance will be removed. [See Rule #5 for more information](https://www.reddit.com/r/chefknives/about/rules).\n\n" +
+                            $"*This message will self destruct in {_timeLimitMinutes} minutes.*")
+                        .Distinguish("yes", true);
+
+                    _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
+                    ScheduleDelayedCheck(post, replyComment);
+                }
+
+                _logger.Information($"[{nameof(KnifePicsPostHandler)}]: Commented with rule five warning on post by {post.Author}");
 
                 return true;
             }
@@ -68,7 +73,7 @@ namespace ChefKnivesBot.Handlers.Posts
         private void ScheduleDelayedCheck(Post post, Comment replyComment)
         {
             var timer = new Timer { Interval = TimeSpan.FromMinutes(_timeLimitMinutes).TotalMilliseconds };
-            timer.Elapsed += (object sender, ElapsedEventArgs e) => 
+            timer.Elapsed += (object sender, ElapsedEventArgs e) =>
             {
                 timer.Stop();
                 timer.Dispose();
@@ -85,7 +90,7 @@ namespace ChefKnivesBot.Handlers.Posts
                     replyComment.Delete();
 
                     // Update the comment in the database. There has to be a more elegant way to do this...
-                    var databaseComment = replyComment.ToSelfComment(post.Id, RedditThingType.Post);
+                    var databaseComment = replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId);
                     databaseComment.IsDeleted = true;
                     _service.SelfCommentDatabase.Upsert(databaseComment);
                 }
