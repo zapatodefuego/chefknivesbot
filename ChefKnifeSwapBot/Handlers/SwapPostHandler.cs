@@ -47,9 +47,10 @@ namespace ChefKnifeSwapBot.Handlers
                 return false;
             }
 
+            var linkFlair = post.Listing.LinkFlairTemplateId;
             var postShouldBeRemoved = false;
             var replyMessage = new StringBuilder();
-            if (post.Title.Contains("[Selling]", StringComparison.OrdinalIgnoreCase) || (_flair != null && _flair.Id.Equals(_flair.Id)))
+            if (post.Title.Contains("[Selling]", StringComparison.OrdinalIgnoreCase) || (linkFlair != null && linkFlair.Equals(_flair.Id)))
             {
                 // Set the flair
                 post.SetFlair(_flair.Text, _flair.Id);
