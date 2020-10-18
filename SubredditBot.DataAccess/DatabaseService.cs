@@ -88,6 +88,10 @@ namespace SubredditBot.DataAccess
                 {
                     return queryResult.First();
                 }
+                else
+                {
+                    return null;
+                }
             }
 
             return cacheResult.First();
