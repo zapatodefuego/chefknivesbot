@@ -23,6 +23,7 @@ namespace SubredditBot.Lib
 
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly string _subredditName;
         private readonly Func<string, Task> _callback;
         private readonly bool _processOldPosts;
         private CancellationTokenSource _cancellationToken;
@@ -39,6 +40,7 @@ namespace SubredditBot.Lib
             _logger = logger;
             _configuration = configuration;
             RedditClient = redditClient;
+            _subredditName = subredditName;
             _callback = callback;
             _processOldPosts = processOldPosts;
             Subreddit = redditClient.Subreddit(subredditName);
@@ -149,6 +151,7 @@ namespace SubredditBot.Lib
                     {
                         PostHandlers.ForEach(c =>
                         {
+                            _logger.Information($"Reprocessing post {postToUpdate.Title} from original flair: {updatedPost.Flair} to new flair: {postToUpdate.Flair}");
                             var postController = RedditClient.Post(updatedPost.Fullname).Info();
                             c.Process(postController);
                         });
@@ -181,7 +184,7 @@ namespace SubredditBot.Lib
                 tries++;
             }
 
-            _logger.Information($"Fineshed pulling posts and comments.");
+            _logger.Information($"Finished pulling posts and comments.");
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)
@@ -222,7 +225,11 @@ namespace SubredditBot.Lib
             {
                 foreach (var comment in e.NewComments)
                 {
-                    Parallel.ForEach(CommentHandlers, c => c.Process(comment, _callback));
+                    Parallel.ForEach(CommentHandlers, c =>
+                    {
+                        _logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
+                        c.Process(comment, _callback);
+                    });
                 }
             }
             catch (RedditGatewayTimeoutException exception)
@@ -249,7 +256,11 @@ namespace SubredditBot.Lib
             {
                 foreach (var post in e.Added)
                 {
-                    Parallel.ForEach(PostHandlers, p => p.Process(post));
+                    Parallel.ForEach(PostHandlers, p =>
+                    {
+                        _logger.Information($"Processing comment: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
+                        p.Process(post);
+                    });
                 }
             }
             catch (RedditGatewayTimeoutException exception)

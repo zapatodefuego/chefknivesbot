@@ -20,5 +20,9 @@
     <ProjectReference Include="..\RykyBot\RykyBot.csproj" />
     <ProjectReference Include="..\SubredditBot.Lib\SubredditBot.Lib.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
   
 </Project>

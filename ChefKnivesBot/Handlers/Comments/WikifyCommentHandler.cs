@@ -38,7 +38,8 @@ namespace ChefKnivesBot.Handlers.Comments
                 return false;
             }
 
-            if (_service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), comment.Id).Result != null)
+            var result = await _service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), comment.Id);
+            if (result != null)
             {
                 return false;
             }

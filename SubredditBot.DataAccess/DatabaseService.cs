@@ -83,10 +83,14 @@ namespace SubredditBot.DataAccess
             var cacheResult = _cache.GetBy(propertyName, propertyValue);
             if (!cacheResult.Any())
             {
-                await GetByFilter(propertyName, propertyValue);
+                var queryResult = await GetByFilter(propertyName, propertyValue);
+                if (queryResult.Any())
+                {
+                    return queryResult.First();
+                }
             }
 
-            return null;
+            return cacheResult.First();
         }
 
         public T GetById(string id)
