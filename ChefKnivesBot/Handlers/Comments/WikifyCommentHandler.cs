@@ -14,7 +14,7 @@ namespace ChefKnivesBot.Handlers.Comments
 {
     public class WikifyCommentHandler : HandlerBase, ICommentHandler
     {
-        private const string _urlRoute = "https://www.reddit.com/r/chefknives";
+        private const string _urlRoute = "https://www.reddit.com";
         private readonly ILogger _logger;
         private readonly ISubredditService _service;
 
