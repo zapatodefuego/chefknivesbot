@@ -5,6 +5,7 @@ using SubredditBot.Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChefKnivesBot
 {
@@ -12,7 +13,7 @@ namespace ChefKnivesBot
     {
         private const string _subredditName = "chefknives";
 
-        public SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false)
+        public SubredditService Start(ILogger logger, IConfiguration configuration, Func<string, Task> callback, bool dryRun = false)
         {
             logger.Information("Application started...");
 
@@ -22,7 +23,7 @@ namespace ChefKnivesBot
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName);
+            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName, callback : callback);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
             {

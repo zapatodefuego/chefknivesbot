@@ -1,5 +1,6 @@
 ﻿using ChefKnivesCommentsDatabase;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson.Serialization;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Controllers.EventArgs;
@@ -12,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Comment = SubredditBot.Data.Comment;
 
 namespace SubredditBot.Lib
 {
@@ -21,14 +24,26 @@ namespace SubredditBot.Lib
 
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly string _subredditName;
+        private readonly Func<string, Task> _callback;
+        private readonly bool _processOldPosts;
         private CancellationTokenSource _cancellationToken;
 
-        public SubredditService(ILogger logger, IConfiguration configuration, RedditClient redditClient, string subredditName, string databaseName)
+        public SubredditService(
+            ILogger logger,
+            IConfiguration configuration,
+            RedditClient redditClient,
+            string subredditName,
+            string databaseName,
+            Func<string, Task> callback = null,
+            bool processOldPosts = true)
         {
             _logger = logger;
             _configuration = configuration;
             RedditClient = redditClient;
-
+            _subredditName = subredditName;
+            _callback = callback;
+            _processOldPosts = processOldPosts;
             Subreddit = redditClient.Subreddit(subredditName);
             Account = redditClient.Account;
 
@@ -119,19 +134,58 @@ namespace SubredditBot.Lib
             Repeater.Repeat(() => PullCommentsAndPosts(), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
         }
 
-        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 100)
+        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 500)
         {
             _logger.Information($"Pulling {postCount} posts and {commentCount} comments. Interval: {_commentAndPostPullIntervalMinutes} minutes");
 
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
             var recentPosts = redditReader.GetRecentPosts(numPosts: postCount);
-            RedditPostDatabase.Upsert(recentPosts);
+            foreach (var postToUpdate in recentPosts)
+            {
+                var updatedPost = RedditPostDatabase.Upsert(postToUpdate);
+
+                // If process old posts is enabled, re-trigger the handlers for those posts
+                if (_processOldPosts)
+                {
+                    if (updatedPost != null && postToUpdate.Flair != updatedPost.Flair)
+                    {
+                        PostHandlers.ForEach(c =>
+                        {
+                            _logger.Information($"Reprocessing post {postToUpdate.Title} from original flair: {updatedPost.Flair} to new flair: {postToUpdate.Flair}");
+                            var postController = RedditClient.Post(updatedPost.Fullname).Info();
+                            c.Process(postController);
+                        });
+                    }
+                }
+            }
 
             var recentComments = redditReader.GetRecentComments(numComments: commentCount);
             RedditCommentDatabase.Upsert(recentComments);
 
-            _logger.Information($"Fineshed pulling posts and comments.");
+            var tries = 0;
+            var count = 0;
+            var oldestComment = recentComments.First();
+            while (count < commentCount && tries < 10)
+            {
+                var newComments = new List<SubredditBot.Data.Comment>();
+                foreach (var comment in recentComments)
+                {
+                    if (comment.CreateDate < oldestComment.CreateDate)
+                    {
+                        oldestComment = comment;
+                    }
+
+                    newComments.Add(comment);
+                    count++;
+                }
+
+                RedditCommentDatabase.Upsert(newComments);
+                recentComments = redditReader.GetRecentComments(numComments: commentCount, after: oldestComment.Fullname);
+                tries++;
+            }
+
+            _logger.Information($"Finished pulling posts and comments.");
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)
@@ -142,68 +196,57 @@ namespace SubredditBot.Lib
                 {
                     MessageHandlers.ForEach(c =>
                     {
-                        Diagnostics.SeenMessages++;
                         if (c.Process(message))
                         {
-                            Diagnostics.ProcessedMessages++;
                         }
                     });
                 }
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                Diagnostics.RedditGatewayTimeoutException++;
                 _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
                 Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
                 Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (Exception exception)
             {
-                Diagnostics.OtherExceptionCount++;
                 _logger.Error(exception, $"Unexpected exception caught in {nameof(Messages_UnreadUpdated)}");
             }
         }
 
-        private void Comments_NewUpdated(object sender, CommentsUpdateEventArgs e)
+        private async void Comments_NewUpdated(object sender, CommentsUpdateEventArgs e)
         {
             try
             {
                 foreach (var comment in e.NewComments)
                 {
-                    CommentHandlers.ForEach(c =>
+                    Parallel.ForEach(CommentHandlers, c =>
                     {
-                        Diagnostics.SeenComments++;
-                        if (c.Process(comment))
-                        {
-                            Diagnostics.ProcessedComments++;
-                        }
+                        //_logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
+                        c.Process(comment, _callback);
                     });
                 }
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                Diagnostics.RedditGatewayTimeoutException++;
                 _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
                 Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
                 SubscribeToCommentFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
                 Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
                 SubscribeToCommentFeed();
             }
             catch (Exception exception)
             {
-                Diagnostics.OtherExceptionCount++;
                 _logger.Error(exception, $"Unexpected exception caught in {nameof(Comments_NewUpdated)}");
             }
         }
@@ -214,33 +257,27 @@ namespace SubredditBot.Lib
             {
                 foreach (var post in e.Added)
                 {
-                    PostHandlers.ForEach(c =>
+                    Parallel.ForEach(PostHandlers, p =>
                     {
-                        Diagnostics.SeenPosts++;
-                        if (c.Process(post))
-                        {
-                            Diagnostics.ProcessedPosts++;
-                        }
+                        //_logger.Information($"Processing comment: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
+                        p.Process(post);
                     });
                 }
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                Diagnostics.RedditGatewayTimeoutException++;
                 _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
                 Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                Diagnostics.RedditServiceUnavailableExceptionCount++;
                 _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
                 Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (Exception exception)
             {
-                Diagnostics.OtherExceptionCount++;
                 _logger.Error(exception, $"Unexpected exception caught in {nameof(Posts_NewUpdated_OrEdited)}");
             }
         }

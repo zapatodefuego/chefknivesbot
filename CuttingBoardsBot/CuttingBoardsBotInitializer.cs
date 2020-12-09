@@ -22,7 +22,7 @@ namespace CuttingBoardsBot
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName);
+            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName, callback: null);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
             {

@@ -8,6 +8,8 @@ namespace SubredditBot.Data
     {
         public string Id { get; set; } = string.Empty;
 
+        public string Fullname { get; set; } = string.Empty;
+
         public string Author { get; set; } = string.Empty;
 
         [BsonRepresentation(BsonType.DateTime)]
@@ -16,6 +18,8 @@ namespace SubredditBot.Data
         public string Kind { get; set; } = string.Empty;
 
         public bool IsDeleted { get; set; }
+
+        public string Permalink { get; set; } = string.Empty;
 
         public override int GetHashCode()
         {
@@ -32,11 +36,11 @@ namespace SubredditBot.Data
         {
             if (o is RedditThing other)
             {
-                return Id.Equals(other.Id)
-                    && Author.Equals(other.Author)
-                    && Kind.Equals(other.Kind)
-                    && (CreateDate == null || CreateDate.Equals(other.CreateDate))
-                    && IsDeleted.Equals(other.IsDeleted);
+                return Equals(Id, other.Id)
+                    && Equals(Author, other.Author)
+                    && Equals(Kind, other.Kind)
+                    && Equals(CreateDate, other.CreateDate)
+                    && Equals(IsDeleted, other.IsDeleted);
             }
 
             return false;

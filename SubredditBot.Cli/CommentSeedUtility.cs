@@ -40,7 +40,7 @@ namespace SubredditBot.Cli
                     continue;
                 }
 
-                var postController = _redditClient.Post($"t3_{post.Id}");
+                var postController = _redditClient.Post(post.Fullname);
                 var comments = postController.Comments.GetComments();
                 foreach (var comment in comments)
                 {
@@ -49,7 +49,7 @@ namespace SubredditBot.Cli
                     _commentDatabase.Upsert(redditComment);
                 }
 
-                Console.WriteLine($"Post {post.Id} had {comments.Count} comments");
+                Console.WriteLine($"Post {post.Id} had {comments.Count} comments. Post created: {post.CreateDate}");
             }
 
             Console.WriteLine($"Pulled {commentCount} comments from {postCount} posts");

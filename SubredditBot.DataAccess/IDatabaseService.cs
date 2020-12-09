@@ -6,13 +6,14 @@ namespace SubredditBot.DataAccess
 {
     public interface IDatabaseService<T> where T : RedditThing
     {
-        Task<bool> ContainsAny(string propertyName, string propertyValue);
+        Task<T> GetAny(string propertyName, string propertyValue);
         void Delete(string id);
         void Dispose();
         Task<IEnumerable<T>> GetAll();
-        Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue);
+        Task<IEnumerable<T>> GetByFilter(string propertyName, string propertyValue);
+        Task<IEnumerable<T>> GetByQueryable(string propertyName, string propertyValue);
         T GetById(string id);
-        void Upsert(IEnumerable<T> things);
-        void Upsert(T thing);
+        IEnumerable<T> Upsert(IEnumerable<T> things);
+        T Upsert(T thing);
     }
 }

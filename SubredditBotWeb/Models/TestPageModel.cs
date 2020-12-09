@@ -1,4 +1,4 @@
-﻿namespace SubredditBotWeb.Models
+﻿namespace ChefKnivesBotWeb.Models
 {
     public class TestPageModel
     {

@@ -5,12 +5,14 @@ using SubredditBot.Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Comment = Reddit.Controllers.Comment;
 
 namespace ChefKnivesBot.Handlers.Comments
 {
     public class MakerPostCommentHandler : HandlerBase, ICommentHandler
     {
+        private const string _urlRoot = "https://www.reddit.com";
         private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private readonly ILogger _logger;
         private readonly ISubredditService _service;
@@ -24,7 +26,7 @@ namespace ChefKnivesBot.Handlers.Comments
             _makerPostFlair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Maker Post"));
         }
 
-        public bool Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController, Func<string, Task> callback)
         {
             var comment = baseController as Comment;
             if (comment == null)
@@ -37,7 +39,7 @@ namespace ChefKnivesBot.Handlers.Comments
             // Check if the link flair matches the maker post flait and that the author is not a moderator
             if (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
             {
-                if (comment.Removed || comment.Listing.Approved)
+                if (comment.Removed || comment.Listing.Approved || comment.Author.Equals(_service.Account.Me.Name))
                 {
                     return false;
                 }
@@ -48,14 +50,12 @@ namespace ChefKnivesBot.Handlers.Comments
                     {
                         comment.Remove();
 
-                        // Send message to modmail about the removal for review
-                        _service.Account.Modmail.NewConversation(
-                            body: $"Removed comment by {comment.Author}: {comment.Permalink}",
-                            subject: $"{nameof(MakerPostCommentHandler)}: comment removal review",
-                            srName: _service.Subreddit.Name,
-                            to: "chefknives");
+                        if (callback != null)
+                        {
+                            await callback($"Removed comment by {comment.Author} on a Maker Post: {_urlRoot}{comment.Permalink}");
+                        }
 
-                        _logger.Information($"Removed comment from {comment.Author}: {comment.Body.Substring(0, 100)}");
+                        _logger.Information($"Removed comment from {comment.Author}: {string.Concat(comment.Body.Take(100))}");
                     }
 
                     return true;

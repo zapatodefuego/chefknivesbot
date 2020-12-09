@@ -12,7 +12,9 @@ namespace SubredditBot.Lib.DataExtensions
             return new Comment
             {
                 Author = comment.Author,
+                Permalink = comment.Permalink,
                 Body = comment.Body,
+                Fullname = comment.Fullname,
                 Id = comment.Id,
                 Kind = "t1",
                 PostLinkId = comment.Listing.LinkId,

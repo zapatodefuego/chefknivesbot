@@ -23,6 +23,8 @@ namespace SubredditBot.DataAccess
             _databaseName = databaseName;
             _collectionName = collectionName;
 
+            BsonTypeMapInitializer.RunOnce();
+
             // ensures the database and collection is set up the first time
             if (!_mongoClient.GetDatabase(databaseName).ListCollections(new ListCollectionsOptions { Filter = new BsonDocument("name", collectionName) }).Any())
             {
@@ -35,39 +37,64 @@ namespace SubredditBot.DataAccess
         /// <summary>
         /// Ensures a post is in is in the database
         /// </summary>
-        /// <param name="post"></param>
-        public void Upsert(T thing)
+        /// <returns>The original value, if any</returns>
+        public T Upsert(T thing)
         {
-            Upsert(new List<T> { thing });
+            return Upsert(new List<T> { thing }).SingleOrDefault();
         }
 
         /// <summary>
         /// Ensures each post in the collection is in the database
         /// </summary>
-        /// <param name="posts"></param>
-        public void Upsert(IEnumerable<T> things)
+        /// <returns>The original values, if any</returns>
+        public IEnumerable<T> Upsert(IEnumerable<T> things)
         {
+            var updatedThings = new List<T>();
             foreach (T thing in things)
             {
-                if (!_cache.Contains(thing))
+                // If an object in the cache matches fully, do nothing and return
+                if (_cache.Contains(thing, new CacheAllPropertiesComparer<T>()))
                 {
-                    _cache.Add(thing);
-                    UpsertIntoCollection(thing);
+                    return updatedThings;
                 }
+
+                // If an object in the cache matches by the default comparer, 
+                // then this upsert is updating something so remove it
+                // and capture the updated object
+                if (_cache.Contains(thing))
+                {
+                    updatedThings.Add(GetById(thing.Id));
+                    _cache.Remove(thing);
+                }
+
+                // Add and upsert the item 
+                _cache.Add(thing);
+                UpsertIntoCollection(thing);
             }
+
+            return updatedThings;
         }
 
         /// <summary>
         /// Tries to get any item by item first from the cache and then from the database
         /// </summary>
-        public async Task<bool> ContainsAny(string propertyName, string propertyValue)
+        public async Task<T> GetAny(string propertyName, string propertyValue)
         {
-            if (!_cache.GetBy(propertyName, propertyValue).Any())
+            var cacheResult = _cache.GetBy(propertyName, propertyValue);
+            if (!cacheResult.Any())
             {
-                return (await GetBy(propertyName, propertyValue)).Any();
+                var queryResult = await GetByFilter(propertyName, propertyValue);
+                if (queryResult.Any())
+                {
+                    return queryResult.First();
+                }
+                else
+                {
+                    return null;
+                }
             }
 
-            return true;
+            return cacheResult.First();
         }
 
         public T GetById(string id)
@@ -91,7 +118,7 @@ namespace SubredditBot.DataAccess
             return null;
         }
 
-        public async Task<IEnumerable<T>> GetBy(string propertyName, string propertyValue)
+        public async Task<IEnumerable<T>> GetByFilter(string propertyName, string propertyValue)
         {
             if (propertyName.Equals(nameof(RedditThing.Id)))
             {
@@ -100,6 +127,36 @@ namespace SubredditBot.DataAccess
 
             var filter = Builders<BsonDocument>.Filter.Eq(propertyName, propertyValue);
             var results = await GetByFilter(filter);
+            foreach (var result in results)
+            {
+                if (!_cache.Contains(result))
+                {
+                    _cache.Add(result);
+                }
+            }
+
+            return results;
+        }
+
+        public async Task<IEnumerable<T>> GetByQueryable(string propertyName, string propertyValue)
+        {
+            if (propertyName.Equals(nameof(RedditThing.Id)))
+            {
+                throw new InvalidOperationException($"Use {nameof(GetById)} to query by Id");
+            }
+
+            var bsonResults = GetMongoCollection().AsQueryable();
+            var results = new List<T>();
+            foreach (var bsonResult in bsonResults)
+            {
+                if (bsonResult.TryGetValue(propertyName, out BsonValue bsonValue) &&
+                    bsonValue.IsString &&
+                    bsonValue.AsString.ToLower().Equals(propertyValue.ToLower()))
+                {
+                    results.Add(BsonSerializer.Deserialize<T>(bsonResult));
+                }
+            }
+
             foreach (var result in results)
             {
                 if (!_cache.Contains(result))

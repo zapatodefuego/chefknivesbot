@@ -12,7 +12,7 @@ namespace ChefKnifeSwapBot
     {
         private const string _subredditName = "chefknifeswap";
 
-        public SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false)
+        public SubredditService Start(ILogger logger, IConfiguration configuration, bool dryRun = false, bool processOldPosts = false)
         {
             logger.Information("Application started...");
 
@@ -22,7 +22,7 @@ namespace ChefKnifeSwapBot
             }
 
             var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
-            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName);
+            var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName, processOldPosts: processOldPosts);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
             {

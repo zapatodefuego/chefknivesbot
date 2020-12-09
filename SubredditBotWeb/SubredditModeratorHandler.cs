@@ -21,6 +21,10 @@ namespace SubredditBotWeb
             {
                 context.Succeed(requirement);
             }
+            else if (Program.Configuration["AllowedUsers"].Split(',').Contains(context.User.Identity.Name))
+            {
+                context.Succeed(requirement);
+            }
 
             return Task.CompletedTask;
         }

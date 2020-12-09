@@ -1,10 +1,12 @@
-﻿using Reddit.Controllers;
+﻿using ChefKnivesBot.Utilities;
+using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
 using SubredditBot.Data;
 using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
 using System.Linq;
+using System.Threading.Tasks;
 using Post = Reddit.Controllers.Post;
 
 namespace ChefKnivesBot.Handlers.Posts
@@ -25,7 +27,7 @@ namespace ChefKnivesBot.Handlers.Posts
             _flair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Recommend me"));
         }
 
-        public bool Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController)
         {
             var post = baseController as Post;
             if (post == null)
@@ -36,24 +38,27 @@ namespace ChefKnivesBot.Handlers.Posts
             var linkFlairId = post.Listing.LinkFlairTemplateId;
             if (linkFlairId != null && linkFlairId.Equals(_flair.Id))
             {
-                if (!_service.SelfCommentDatabase.ContainsAny(nameof(SelfComment.ParentId), post.Id).Result)
+                var existing = await _service.SelfCommentDatabase.GetAny(nameof(SelfComment.ParentId), post.Id);
+                if (SelfPostUtilities.PostHasExistingResponse(existing, linkFlairId))
                 {
-                    if (!DryRun)
-                    {
-                        var message = $"Please ensure you have filled out the Questionnaire and consider reviewing our Getting Started guide: \n\n" +
-                        $"* Questionnaire: {_questionnaireUrl}\n" +
-                        $"* Getting Started guide: {_gettingStartedUrl}\n\n" +
-                        $"Failure to fill out the questionnaire without a good reason or asking questions already answered in the wiki is considered low effort and will likely result in low effort responses.!";
-
-                        var replyComment = post
-                            .Reply(message)
-                            .Distinguish("yes", true);
-
-                        _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post));
-                    }
-
-                    _logger.Information($"[{nameof(RecommendMePostHandler)}]: Commented with recommend me details on post by {post.Author}");
+                    return false;
                 }
+
+                if (!DryRun)
+                {
+                    var message = $"Please ensure you have filled out the Questionnaire and consider reviewing our Getting Started guide: \n\n" +
+                    $"* Questionnaire: {_questionnaireUrl}\n" +
+                    $"* Getting Started guide: {_gettingStartedUrl}\n\n" +
+                    $"Low effort posts may be removed.";
+
+                    var replyComment = post
+                        .Reply(message)
+                        .Distinguish("yes", true);
+
+                    _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
+                }
+
+                _logger.Information($"[{nameof(RecommendMePostHandler)}]: Commented with recommend me details on post by {post.Author}");
 
                 return true;
             }
