@@ -1,8 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Serilog;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,9 @@ namespace ChefKnivesDiscord
 
             _fileAccess = new ThreadSafeFileAccess<DumbMetricsModel>(_configuration["DumbMetrics"]);
             _random = new Random(Guid.NewGuid().GetHashCode());
+
+            var pastaFilePath = Path.Combine(Environment.CurrentDirectory, "pastas.json");
+            dynamic messages = JsonConvert.DeserializeObject(File.ReadAllText(pastaFilePath));
         }
 
         public async Task Start()
@@ -71,6 +76,24 @@ namespace ChefKnivesDiscord
                 builder.AppendLine("!wendys");
                 builder.AppendLine("!rando");
                 await message.Channel.SendMessageAsync(builder.ToString());
+            }
+
+            if (message.Content.StartsWith("!pasta"))
+            {
+                var parts = message.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 2)
+                {
+
+                    var subCommand = parts[1];
+                    if (subCommand.Equals("all"))
+                    {
+                        await message.Channel.SendMessageAsync("test!");
+                    }
+                    else
+                    {
+                        await message.Channel.SendMessageAsync("test!");
+                    }
+                }
             }
 
             if (message.Content == "!ping")
