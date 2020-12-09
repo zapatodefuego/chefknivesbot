@@ -1,8 +1,11 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Serilog;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +20,7 @@ namespace ChefKnivesDiscord
         private readonly IConfiguration _configuration;
         private readonly ThreadSafeFileAccess<DumbMetricsModel> _fileAccess;
         private readonly Random _random;
+        private readonly Dictionary<string, string> _pastas = new Dictionary<string, string>();
 
         public DiscordService(ILogger logger, IConfiguration configuration)
         {
@@ -29,6 +33,9 @@ namespace ChefKnivesDiscord
 
             _fileAccess = new ThreadSafeFileAccess<DumbMetricsModel>(_configuration["DumbMetrics"]);
             _random = new Random(Guid.NewGuid().GetHashCode());
+
+            var pastaFilePath = Path.Combine(Environment.CurrentDirectory, "pastas.json");
+            _pastas = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(pastaFilePath));
         }
 
         public async Task Start()
@@ -71,6 +78,46 @@ namespace ChefKnivesDiscord
                 builder.AppendLine("!wendys");
                 builder.AppendLine("!rando");
                 await message.Channel.SendMessageAsync(builder.ToString());
+            }
+
+            if (message.Content.StartsWith("!pasta"))
+            {
+                var parts = message.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2)
+                {
+                    var subCommand = parts[1];
+                    if (subCommand.Equals("all"))
+                    {
+                        var builder = new StringBuilder();
+                        builder.AppendLine("I know the following pastas:");
+
+                        var count = 1;
+                        foreach (var pasta in _pastas)
+                        {
+                            builder.AppendLine($"{count++}. {pasta.Key}");
+                        }
+
+                        await message.Channel.SendMessageAsync(builder.ToString());
+                    }
+                    else
+                    {
+                        if (_pastas.ContainsKey(subCommand))
+                        {
+                            await message.Channel.SendMessageAsync($"> {_pastas[subCommand]}");
+                        }
+                        else
+                        {
+                            await message.Channel.SendMessageAsync("I don't know that pasta");
+                        }
+                    }
+                }
+                else
+                {
+                    var builder = new StringBuilder();
+                    builder.AppendLine("Command sytax: !pasta <name of pasta>");
+                    builder.AppendLine("*Use '!pasta all' to get a list of all pastas*");
+                    await message.Channel.SendMessageAsync(builder.ToString());
+                }
             }
 
             if (message.Content == "!ping")
