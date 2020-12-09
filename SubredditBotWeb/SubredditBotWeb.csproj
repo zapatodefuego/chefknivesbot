@@ -27,5 +27,11 @@
   <ItemGroup>
     <Folder Include="Logs\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="pastas.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   
 </Project>
