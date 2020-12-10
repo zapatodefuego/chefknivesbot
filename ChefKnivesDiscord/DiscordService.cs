@@ -99,6 +99,11 @@ namespace ChefKnivesDiscord
 
                         await message.Channel.SendMessageAsync(builder.ToString());
                     }
+                    if (subCommand.Equals("random"))
+                    {
+                        var randomPasta = _pastas.ElementAt(_random.Next(_pastas.Count));
+                        await message.Channel.SendMessageAsync($"> {randomPasta.Value}");
+                    }
                     else
                     {
                         if (_pastas.ContainsKey(subCommand))
