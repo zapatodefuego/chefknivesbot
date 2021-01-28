@@ -33,3 +33,4 @@ jobs:
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_9c79bf688ede4ebd8911a0492e97a4b0 }}
         package: ${{env.DOTNET_ROOT}}/myapp 
+        files: '${{env.DOTNET_ROOT}}/myapp/appsettings.json'
