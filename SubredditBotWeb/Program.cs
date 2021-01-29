@@ -34,59 +34,59 @@ namespace SubredditBotWeb
                 .Build();
 
             // ChefKnives config
-            var chefKnivesSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["ChefKnivesSettingsFile"]);
-            var compoundConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", false, false);
+            //var chefKnivesSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["ChefKnivesSettingsFile"]);
+            //var compoundConfiguration = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json", false, false);
 
-            if (!string.IsNullOrEmpty(chefKnivesSettingsFile))
-            {
-                compoundConfiguration.AddJsonFile(chefKnivesSettingsFile, false, false);
-            }
+            //if (!string.IsNullOrEmpty(chefKnivesSettingsFile))
+            //{
+            //    compoundConfiguration.AddJsonFile(chefKnivesSettingsFile, false, false);
+            //}
 
-            Configuration = compoundConfiguration.Build();
+            Configuration = initialConfiguration;
 
             // Ryky config
-            var rykySettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RykySettingsFile"]);
-            var rykyConfigBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, false);
+            //var rykySettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["RykySettingsFile"]);
+            //var rykyConfigBuilder = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json", true, false);
 
-            if (!string.IsNullOrEmpty(rykySettingsFile))
-            {
-                rykyConfigBuilder.AddJsonFile(rykySettingsFile, false, false);
-            }
+            //if (!string.IsNullOrEmpty(rykySettingsFile))
+            //{
+            //    rykyConfigBuilder.AddJsonFile(rykySettingsFile, false, false);
+            //}
 
-            var rykyConfig = rykyConfigBuilder.Build();
+            //var rykyConfig = rykyConfigBuilder.Build();
 
             // CuttingBoards config
-            var cuttingBoardsSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["CuttingBoardsSettingsFile"]);
-            var cuttingBoardsConfigBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, false);
+            //var cuttingBoardsSettingsFile = Environment.ExpandEnvironmentVariables(initialConfiguration["CuttingBoardsSettingsFile"]);
+            //var cuttingBoardsConfigBuilder = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json", true, false);
 
-            if (!string.IsNullOrEmpty(cuttingBoardsSettingsFile))
-            {
-                cuttingBoardsConfigBuilder.AddJsonFile(cuttingBoardsSettingsFile, false, false);
-            }
+            //if (!string.IsNullOrEmpty(cuttingBoardsSettingsFile))
+            //{
+            //    cuttingBoardsConfigBuilder.AddJsonFile(cuttingBoardsSettingsFile, false, false);
+            //}
 
-            var cuttingBoardsConfig = cuttingBoardsConfigBuilder.Build();
+            //var cuttingBoardsConfig = cuttingBoardsConfigBuilder.Build();
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File("Logs/.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            DiscordService = new DiscordService(Log.Logger, Configuration);
+            DiscordService = new DiscordService(Log.Logger, Configuration.GetSection("ChefKnivesSettings"));
             DiscordService.Start().GetAwaiter().GetResult();
 
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
                 DryRun = args.Any(a => a.Equals("--dryrun"));
 
-                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, Configuration, DiscordService.SendModChannelMessage, DryRun);
+                ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, Configuration.GetSection("ChefKnivesSettings"), DiscordService.SendModChannelMessage, DryRun);
 
                 // TODO: processing old posts is disabled for swap since it causes the bot to run back in time and comment on many old posts, which we
                 // probably don't want
-                ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, Configuration, dryRun: DryRun, processOldPosts: false);
+                ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, Configuration.GetSection("ChefKnifeSwapSettings"), dryRun: DryRun, processOldPosts: false);
                 //var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
-                var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, cuttingBoardsConfig, DryRun);
+                var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, Configuration.GetSection("CuttingBoardsSettings"), DryRun);
             }
 
             CreateHostBuilder(args).Build().Run();

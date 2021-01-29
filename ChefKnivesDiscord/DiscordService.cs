@@ -31,7 +31,7 @@ namespace ChefKnivesDiscord
             _logger = logger;
             _configuration = configuration;
 
-            _fileAccess = new ThreadSafeFileAccess<DumbMetricsModel>(_configuration["DumbMetrics"]);
+            //_fileAccess = new ThreadSafeFileAccess<DumbMetricsModel>(_configuration["DumbMetrics"]);
             _random = new Random(Guid.NewGuid().GetHashCode());
 
             var pastaFilePath = Path.Combine(Environment.CurrentDirectory, "pastas.json");
@@ -133,47 +133,51 @@ namespace ChefKnivesDiscord
 
             if (message.Content == "!reee")
             {
-                var model = _fileAccess.Read();
-                await message.Channel.SendMessageAsync($"reee. ~that was reee #{model.ReeeCounter}~");                
-                model.ReeeCounter++;
+                await message.Channel.SendMessageAsync("i'm broken right now go away");                
 
-                switch(model.ReeeCounter)
-                {
-                    case 10:
-                        await message.Channel.SendMessageAsync("I've reee'd 10 times!");
-                        break;
-                    case 25:
-                        await message.Channel.SendMessageAsync("That's been 25 reees! You guys sure don't get tired of that, huh...");
-                        break;
-                    case 50:
-                        await message.Channel.SendMessageAsync("All right. 50 reees. Well done.");
-                        break;
-                    case 69:
-                        await message.Channel.SendMessageAsync("nice.");
-                        break;
-                    case 100:
-                        await message.Channel.SendMessageAsync("Okay 100 reees. You uh... you can stop now");
-                        break;
-                    case 150:
-                        await message.Channel.SendMessageAsync("150 reees. Not gonna stop? Lovely. Just, lovely.");
-                        break;
-                    case 200:
-                        await message.Channel.SendMessageAsync("200 reees! You know what? that's enough I'm done do whatever you want.");
-                        break;
-                    case 1000:
-                        await message.Channel.SendMessageAsync("Welp, the big 1k. 1k reees. This is seriously it though, there's nothing after this one. But congratulations I guess?");
-                        break;
-                }
+                //var model = _fileAccess.Read();
+                //await message.Channel.SendMessageAsync($"reee. ~that was reee #{model.ReeeCounter}~");                
+                //model.ReeeCounter++;
 
-                _fileAccess.Write(model);
+                //switch(model.ReeeCounter)
+                //{
+                //    case 10:
+                //        await message.Channel.SendMessageAsync("I've reee'd 10 times!");
+                //        break;
+                //    case 25:
+                //        await message.Channel.SendMessageAsync("That's been 25 reees! You guys sure don't get tired of that, huh...");
+                //        break;
+                //    case 50:
+                //        await message.Channel.SendMessageAsync("All right. 50 reees. Well done.");
+                //        break;
+                //    case 69:
+                //        await message.Channel.SendMessageAsync("nice.");
+                //        break;
+                //    case 100:
+                //        await message.Channel.SendMessageAsync("Okay 100 reees. You uh... you can stop now");
+                //        break;
+                //    case 150:
+                //        await message.Channel.SendMessageAsync("150 reees. Not gonna stop? Lovely. Just, lovely.");
+                //        break;
+                //    case 200:
+                //        await message.Channel.SendMessageAsync("200 reees! You know what? that's enough I'm done do whatever you want.");
+                //        break;
+                //    case 1000:
+                //        await message.Channel.SendMessageAsync("Welp, the big 1k. 1k reees. This is seriously it though, there's nothing after this one. But congratulations I guess?");
+                //        break;
+                //}
+
+                //_fileAccess.Write(model);
             }
 
             if (message.Content == "!wendys")
             {
-                var model = _fileAccess.Read();
-                await message.Channel.SendMessageAsync($"{message.Author.Mention} Sir, this is Wendy's #{model.WendysCounter}");
-                model.WendysCounter++;
-                _fileAccess.Write(model);
+                await message.Channel.SendMessageAsync("i'm broken right now go away");
+
+                //var model = _fileAccess.Read();
+                //await message.Channel.SendMessageAsync($"{message.Author.Mention} Sir, this is Wendy's #{model.WendysCounter}");
+                //model.WendysCounter++;
+                //_fileAccess.Write(model);
             }
 
             if (message.Content == "!rando")
