@@ -78,7 +78,17 @@ namespace SubredditBotWeb
 
             if (!args.Any(a => a.Equals("--websiteonly")))
             {
+
+                DryRun = false;
+#if DEBUG
                 DryRun = args.Any(a => a.Equals("--dryrun"));
+#endif
+                if (DryRun)
+                {
+                    Log.Logger.Fatal("This is a DRYRUN! No actions will be taken!");
+                    Log.Logger.Fatal("This is a DRYRUN! No actions will be taken!");
+                    Log.Logger.Fatal("This is a DRYRUN! No actions will be taken!");
+                }
 
                 ChefKnivesService = new ChefKnivesBotInitializer().Start(Log.Logger, Configuration.GetSection("ChefKnivesSettings"), DiscordService.SendModChannelMessage, DryRun);
 
