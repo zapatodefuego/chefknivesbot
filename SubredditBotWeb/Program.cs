@@ -81,7 +81,7 @@ namespace SubredditBotWeb
 
                 DryRun = false;
 #if DEBUG
-                DryRun = args.Any(a => a.Equals("--dryrun"));
+                DryRun = true;
 #endif
                 if (DryRun)
                 {

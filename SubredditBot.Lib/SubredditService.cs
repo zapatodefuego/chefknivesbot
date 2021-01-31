@@ -228,7 +228,7 @@ namespace SubredditBot.Lib
                 {
                     Parallel.ForEach(CommentHandlers, c =>
                     {
-                        //_logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
+                        _logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
                         c.Process(comment, _callback);
                     });
                 }
@@ -259,7 +259,7 @@ namespace SubredditBot.Lib
                 {
                     Parallel.ForEach(PostHandlers, p =>
                     {
-                        //_logger.Information($"Processing comment: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
+                        _logger.Information($"Processing comment: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
                         p.Process(post);
                     });
                 }

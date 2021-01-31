@@ -18,7 +18,6 @@
     },
     "SubredditBotWeb": {
       "commandName": "Project",
-      "commandLineArgs": "--dryrun",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
