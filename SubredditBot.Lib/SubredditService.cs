@@ -136,7 +136,7 @@ namespace SubredditBot.Lib
 
         public void PullCommentsAndPosts(string subredditName, int postCount = 100, int commentCount = 500)
         {
-            _logger.Information($"Pulling {postCount} posts and {commentCount} comments for {subredditName}. Interval: {_commentAndPostPullIntervalMinutes} minutes");
+            _logger.Information($"[{_subredditName}] Pulling {postCount} posts and {commentCount}. Interval: {_commentAndPostPullIntervalMinutes} minutes");
 
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
@@ -152,7 +152,7 @@ namespace SubredditBot.Lib
                     {
                         PostHandlers.ForEach(c =>
                         {
-                            _logger.Information($"Reprocessing post {postToUpdate.Title} from original flair: {updatedPost.Flair} to new flair: {postToUpdate.Flair}");
+                            _logger.Information($"[{_subredditName}] Reprocessing post {postToUpdate.Title} from original flair: {updatedPost.Flair} to new flair: {postToUpdate.Flair}");
                             var postController = RedditClient.Post(updatedPost.Fullname).Info();
                             c.Process(postController);
                         });
@@ -185,7 +185,7 @@ namespace SubredditBot.Lib
                 tries++;
             }
 
-            _logger.Information($"Finished pulling posts and comments for {subredditName}.");
+            _logger.Information($"[{_subredditName}] Finished pulling posts and comments");
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)
@@ -204,19 +204,19 @@ namespace SubredditBot.Lib
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
+                _logger.Error(exception, $"[{_subredditName}] Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
                 Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                _logger.Error(exception, $"Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
+                _logger.Error(exception, $"[{_subredditName}] Exception caught in {nameof(Messages_UnreadUpdated)}. Redoing event and continuing...");
                 Account.Messages.InboxUpdated -= Messages_UnreadUpdated;
                 SubscribeToMessageFeed();
             }
             catch (Exception exception)
             {
-                _logger.Error(exception, $"Unexpected exception caught in {nameof(Messages_UnreadUpdated)}");
+                _logger.Error(exception, $"[{_subredditName}] Unexpected exception caught in {nameof(Messages_UnreadUpdated)}");
             }
         }
 
@@ -225,7 +225,7 @@ namespace SubredditBot.Lib
             try
             {
                 var processed = new List<Tuple<string, string, bool>>();
-                _logger.Information($"Processing new comments...");
+                _logger.Information($"[{_subredditName}] Processing new comments...");
                 foreach (var comment in e.NewComments)
                 {
                     Parallel.ForEach(CommentHandlers, async c =>
@@ -236,23 +236,24 @@ namespace SubredditBot.Lib
                 }
 
                 var processedList = string.Join(", ", processed.Select(p => $"{p.Item1}|{p.Item2}|{p.Item3}"));
-                _logger.Information($"Processed comments: {processedList}");
+                _logger.Information($"[{_subredditName}] Processed comments: {processedList}");
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
+                _logger.Error(exception, $"[{_subredditName}] Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
                 Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
                 SubscribeToCommentFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                _logger.Error(exception, $"Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
+                _logger.Error(exception, $"[{_subredditName}] Exception caught in {nameof(Comments_NewUpdated)}. Redoing event and continuing...");
                 Subreddit.Comments.NewUpdated -= Comments_NewUpdated;
+
                 SubscribeToCommentFeed();
             }
             catch (Exception exception)
             {
-                _logger.Error(exception, $"Unexpected exception caught in {nameof(Comments_NewUpdated)}");
+                _logger.Error(exception, $"[{_subredditName}] Unexpected exception caught in {nameof(Comments_NewUpdated)}");
             }
         }
 
@@ -261,7 +262,7 @@ namespace SubredditBot.Lib
             try
             {
                 var processed = new List<Tuple<string, string, bool>>();
-                _logger.Information($"Processing new posts...");
+                _logger.Information($"[{_subredditName}] Processing new posts...");
                 foreach (var post in e.Added)
                 {
                     Parallel.ForEach(PostHandlers, async p =>
@@ -272,23 +273,23 @@ namespace SubredditBot.Lib
                 }
 
                 var processedList = string.Join(", ", processed.Select(p => $"{p.Item1}|{p.Item2}|{p.Item3}"));
-                _logger.Information($"Processed posts: {processedList}");
+                _logger.Information($"[{_subredditName}] Processed posts: {processedList}");
             }
             catch (RedditGatewayTimeoutException exception)
             {
-                _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
+                _logger.Error(exception, $"[{_subredditName}] Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
                 Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (RedditServiceUnavailableException exception)
             {
-                _logger.Error(exception, $"Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
+                _logger.Error(exception, $"[{_subredditName}] Exception caught in {nameof(Posts_NewUpdated_OrEdited)}. Redoing event and continuing...");
                 Subreddit.Posts.NewUpdated -= Posts_NewUpdated_OrEdited;
                 SubscribeToPostFeed();
             }
             catch (Exception exception)
             {
-                _logger.Error(exception, $"Unexpected exception caught in {nameof(Posts_NewUpdated_OrEdited)}");
+                _logger.Error(exception, $"[{_subredditName}] Unexpected exception caught in {nameof(Posts_NewUpdated_OrEdited)}");
             }
         }
     }
