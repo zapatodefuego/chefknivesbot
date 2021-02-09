@@ -5,6 +5,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>SubredditBotWeb</AssemblyName>
     <RootNamespace>SubredditBotWeb</RootNamespace>
+    <UserSecretsId>c270fa53-63a5-4429-8bb3-65246d5c3089</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

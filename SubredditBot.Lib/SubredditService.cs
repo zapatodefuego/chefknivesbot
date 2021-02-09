@@ -103,21 +103,21 @@ namespace SubredditBot.Lib
         {
             Subreddit.Posts.GetNew();
             Subreddit.Posts.NewUpdated += Posts_NewUpdated_OrEdited;
-            Subreddit.Posts.MonitorNew();
+            Subreddit.Posts.MonitorNew(monitoringDelayMs: 6000);
         }
 
         public void SubscribeToCommentFeed()
         {
             Subreddit.Comments.GetNew();
             Subreddit.Comments.NewUpdated += Comments_NewUpdated;
-            Subreddit.Comments.MonitorNew();
+            Subreddit.Comments.MonitorNew(monitoringDelayMs: 6000);
         }
 
         public void SubscribeToMessageFeed()
         {
             Account.Messages.GetMessagesUnread();
             Account.Messages.UnreadUpdated += Messages_UnreadUpdated;
-            Account.Messages.MonitorUnread();
+            Account.Messages.MonitorUnread(monitoringDelayMs: 6000);
         }
 
         public void UnsubscribeAllEvents()
@@ -131,12 +131,12 @@ namespace SubredditBot.Lib
         {
             _cancellationToken = new CancellationTokenSource();
 
-            Repeater.Repeat(() => PullCommentsAndPosts(), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
+            Repeater.Repeat(() => PullCommentsAndPosts(_subredditName), _commentAndPostPullIntervalMinutes * 60, _cancellationToken.Token);
         }
 
-        public void PullCommentsAndPosts(int postCount = 100, int commentCount = 500)
+        public void PullCommentsAndPosts(string subredditName, int postCount = 100, int commentCount = 500)
         {
-            _logger.Information($"Pulling {postCount} posts and {commentCount} comments. Interval: {_commentAndPostPullIntervalMinutes} minutes");
+            _logger.Information($"Pulling {postCount} posts and {commentCount} comments for {subredditName}. Interval: {_commentAndPostPullIntervalMinutes} minutes");
 
             var redditReader = new RedditHttpsReader(subreddit: Subreddit.Name);
 
@@ -185,7 +185,7 @@ namespace SubredditBot.Lib
                 tries++;
             }
 
-            _logger.Information($"Finished pulling posts and comments.");
+            _logger.Information($"Finished pulling posts and comments for {subredditName}.");
         }
 
         private void Messages_UnreadUpdated(object sender, MessagesUpdateEventArgs e)
@@ -228,7 +228,7 @@ namespace SubredditBot.Lib
                 {
                     Parallel.ForEach(CommentHandlers, c =>
                     {
-                        _logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
+                        //_logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
                         c.Process(comment, _callback);
                     });
                 }
@@ -259,7 +259,7 @@ namespace SubredditBot.Lib
                 {
                     Parallel.ForEach(PostHandlers, p =>
                     {
-                        _logger.Information($"Processing comment: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
+                        //_logger.Information($"Processing post: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
                         p.Process(post);
                     });
                 }

@@ -20,7 +20,7 @@ namespace SubredditBot.Lib
 
         void Dispose();
         bool IsSubredditModerator(string username);
-        void PullCommentsAndPosts(int postCount = 100, int commentCount = 100);
+        void PullCommentsAndPosts(string subredditName, int postCount = 100, int commentCount = 100);
         void RegisterRepeatForCommentAndPostDataPull();
         void SubscribeToCommentFeed();
         void SubscribeToMessageFeed();
