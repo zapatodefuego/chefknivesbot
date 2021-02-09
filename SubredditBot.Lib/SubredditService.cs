@@ -224,19 +224,24 @@ namespace SubredditBot.Lib
         {
             try
             {
-                var processed = new List<Tuple<string, string, bool>>();
-                _logger.Information($"[{_subredditName}] Processing new comments...");
+                var processed = new Dictionary<string, string>();
                 foreach (var comment in e.NewComments)
                 {
                     Parallel.ForEach(CommentHandlers, async c =>
                     {
                         var result = await c.Process(comment, _callback);
-                        processed.Add(new Tuple<string, string, bool>(comment.Id, c.GetType().Name, result));
+                        if (result == true)
+                        {
+                            processed.Add(comment.Id, c.GetType().Name);
+                        }
                     });
                 }
 
-                var processedList = string.Join(", ", processed.Select(p => $"{p.Item1}|{p.Item2}|{p.Item3}"));
-                _logger.Information($"[{_subredditName}] Processed comments: {processedList}");
+                var processedList = string.Join(", ", processed.Select(p => $"{p.Key}|{p.Value}"));
+                if (processedList.Any())
+                {
+                    _logger.Information($"[{_subredditName}] Processed (result was true) comments: {processedList}");
+                }
             }
             catch (RedditGatewayTimeoutException exception)
             {
@@ -261,19 +266,24 @@ namespace SubredditBot.Lib
         {
             try
             {
-                var processed = new List<Tuple<string, string, bool>>();
-                _logger.Information($"[{_subredditName}] Processing new posts...");
+                var processed = new Dictionary<string, string>();
                 foreach (var post in e.Added)
                 {
                     Parallel.ForEach(PostHandlers, async p =>
                     {
                         var result = await p.Process(post);
-                        processed.Add(new Tuple<string, string, bool>(post.Id, p.GetType().Name, result));
+                        if (result == true)
+                        {
+                            processed.Add(post.Id, p.GetType().Name);
+                        }
                     });
                 }
 
-                var processedList = string.Join(", ", processed.Select(p => $"{p.Item1}|{p.Item2}|{p.Item3}"));
-                _logger.Information($"[{_subredditName}] Processed posts: {processedList}");
+                var processedList = string.Join(", ", processed.Select(p => $"{p.Key}|{p.Value}"));
+                if (processedList.Any())
+                {
+                    _logger.Information($"[{_subredditName}] Processed (result was true) posts: {processedList}");
+                }
             }
             catch (RedditGatewayTimeoutException exception)
             {
