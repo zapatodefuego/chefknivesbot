@@ -21,7 +21,11 @@ namespace CuttingBoardsBot
                 logger.Warning("This is a DRYRUN! No actions will be taken!");
             }
 
-            var redditClient = new RedditClient(appId: configuration["AppId"], appSecret: configuration["AppSecret"], refreshToken: configuration["RefreshToken"]);
+            var redditClient = new RedditClient(
+                appId: configuration["AppId"],
+                appSecret: configuration["AppSecret"],
+                accessToken: configuration["AccessToken"],
+                refreshToken: configuration["RefreshToken"]);
             var service = new SubredditService(logger, configuration, redditClient, subredditName: _subredditName, databaseName: _subredditName, callback: null);
 
             foreach (var handler in GetHandlers(typeof(IPostHandler), logger, service, dryRun))
