@@ -94,9 +94,9 @@ namespace SubredditBotWeb
 
                 // TODO: processing old posts is disabled for swap since it causes the bot to run back in time and comment on many old posts, which we
                 // probably don't want
-                ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, Configuration.GetSection("ChefKnifeSwapSettings"), dryRun: DryRun, processOldPosts: false);
+                //ChefKnifeSwapService = new ChefKnifeSwapBotInitializer().Start(Log.Logger, Configuration.GetSection("ChefKnifeSwapSettings"), dryRun: DryRun, processOldPosts: false);
                 //var rykyService = new RykyBotInitializer().Start(Log.Logger, rykyConfig, DryRun);
-                var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, Configuration.GetSection("CuttingBoardsSettings"), DryRun);
+                //var cuttingBoardsService = new CuttingBoardsBotInitializer().Start(Log.Logger, Configuration.GetSection("CuttingBoardsSettings"), DryRun);
             }
 
             CreateHostBuilder(args).Build().Run();

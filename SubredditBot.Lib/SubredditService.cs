@@ -103,21 +103,21 @@ namespace SubredditBot.Lib
         {
             Subreddit.Posts.GetNew();
             Subreddit.Posts.NewUpdated += Posts_NewUpdated_OrEdited;
-            Subreddit.Posts.MonitorNew(monitoringDelayMs: 6000);
+            Subreddit.Posts.MonitorNew(monitoringDelayMs: 60000);
         }
 
         public void SubscribeToCommentFeed()
         {
             Subreddit.Comments.GetNew();
             Subreddit.Comments.NewUpdated += Comments_NewUpdated;
-            Subreddit.Comments.MonitorNew(monitoringDelayMs: 6000);
+            Subreddit.Comments.MonitorNew(monitoringDelayMs: 60000);
         }
 
         public void SubscribeToMessageFeed()
         {
             Account.Messages.GetMessagesUnread();
             Account.Messages.UnreadUpdated += Messages_UnreadUpdated;
-            Account.Messages.MonitorUnread(monitoringDelayMs: 6000);
+            Account.Messages.MonitorUnread(monitoringDelayMs: 60000);
         }
 
         public void UnsubscribeAllEvents()
@@ -224,14 +224,19 @@ namespace SubredditBot.Lib
         {
             try
             {
+                var processed = new List<Tuple<string, string, bool>>();
+                _logger.Information($"Processing new comments...");
                 foreach (var comment in e.NewComments)
                 {
-                    Parallel.ForEach(CommentHandlers, c =>
+                    Parallel.ForEach(CommentHandlers, async c =>
                     {
-                        //_logger.Information($"Processing comment: {comment.Id} Subreddit: {_subredditName} Handler: {c.GetType().Name}");
-                        c.Process(comment, _callback);
+                        var result = await c.Process(comment, _callback);
+                        processed.Add(new Tuple<string, string, bool>(comment.Id, c.GetType().Name, result));
                     });
                 }
+
+                var processedList = string.Join(", ", processed.Select(p => $"{p.Item1}|{p.Item2}|{p.Item3}"));
+                _logger.Information($"Processed comments: {processedList}");
             }
             catch (RedditGatewayTimeoutException exception)
             {
@@ -255,14 +260,19 @@ namespace SubredditBot.Lib
         {
             try
             {
+                var processed = new List<Tuple<string, string, bool>>();
+                _logger.Information($"Processing new posts...");
                 foreach (var post in e.Added)
                 {
-                    Parallel.ForEach(PostHandlers, p =>
+                    Parallel.ForEach(PostHandlers, async p =>
                     {
-                        //_logger.Information($"Processing post: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
-                        p.Process(post);
+                        var result = await p.Process(post);
+                        processed.Add(new Tuple<string, string, bool>(post.Id, p.GetType().Name, result));
                     });
                 }
+
+                var processedList = string.Join(", ", processed.Select(p => $"{p.Item1}|{p.Item2}|{p.Item3}"));
+                _logger.Information($"Processed posts: {processedList}");
             }
             catch (RedditGatewayTimeoutException exception)
             {
