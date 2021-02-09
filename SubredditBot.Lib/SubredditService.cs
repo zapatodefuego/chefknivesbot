@@ -103,21 +103,21 @@ namespace SubredditBot.Lib
         {
             Subreddit.Posts.GetNew();
             Subreddit.Posts.NewUpdated += Posts_NewUpdated_OrEdited;
-            Subreddit.Posts.MonitorNew(monitoringDelayMs: 60000);
+            Subreddit.Posts.MonitorNew(monitoringDelayMs: 120000);
         }
 
         public void SubscribeToCommentFeed()
         {
             Subreddit.Comments.GetNew();
             Subreddit.Comments.NewUpdated += Comments_NewUpdated;
-            Subreddit.Comments.MonitorNew(monitoringDelayMs: 60000);
+            Subreddit.Comments.MonitorNew(monitoringDelayMs: 120000);
         }
 
         public void SubscribeToMessageFeed()
         {
             Account.Messages.GetMessagesUnread();
             Account.Messages.UnreadUpdated += Messages_UnreadUpdated;
-            Account.Messages.MonitorUnread(monitoringDelayMs: 60000);
+            Account.Messages.MonitorUnread(monitoringDelayMs: 120000);
         }
 
         public void UnsubscribeAllEvents()
