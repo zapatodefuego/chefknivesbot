@@ -1,0 +1,19 @@
+﻿[Unit]
+Description=chefknives bot
+
+[Service]
+WorkingDirectory=/home/ec2-user/web
+ExecStart=/usr/bin/dotnet /home/ec2-user/web/SubredditBotWeb.dll
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillMode=mixed
+TimeoutStopSec=10
+SyslogIdentifier=dotnet-chefknivesbot
+User=ec2-user
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+RuntimeMaxSec=1d
+
+[Install]
+WantedBy=multi-user.target
