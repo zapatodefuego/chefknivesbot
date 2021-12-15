@@ -13,7 +13,8 @@ namespace ChefKnivesBot.Handlers.Comments
     public class MakerPostCommentHandler : HandlerBase, ICommentHandler
     {
         private const string _urlRoot = "https://www.reddit.com";
-        private static List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
+        private static readonly List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
+        private static readonly List<string> _autoApprovedUsers = new List<string> { "zapatodefuego", "marine775", "fiskedyret", "barclid", "cweees", "cosmicrave", "refgent" };
         private readonly ILogger _logger;
         private readonly ISubredditService _service;
         private readonly FlairV2 _makerPostFlair;
@@ -39,7 +40,7 @@ namespace ChefKnivesBot.Handlers.Comments
             // Check if the link flair matches the maker post flait and that the author is not a moderator
             if (linkFlairId != null && linkFlairId.Equals(_makerPostFlair.Id))
             {
-                if (comment.Removed || comment.Listing.Approved || comment.Author.Equals(_service.Account.Me.Name))
+                if (comment.Removed || comment.Listing.Approved || CommentAuthorAutoApproved(comment.Author.ToLower()))
                 {
                     return false;
                 }
@@ -63,6 +64,11 @@ namespace ChefKnivesBot.Handlers.Comments
             }
 
             return false;
+        }
+
+        private bool CommentAuthorAutoApproved(string authorLowerCase)
+        {
+            return authorLowerCase.Equals(_service.Account.Me.Name) || _autoApprovedUsers.Any(user => authorLowerCase == user);
         }
     }
 }
