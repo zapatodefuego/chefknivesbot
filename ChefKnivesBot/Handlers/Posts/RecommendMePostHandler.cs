@@ -1,5 +1,6 @@
 ﻿using ChefKnivesBot.Utilities;
 using Reddit.Controllers;
+using Reddit.Inputs.LinksAndComments;
 using Reddit.Things;
 using Serilog;
 using SubredditBot.Data;
@@ -57,10 +58,16 @@ namespace ChefKnivesBot.Handlers.Posts
                     $"* Recent recommendation megathreads: {_questionnaireUrl}\n" +
                     $"* Getting Started guide: {_gettingStartedUrl}\n\n" +
                     $"A moderator may remove this post if it asks for a recommendation.";
+                    LinksAndCommentsReportInput linksAndCommentsReportInput = new LinksAndCommentsReportInput()
+                    {
+                        rule_reason = "Rule 2",
+                        additional_info = "Suspected recommend me post",
+                    };
 
                     var replyComment = post
                         .Reply(message)
                         .Distinguish("yes", true);
+                    post.Report(linksAndCommentsReportInput);
 
                     _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
                 }
