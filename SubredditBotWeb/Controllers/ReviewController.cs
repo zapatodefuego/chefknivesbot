@@ -42,7 +42,7 @@ namespace SubredditBotWeb.Controllers
             var reviewTask = MakerCommentsReviewUtility.Review(model.Username, Program.ChefKnivesService.RedditPostDatabase, Program.ChefKnivesService.RedditCommentDatabase);
             var result = reviewTask.GetAwaiter().GetResult();
 
-            model.Message = $"Reviewed {model.Username} in {result.ReviewTime} (ms). Found {result.MakerPosts.Count()} maker posts and {result.Comments.Count() - result.MakerComments.Count()} total non-maker comments.";
+            model.Message = $"Reviewed {model.Username} in {result.ReviewTime} (ms). Found {result.MakerPosts.Count()} maker posts and {result.Comments.Count() - result.SelfComments.Count()} total non-maker comments.";
             model.Comments = result.Comments.OrderByDescending(o => o.CreateDate).ToList();
             model.Comments.ForEach(c => c.Permalink = $"{urlRoot}{c.Permalink}");
 

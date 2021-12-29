@@ -26,7 +26,7 @@ namespace ChefKnivesBot.Utilities
             var posts = await postDatabase.GetByQueryable(nameof(RedditThing.Author), author);
             var makerPosts = posts.Where(p => p.Flair != null && p.Flair.Equals("Maker Post"));
             var comments = await commentDatabase.GetByQueryable(nameof(RedditThing.Author), author);
-            var makerComments = new List<Comment>();
+            var selfComments = new List<Comment>();
             foreach (var comment in comments)
             {
                 var post = postDatabase.GetById(ConvertListingIdToPostId(comment.PostLinkId));
@@ -35,9 +35,9 @@ namespace ChefKnivesBot.Utilities
                     continue;
                 }
 
-                if (post.Author.Equals(author) && post.Flair != null && post.Flair.Equals("Maker Post"))
+                if (post.Author.Equals(author))
                 {
-                    makerComments.Add(comment);
+                    selfComments.Add(comment);
                 }
             }
 
@@ -48,7 +48,7 @@ namespace ChefKnivesBot.Utilities
                 Posts = posts,
                 MakerPosts = makerPosts,
                 Comments = comments,
-                MakerComments = makerComments,
+                SelfComments = selfComments,
                 ReviewTime = _stopWatch.ElapsedMilliseconds
 
             };
