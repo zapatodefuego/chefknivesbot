@@ -4,7 +4,6 @@ using Reddit.Things;
 using Serilog;
 using SubredditBot.Data;
 using SubredditBot.Lib;
-using SubredditBot.Lib.Data;
 using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Linq;
@@ -55,7 +54,7 @@ namespace ChefKnivesBot.Handlers.Posts
                 }
 
                 var result = MakerCommentsReviewUtility.Review(post.Author, _service.RedditPostDatabase, _service.RedditCommentDatabase).Result;
-                var nonMakerCommentCount = result.Comments.Count() - result.MakerComments.Count();
+                var nonMakerCommentCount = result.Comments.Count() - result.SelfComments.Count();
                 var makerPostCount = result.MakerPosts.Count();
 
                 if (nonMakerCommentCount < 2)
@@ -83,7 +82,7 @@ namespace ChefKnivesBot.Handlers.Posts
             {
                 var reply = post
                     .Reply(
-                        $"It looks like you haven't recently commented on any posts within this community. " +
+                        $"It looks like you haven't recently commented on others posts within this community. " +
                         $"Please sufficiently interact with r/{_service.Subreddit.Name} by constructively commenting on posts other than your own before submitting a Maker Post.\n\n" +
                         $"For more information review the [Maker FAQ](https://www.reddit.com/r/chefknives/wiki/makerfaq)")
                     .Distinguish("yes", false);

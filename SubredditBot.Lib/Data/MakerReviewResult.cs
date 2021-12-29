@@ -9,7 +9,7 @@ namespace SubredditBot.Lib.Data
         public IEnumerable<Post> MakerPosts { get; set; }
         public IEnumerable<Post> Posts { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
-        public IEnumerable<Comment> MakerComments { get; set; }
+        public IEnumerable<Comment> SelfComments { get; set; }
     }
 
 }
