@@ -25,6 +25,8 @@ namespace ChefKnivesBot.Handlers.Posts
             "budget",
             "buy",
             "recommend",
+            "first",
+            "purchase",
         };
 
         public RecommendMePostHandler(ILogger logger, ISubredditService service, bool dryRun)
@@ -32,7 +34,7 @@ namespace ChefKnivesBot.Handlers.Posts
         {
             _logger = logger;
             _service = service;
-            _flair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Question"));
+            _flair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Question") || f.Text.Equals("Discussion"));
         }
 
         public async Task<bool> Process(BaseController baseController)
@@ -68,7 +70,6 @@ namespace ChefKnivesBot.Handlers.Posts
                         .Reply(message)
                         .Distinguish("yes", true);
                     post.Report(linksAndCommentsReportInput);
-
                     _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
                 }
 
