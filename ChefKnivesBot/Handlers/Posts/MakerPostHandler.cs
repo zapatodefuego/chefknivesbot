@@ -29,7 +29,7 @@ namespace ChefKnivesBot.Handlers.Posts
             _makerPostFlair = _service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals(_makerPostName));
         }
 
-        public async Task<bool> Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController, Func<string, Task> callback = null)
         {
             var post = baseController as Post;
             if (post == null)
