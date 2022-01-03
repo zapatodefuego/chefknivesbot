@@ -31,8 +31,8 @@ namespace SubredditBotWeb
                 })
                 .AddReddit(options =>
                 {
-                    options.ClientId = Configuration["AppId"];
-                    options.ClientSecret = Configuration["AppSecret"];
+                    options.ClientId = Configuration.GetSection("ChefKnivesSettings")["AppId"];
+                    options.ClientSecret = Configuration.GetSection("ChefKnivesSettings")["AppSecret"];
                 });
 
             services

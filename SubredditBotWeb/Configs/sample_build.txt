@@ -1,0 +1,15 @@
+﻿cd /home/ec2-user/chefknivesbot
+
+sudo systemctl stop chefknivesbot
+
+git fetch --all
+git pull
+git clean -fxd
+
+dotnet build -c release
+dotnet publish -c release -o /home/ec2-user/web
+dotnet build-server shutdown
+
+cp /home/ec2-user/appsettings_base.json /home/ec2-user/web/appsettings.json
+
+sudo systemctl start chefknivesbot
