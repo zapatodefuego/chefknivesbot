@@ -1,6 +1,5 @@
 ﻿using ChefKnivesCommentsDatabase;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Bson.Serialization;
 using Reddit;
 using Reddit.Controllers;
 using Reddit.Controllers.EventArgs;
@@ -14,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Comment = SubredditBot.Data.Comment;
 
 namespace SubredditBot.Lib
 {
@@ -154,7 +152,7 @@ namespace SubredditBot.Lib
                         {
                             _logger.Information($"Reprocessing post {postToUpdate.Title} from original flair: {updatedPost.Flair} to new flair: {postToUpdate.Flair}");
                             var postController = RedditClient.Post(updatedPost.Fullname).Info();
-                            c.Process(postController);
+                            c.Process(postController, _callback);
                         });
                     }
                 }
@@ -260,7 +258,7 @@ namespace SubredditBot.Lib
                     Parallel.ForEach(PostHandlers, p =>
                     {
                         //_logger.Information($"Processing comment: {post.Id} Subreddit: {_subredditName} Handler: {p.GetType().Name}");
-                        p.Process(post);
+                        p.Process(post, _callback);
                     });
                 }
             }

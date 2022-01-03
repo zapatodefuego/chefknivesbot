@@ -1,11 +1,11 @@
 ﻿using ChefKnivesBot.Utilities;
 using Reddit.Controllers;
-using Reddit.Inputs.LinksAndComments;
 using Reddit.Things;
 using Serilog;
 using SubredditBot.Data;
 using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +15,7 @@ namespace ChefKnivesBot.Handlers.Posts
 {
     public class RecommendMePostHandler : HandlerBase, IPostHandler
     {
+        private const string _urlRoot = "https://www.reddit.com";
         private const string _gettingStartedUrl = "https://www.reddit.com/r/chefknives/wiki/gettingstarted";
         private const string _questionnaireUrl = "https://www.reddit.com/r/chefknives/?f=flair_name%3A%22Recommend%20me%22";
         private ILogger _logger;
@@ -37,7 +38,7 @@ namespace ChefKnivesBot.Handlers.Posts
             _flair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Question") || f.Text.Equals("Discussion"));
         }
 
-        public async Task<bool> Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController, Func<string, Task> callback)
         {
             var post = baseController as Post;
             if (post == null)
@@ -57,20 +58,22 @@ namespace ChefKnivesBot.Handlers.Posts
                 if (!DryRun)
                 {
                     var message = $"This looks like a \"Recommend Me\" style post which is not allowed outside AutoModerator's weekly thread. \n\n" +
+                    $"* Please search through recent recommendations for similar requests and add a new comment if you don't find anything\n" + 
                     $"* Recent recommendation megathreads: {_questionnaireUrl}\n" +
                     $"* Getting Started guide: {_gettingStartedUrl}\n\n" +
-                    $"A moderator may remove this post if it asks for a recommendation.";
-                    LinksAndCommentsReportInput linksAndCommentsReportInput = new LinksAndCommentsReportInput()
-                    {
-                        rule_reason = "Rule 2",
-                        additional_info = "Suspected recommend me post",
-                    };
+                    $"This post was automatically removed and a moderator will restore it if done in error. ";
 
                     var replyComment = post
                         .Reply(message)
                         .Distinguish("yes", true);
-                    post.Report(linksAndCommentsReportInput);
                     _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
+
+                    post.Remove();
+
+                    if (callback != null)
+                    {
+                        await callback($"Suspected \"Recommend Me\" post removed by {post.Author}, title: {_urlRoot}{post.Permalink}");
+                    }
                 }
 
                 _logger.Information($"[{nameof(RecommendMePostHandler)}]: Commented with recommend me details on post by {post.Author}");

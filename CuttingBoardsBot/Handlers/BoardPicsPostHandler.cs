@@ -4,6 +4,7 @@ using Serilog;
 using SubredditBot.Data;
 using SubredditBot.Lib;
 using SubredditBot.Lib.DataExtensions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -28,7 +29,7 @@ namespace CuttingBoardsBot.Handlers
             _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive content"));
         }
 
-        public async Task<bool> Process(BaseController baseController)
+        public async Task<bool> Process(BaseController baseController, Func<string, Task> _)
         {
             var post = baseController as Post;
             if (post == null)
