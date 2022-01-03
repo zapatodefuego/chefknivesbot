@@ -31,7 +31,7 @@ namespace ChefKnivesBot.Handlers.Posts
             _rulefive = service.Subreddit.GetRules().Rules.First(r => r.ShortName.Equals("#5 - Descriptive Content"));
         }
 
-        public async Task<bool> Process(BaseController baseController, Func<string, Task> _)
+        public async Task<bool> Process(BaseController baseController, Func<string, Task> callback = null)
         {
             var post = baseController as Post;
             if (post == null)

@@ -33,7 +33,7 @@ namespace ChefKnifeSwapBot.Handlers
             _flair = service.Subreddit.Flairs.LinkFlairV2.First(f => f.Text.Equals("Selling"));
         }
 
-        public async Task<bool> Process(BaseController controller, Func<string, Task> _)
+        public async Task<bool> Process(BaseController controller, Func<string, Task> callback = null)
         {
             var post = controller as SelfPost;
             if (post == null)
