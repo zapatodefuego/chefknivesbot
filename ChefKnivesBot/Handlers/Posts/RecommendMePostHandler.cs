@@ -28,6 +28,19 @@ namespace ChefKnivesBot.Handlers.Posts
             "recommend",
             "first",
             "purchase",
+            "looking",
+            "get",
+            "getting",
+            "recommendations",
+            "thoughts",
+            "need",
+            "opinion",
+            "opinions",
+            "experience",
+            "experiences",
+            "want",
+            "buying",
+            "help",
         };
 
         public RecommendMePostHandler(ILogger logger, ISubredditService service, bool dryRun)
