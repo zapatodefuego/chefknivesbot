@@ -1,7 +1,9 @@
 ﻿using Reddit.Controllers;
 using Reddit.Things;
 using Serilog;
+using SubredditBot.Data;
 using SubredditBot.Lib;
+using SubredditBot.Lib.DataExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,6 @@ namespace ChefKnivesBot.Handlers.Comments
 {
     public class MakerPostCommentHandler : HandlerBase, ICommentHandler
     {
-        private const string _urlRoot = "https://www.reddit.com";
         private static readonly List<string> _forbiddenPhrases = new List<string> { "buy", "sell", "website", "price", "cost", "make me", "order", "instagram", "facebook" };
         private static readonly List<string> _autoApprovedUsers = new List<string> { "zapatodefuego", "marine775", "fiskedyret", "barclid", "cweees", "cosmicrave", "refgent" };
         private readonly ILogger _logger;
@@ -50,11 +51,13 @@ namespace ChefKnivesBot.Handlers.Comments
                     if (!DryRun)
                     {
                         comment.Remove();
+                        var message = $"This looks like a comment related to sales, pricing or other offerings. Please check the stickied comment in this thread for rules on Maker Posts. \n\n" +
+                            "This post was automatically removed - please notify via modmail if done in error and it will be restored.";
 
-                        if (callback != null)
-                        {
-                            await callback($"Removed comment by {comment.Author} on a Maker Post: {_urlRoot}{comment.Permalink}");
-                        }
+                        var replyComment = comment
+                            .Reply("")
+                            .Distinguish("yes", true);
+                        _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(comment.Id, RedditThingType.Comment, comment.Listing.AuthorFlairTemplateId));
 
                         _logger.Information($"Removed comment from {comment.Author}: {string.Concat(comment.Body.Take(100))}");
                     }

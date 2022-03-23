@@ -17,7 +17,7 @@ namespace ChefKnivesBot.Handlers.Posts
     {
         private const string _urlRoot = "https://www.reddit.com";
         private const string _gettingStartedUrl = "https://www.reddit.com/r/chefknives/wiki/gettingstarted";
-        private const string _questionnaireUrl = "https://www.reddit.com/r/chefknives/?f=flair_name%3A%22Recommend%20me%22";
+        private const string _recommendMeUrl = "https://www.reddit.com/r/chefknives/?f=flair_name%3A%22Recommend%20me%22";
         private ILogger _logger;
         private readonly ISubredditService _service;
         private readonly FlairV2 _flair;
@@ -70,11 +70,12 @@ namespace ChefKnivesBot.Handlers.Posts
 
                 if (!DryRun)
                 {
-                    var message = $"This looks like a \"Recommend Me\" style post which is not allowed outside AutoModerator's weekly thread. \n\n" +
+                    var message = $"This looks like a post asking for a knife-related recommendation. " +
+                    $"You're in the right subreddit, but not the right thread. You'll want to redirect this question to the pinned weekly megathread. \n\n" +
                     $"* Please search through recent recommendations for similar requests and add a new comment if you don't find anything\n" + 
-                    $"* Recent recommendation megathreads: {_questionnaireUrl}\n" +
+                    $"* Recent recommendation megathreads: {_recommendMeUrl}\n" +
                     $"* Getting Started guide: {_gettingStartedUrl}\n\n" +
-                    $"This post was automatically removed and a moderator will restore it if done in error. ";
+                    $"This post was automatically removed - please notify via modmail if done in error (i.e. you're not asking for a recommendation) and it will be restored. ";
 
                     var replyComment = post
                         .Reply(message)
@@ -82,11 +83,6 @@ namespace ChefKnivesBot.Handlers.Posts
                     _service.SelfCommentDatabase.Upsert(replyComment.ToSelfComment(post.Id, RedditThingType.Post, post.Listing.LinkFlairTemplateId));
 
                     post.Remove();
-
-                    if (callback != null)
-                    {
-                        await callback($"Suspected \"Recommend Me\" post removed by {post.Author}, title: {_urlRoot}{post.Permalink}");
-                    }
                 }
 
                 _logger.Information($"[{nameof(RecommendMePostHandler)}]: Commented with recommend me details on post by {post.Author}");
