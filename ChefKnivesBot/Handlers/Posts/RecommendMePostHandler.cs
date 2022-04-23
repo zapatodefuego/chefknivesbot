@@ -18,6 +18,7 @@ namespace ChefKnivesBot.Handlers.Posts
         private const string _urlRoot = "https://www.reddit.com";
         private const string _gettingStartedUrl = "https://www.reddit.com/r/chefknives/wiki/gettingstarted";
         private const string _recommendMeUrl = "https://www.reddit.com/r/chefknives/?f=flair_name%3A%22Recommend%20me%22";
+        private const string _modMailUrl = "https://www.reddit.com/message/compose?to=%2Fr%2Fchefknives";
         private ILogger _logger;
         private readonly ISubredditService _service;
         private readonly FlairV2 _flair;
@@ -75,7 +76,7 @@ namespace ChefKnivesBot.Handlers.Posts
                     $"* Please search through recent recommendations for similar requests and add a new comment if you don't find anything\n" + 
                     $"* Recent recommendation megathreads: {_recommendMeUrl}\n" +
                     $"* Getting Started guide: {_gettingStartedUrl}\n\n" +
-                    $"This post was automatically removed - please notify via modmail if done in error (i.e. you're not asking for a recommendation) and it will be restored. ";
+                    $"This post was automatically removed - please notify [via modmail]({_modMailUrl}) if done in error (i.e. you're not asking for a recommendation) and it will be restored. ";
 
                     var replyComment = post
                         .Reply(message)
