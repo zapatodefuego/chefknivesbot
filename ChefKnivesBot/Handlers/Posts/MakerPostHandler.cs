@@ -63,7 +63,8 @@ namespace ChefKnivesBot.Handlers.Posts
                 }
                 else if (nonMakerCommentCount < makerPostCount * 3)
                 {
-                    SendTenToOneWarningMessage(post, nonMakerCommentCount, makerPostCount);
+                    //SendTenToOneWarningMessage(post, nonMakerCommentCount, makerPostCount);
+                    _logger.Warning($"Skipped TenToOne handler! Author: {post?.Author}, nonMakerCommentCount: {nonMakerCommentCount}, makerPostCount: {makerPostCount}");
                 }
                 else
                 {
