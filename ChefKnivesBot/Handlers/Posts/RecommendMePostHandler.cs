@@ -42,6 +42,7 @@ namespace ChefKnivesBot.Handlers.Posts
             "want",
             "buying",
             "help",
+            "good",
         };
 
         public RecommendMePostHandler(ILogger logger, ISubredditService service, bool dryRun)
