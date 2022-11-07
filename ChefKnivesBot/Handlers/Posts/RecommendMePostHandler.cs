@@ -35,14 +35,14 @@ namespace ChefKnivesBot.Handlers.Posts
             "recommendations",
             "thoughts",
             "need",
-            "opinion",
             "opinions",
-            "experience",
             "experiences",
             "want",
             "buying",
             "help",
             "good",
+            "suggestions",
+            "advice"
         };
 
         public RecommendMePostHandler(ILogger logger, ISubredditService service, bool dryRun)
