@@ -17,7 +17,7 @@ namespace ChefKnivesBot.Handlers.Posts
     {
         private const string _urlRoot = "https://www.reddit.com";
         private const string _gettingStartedUrl = "https://www.reddit.com/r/chefknives/wiki/gettingstarted";
-        private const string _recommendMeUrl = "https://www.reddit.com/r/chefknives/?f=flair_name%3A%22Recommend%20me%22";
+        private const string _recommendMeUrl = "https://www.reddit.com/r/chefknives/search?sort=new&restrict_sr=on&q=flair%3ARecommend%2Bme";
         private const string _modMailUrl = "https://www.reddit.com/message/compose?to=%2Fr%2Fchefknives";
         private ILogger _logger;
         private readonly ISubredditService _service;
