@@ -157,7 +157,6 @@ namespace SubredditBot.Cli
             // chefknives posts
             service.PostHandlers.Add(new KnifePicsPostHandler(logger, service, dryRun));
             service.PostHandlers.Add(new MakerPostHandler(logger, service, dryRun));
-            service.PostHandlers.Add(new RecommendMePostHandler(logger, service, dryRun));
 
             // chefknives messages
             //service.MessageHandlers.Add(new MessageHandler(logger, service, dryRun));
